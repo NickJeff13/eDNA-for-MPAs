@@ -14,7 +14,7 @@ list.files(path)
 fnFs <- sort(list.files(path, pattern="_R1.fastq", full.names = TRUE))
 fnRs <- sort(list.files(path, pattern="_R2.fastq", full.names = TRUE))
 # Extract sample names, assuming filenames have format: SAMPLENAME_XXX.fastq
-sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`, 3)
+sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`, 3) #the three here means the third underscore in the filename 
 
 #visualize quality profiles
 plotQualityProfile(fnFs[1:2])
