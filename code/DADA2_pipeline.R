@@ -68,8 +68,13 @@ rownames(track) <- sample.names
 head(track)
 
 #Now let's assign taxonomy with our 12S database as the training set
+#take a look at an example reference for assignSpecies
+seqs <- getSequences(system.file("extdata", "example_seqs.fa", package="dada2"))
+species_fasta <- system.file("extdata", "example_species_assignment.fa.gz", package="dada2")
+
+#Now try ours
 taxa <- assignTaxonomy(seqtab.nochim, "../../../ReferenceData/12S_Actinopterygii_reflib_FEB25_2021.fa", multithread=TRUE)
 
-
+gull.species <-assignSpecies(seqs = seqtab.nochim, refFasta = "../../../../../hdd5/eDNA_Data/ReferenceData/12S_Actinopterygii_reflib_FEB25_2021.fasta.gz", tryRC = T, verbose =T)
 
 
