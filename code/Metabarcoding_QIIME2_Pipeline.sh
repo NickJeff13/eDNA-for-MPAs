@@ -14,6 +14,11 @@ qiime tools import \
 --input-format PairedEndFastqManifestPhred33V2 \
 --output-path 16S-combined-demux.qza
 
+#check out the data for visualization
+qiime demux summarize \
+  --i-data 16S-combined-demux.qza \
+  --o-visualization 16S-demux-subsample.qzv
+  
 #Now trim primers
 qiime cutadapt trim-paired \
 --i-demultiplexed-sequences 16S-combined-demux.qza \
@@ -27,8 +32,10 @@ qiime cutadapt trim-paired \
 #Note: using --p-n-threads = 0 will use all threads available 
 qiime dada2 denoise-paired \
 --i-demultiplexed-seqs trimmed/trimmed_sequences.qza \
---p-trunc-len-f  158 \
---p-trunc-len-r  158 \
+--p-trim-left-f 10 \
+--p-trim--left-r 10 \
+--p-trunc-len-f  130 \
+--p-trunc-len-r  130 \
 --p-n-threads 0 \
 --p-min-overlap 12 \
 --p-pooling-method independent \
@@ -70,21 +77,6 @@ qiime feature-table summarize \
        --i-table table-deblur.qza \
        --m-sample-metadata-file metadata.tsv \
        --o-visualization table-deblur.qzv
-#For loop
-for read1 in */xxxxR1.fastq; 
-do 
-read2=$(echo $read1| sed 's/R1.fastq/R2.fastq/'); 
-cutadapt $read1 $read2 
-    -u 2 \
-    -U 2 \
-    --minimum-length 90 \
-    -a NNNNNNGTCGGTAAAACTCGTGCCAGC \ #MyFishU
-    -a AGCGYAATCACTTGTCTYTTAA \ #16S_Fwd
-    -A NNNNNNCATAGTGGGGTATCTAATCCCAGTTTG \
-    -A CRBGGTCGCCCCAACCRAA \
-    -o Trim_$read1 \
-    -p Trim_$read2 \
-    $read1 \
-    $read2 ; 
-    done
+
+
 
