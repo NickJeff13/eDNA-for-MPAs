@@ -42,7 +42,88 @@ qiime dada2 denoise-paired \
 --output-dir trimmed/dada2out \
 --verbose
 
-#DADA2 didn't like the quality scores of my data (NovaSeq 6000 issue) so let's try merging reads with vsearch and denoising with DeBlur
+#Generate summaries of denoising stats and feature table
+qiime feature-table summarize \
+  --i-table trimmed/dada2out/table.qza \
+  --o-visualization trimmed/dada2out/table.qzv \
+  --m-sample-metadata-file ../2021-sample-metadata.tsv &&
+qiime feature-table tabulate-seqs \
+  --i-data trimmed/dada2out/representative_sequences.qza \
+  --o-visualization trimmed/dada2out/rep-seqs.qzv &&
+qiime metadata tabulate \
+  --m-input-file trimmed/dada2out/denoising-stats.qza \
+  --o-visualization trimmed/dada2out/denoising-stats.qzv
+ 
+ #Generate a phylogenetic tree from our data
+ cd trimmed/dada2out/
+ qiime phylogeny align-to-tree-mafft-fasttree \
+  --i-sequences representative_sequences.qza \
+  --o-alignment aligned-rep-seqs.qza \
+  --o-masked-alignment masked-aligned-rep-seqs.qza \
+  --o-tree unrooted-tree.qza \
+  --o-rooted-tree rooted-tree.qza
+  
+  #now use the rooted tree to generate some biodiversity stats
+  qiime diversity core-metrics-phylogenetic \
+  --i-phylogeny rooted-tree.qza \
+  --i-table table.qza \
+  --p-sampling-depth 1500 \
+  --m-metadata-file ../../../2021-sample-metadata.tsv \
+  --output-dir core-metrics-results
+  
+  ###TAXONOMY####
+  #using rescript to train our classifier
+  qiime rescript filter-taxa \
+  --i-taxonomy fish-16S-ref-tax.qza \
+  --m-ids-to-keep-file fish-16S-ref-seqs-keep.qza \
+  --o-filtered-taxonomy fish-16S-ref-taxa-keep.qza
+  
+  qiime rescript evaluate-taxonomy \
+ --i-taxonomies fish-16S-ref-taxa-keep.qza \
+ --o-taxonomy-stats fish-16S-ref-tax-keep-eval.qzv
+ 
+ qiime metadata tabulate \
+ --m-input-file fish-16S-ref-taxa-keep.qza \
+ --o-visualization fish-16S-ref-tax-keep.qzv &&
+ qiime rescript evaluate-seqs \
+ --i-sequences fish-16S-ref-seqs-keep.qza \
+ --p-kmer-lengths 32 16 8 \
+ --o-visualization fish-16S-ref-seqs-keep-eval.qzv
+ 
+ #Build and evaluate classifier
+ #here, the --o-classifier output is of type TaxonomicClassifier and the -o-observed-taxonomy is FeatureData[Taxonomy] (same as --i-taxonomy)
+ qiime rescript evaluate-fit-classifier \
+ --i-sequences fish-16S-ref-seqs-keep.qza \
+ --i-taxonomy fish-16S-ref-taxa-keep.qza \
+ --p-n-jobs -1 \
+ --o-classifier ncbi-16S-fish-refseqs-classifier.qza \
+ --o-evaluation ncbi-16S-fish-refseqs-classifier-evaluation.qzv \
+ --o-observed-taxonomy ncbi-16S-fish-refseqs-predicted-taxonomy.qza \
+ --output-dir 16S-Classifier \
+ --verbose 
+ 
+ qiime rescript evaluate-taxonomy \
+ --i-taxonomies fish-16S-ref-taxa-keep.qza ncbi-16S-fish-refseqs-predicted-taxonomy.qza \
+ --p-labels ref-taxonomy predicted-taxonomy \
+ --o-taxonomy-stats 16S-ref-taxonomy-evaluation.qzv \
+ --verbose
+ 
+#Now back to qiime to do our taxonomy
+  qiime feature-classifier classify-sklearn \
+  --i-classifier ../../../../ReferenceData/ncbi-16S-fish-refseqs-classifier.qza \
+  --i-reads representative_sequences.qza \
+  --o-classification 16S-taxonomy.qza
+
+qiime metadata tabulate \
+  --m-input-file 16S-taxonomy.qza \
+  --o-visualization 16S-taxonomy.qzv
+  
+  
+  
+  
+:' DADA2 didnt like the quality scores of my data (NovaSeq 6000 issue) so lets try merging reads with vsearch and denoising with DeBlur
+Actually not entirely true - it runs, though error plots look weird because of NovaSeq quality score binning. Regardless, shortening my sequences to 130bp seems to have worked for dada2.
+Below are commands to run vsearch to join pairs and then deblur 
 qiime vsearch join-pairs \
 --i-demultiplexed-seqs trimmed/trimmed_sequences.qza \
 --o-joined-sequences joined_reads.qza \
@@ -77,6 +158,6 @@ qiime feature-table summarize \
        --i-table table-deblur.qza \
        --m-sample-metadata-file metadata.tsv \
        --o-visualization table-deblur.qzv
-
+'
 
 
