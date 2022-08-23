@@ -118,8 +118,25 @@ qiime metadata tabulate \
   --m-input-file 16S-taxonomy.qza \
   --o-visualization 16S-taxonomy.qzv
   
+#This gave us a long tsv file for download which shows the features and assigned taxonomy with confidence values
+#Now we'll use ANCOM to test differences among sites
+#First subset by just the BrownsBank samples
+qiime feature-table filter-samples \
+  --i-table table.qza \
+  --m-metadata-file ../../../2021-sample-metadata.tsv \
+  --p-where "[location]='BrownsBank'" \
+  --o-filtered-table BBL-table.qza
   
+  qiime composition add-pseudocount \
+  --i-table BBL-table.qza \
+  --o-composition-table comp-BBL-table.qza
   
+  #this can only be done comparing two groups - can't have all the same or more than 2 unique locations,sites, etc
+  qiime composition ancom \
+  --i-table comp-BBL-table.qza \
+  --m-metadata-file ../../../2021-sample-metadata.tsv \
+  --m-metadata-column location \
+  --o-visualization 16SBBL-ancom-subject.qzv
   
 :' DADA2 didnt like the quality scores of my data (NovaSeq 6000 issue) so lets try merging reads with vsearch and denoising with DeBlur
 Actually not entirely true - it runs, though error plots look weird because of NovaSeq quality score binning. Regardless, shortening my sequences to 130bp seems to have worked for dada2.
