@@ -1,12 +1,15 @@
 #Processing eDNA metabarcode data using QIIME2 and cutadapt, followed by DADA2 taxonomy assignments using custom fish reference databases
 #The qiime tutorials are useful and found at https://docs.qiime2.org/2022.2/tutorials/overview/#useful-points-for-beginners 
 #First activate QIIME if it hasn't been, can also reactivate qiime if you close the window 
-conda activate qiime2-2022.2
+conda activate qiime2-2022.2 &&
+source tab-qiime #activate tab completion
 
 #check currently active conda environment
 conda info
-#activate tab completion
-source tab-qiime
+
+# View plugin, used to view any .qzv file in html and export tsv and fasta files
+qiime tools view /path_to_file/filename.qzv
+
 #Now import our data using a 'manifest' file of all fastq file names
 qiime tools import \
 --type 'SampleData[PairedEndSequencesWithQuality]' \
@@ -17,8 +20,15 @@ qiime tools import \
 #check out the data for visualization
 qiime demux summarize \
   --i-data 16S-combined-demux.qza \
-  --o-visualization 16S-demux-subsample.qzv
+  --o-visualization 16S-demux-subsample.qzv ##save tsv file of per-sample-fastq-counts.tsv for optional step below ##
   
+ ## OPTIONAL: filter out samples with less than 100 reads (can set this to any number) ##
+qiime demux filter-samples \
+  --i-demux 16S-combined-demux.qza \
+  --m-metadata-file /path_to_output_folder/per-sample-fastq-counts.tsv \
+  --p-where 'CAST([forward sequence count] AS INT) > 100' \
+  --o-filtered-demux /path_to_output_folder/filename_greater100reads.qza
+
 #Now trim primers
 qiime cutadapt trim-paired \
 --i-demultiplexed-sequences 16S-combined-demux.qza \
@@ -30,14 +40,15 @@ qiime cutadapt trim-paired \
 
 #denoise using dada2 which infers ASVs 
 #Note: using --p-n-threads = 0 will use all threads available 
+### for 16S use --p-trunc-len-f 125 and --p-trunc-len-r 125; 12S use 116 and 108 ###
+# can add --p-min-overlap 12 or some other number if need be
 qiime dada2 denoise-paired \
---i-demultiplexed-seqs trimmed/trimmed_sequences.qza \
+--i-demultiplexed-seqs 16S-combined-demux.qza \
 --p-trim-left-f 10 \
---p-trim--left-r 10 \
---p-trunc-len-f  130 \
---p-trunc-len-r  130 \
+--p-trim-left-r 10 \
+--p-trunc-len-f  128 \
+--p-trunc-len-r  128 \
 --p-n-threads 0 \
---p-min-overlap 12 \
 --p-pooling-method independent \
 --output-dir trimmed/dada2out \
 --verbose
@@ -53,6 +64,15 @@ qiime feature-table tabulate-seqs \
 qiime metadata tabulate \
   --m-input-file trimmed/dada2out/denoising-stats.qza \
   --o-visualization trimmed/dada2out/denoising-stats.qzv
+ 
+ ### export results to biom formatted file
+qiime tools export --input-path /path_to_output_folder/filename_filtered_table.qza --output-path /path_to_output_folder/filename_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
+
+### convert biom to tsv
+biom convert -i /path_to_output_folder/filename_filtered_table_biom/feature-table.biom -o /path_to_output_folder/filename_feature_table_export.tsv --to-tsv
+
+### OPTIONAL filtering after exporting to tsv
+## Remove rare ASV's by calculating if an ASV has a read number that is less than 0.1% of the total read number of that ASV across all samples. This is summing across columns in the exported feature table, calculating 0.1% of that sum, and removing all instances where read numbers were less than that number.
  
  #Generate a phylogenetic tree from our data
  cd trimmed/dada2out/
@@ -70,6 +90,7 @@ qiime metadata tabulate \
   --p-sampling-depth 1500 \
   --m-metadata-file ../../../2021-sample-metadata.tsv \
   --output-dir core-metrics-results
+ 
   
   ###TAXONOMY####
   #using rescript to train our classifier
