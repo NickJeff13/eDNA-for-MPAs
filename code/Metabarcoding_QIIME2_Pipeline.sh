@@ -57,22 +57,27 @@ qiime dada2 denoise-paired \
 qiime feature-table summarize \
   --i-table trimmed/dada2out/table.qza \
   --o-visualization trimmed/dada2out/table.qzv \
-  --m-sample-metadata-file ../2021-sample-metadata.tsv &&
+  --m-sample-metadata-file ../2021-sample-metadata_ESIonly.tsv &&
 qiime feature-table tabulate-seqs \
   --i-data trimmed/dada2out/representative_sequences.qza \
   --o-visualization trimmed/dada2out/rep-seqs.qzv &&
 qiime metadata tabulate \
-  --m-input-file trimmed/dada2out/denoising-stats.qza \
+  --m-input-file trimmed/dada2out/denoising_stats.qza \
   --o-visualization trimmed/dada2out/denoising-stats.qzv
  
  ### export results to biom formatted file
-qiime tools export --input-path /path_to_output_folder/filename_filtered_table.qza --output-path /path_to_output_folder/filename_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
+qiime tools export \
+--input-path trimmed/dada2out/table.qza \
+--output-path trimmed/dada2out/ESI16S_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
 
 ### convert biom to tsv
-biom convert -i /path_to_output_folder/filename_filtered_table_biom/feature-table.biom -o /path_to_output_folder/filename_feature_table_export.tsv --to-tsv
+biom convert -i trimmed/dada2out/ESI16S_filtered_table_biom/feature-table.biom \
+-o trimmed/dada2out/ESI16S_filtered_table_biom/ESI16S_feature_table_export.tsv \
+--to-tsv
 
 ### OPTIONAL filtering after exporting to tsv
-## Remove rare ASV's by calculating if an ASV has a read number that is less than 0.1% of the total read number of that ASV across all samples. This is summing across columns in the exported feature table, calculating 0.1% of that sum, and removing all instances where read numbers were less than that number.
+## Remove rare ASV's by calculating if an ASV has a read number that is less than 0.1% of the total read number of that ASV across all samples. 
+## This is summing across columns in the exported feature table, calculating 0.1% of that sum, and removing all instances where read numbers were less than that number.
  
  #Generate a phylogenetic tree from our data
  cd trimmed/dada2out/
@@ -92,7 +97,8 @@ biom convert -i /path_to_output_folder/filename_filtered_table_biom/feature-tabl
   --output-dir core-metrics-results
  
   
-  ###TAXONOMY####
+###TAXONOMY####
+## there are lots of ways to do taxonomy, including just blasting, or building a reference database using rescript (below), or using FuzzyID2 with a custom library
   #using rescript to train our classifier
   qiime rescript filter-taxa \
   --i-taxonomy fish-16S-ref-tax.qza \
@@ -159,7 +165,8 @@ qiime feature-table filter-samples \
   --m-metadata-column location \
   --o-visualization 16SBBL-ancom-subject.qzv
   
-:' DADA2 didnt like the quality scores of my data (NovaSeq 6000 issue) so lets try merging reads with vsearch and denoising with DeBlur
+:'OLD CODE and ISSUES: 
+DADA2 didnt like the quality scores of my data (NovaSeq 6000 issue) so lets try merging reads with vsearch and denoising with DeBlur
 Actually not entirely true - it runs, though error plots look weird because of NovaSeq quality score binning. Regardless, shortening my sequences to 130bp seems to have worked for dada2.
 Below are commands to run vsearch to join pairs and then deblur 
 qiime vsearch join-pairs \
