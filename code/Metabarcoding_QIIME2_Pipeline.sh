@@ -11,16 +11,31 @@ conda info
 qiime tools view /path_to_file/filename.qzv
 
 #Now import our data using a 'manifest' file of all fastq file names
+#16S
 qiime tools import \
 --type 'SampleData[PairedEndSequencesWithQuality]' \
 --input-path pe33-16Smanifest \
 --input-format PairedEndFastqManifestPhred33V2 \
 --output-path 16S-combined-demux.qza
 
+#12S
+qiime tools import \
+--type 'SampleData[PairedEndSequencesWithQuality]' \
+--input-path pe33-12Smanifest \
+--input-format PairedEndFastqManifestPhred33V2 \
+--output-path 12S-combined-demux.qza
+
 #check out the data for visualization
+#16S
 qiime demux summarize \
   --i-data 16S-combined-demux.qza \
   --o-visualization 16S-demux-subsample.qzv ##save tsv file of per-sample-fastq-counts.tsv for optional step below ##
+  
+#12S
+qiime demux summarize \
+  --i-data 12S-combined-demux.qza \
+  --o-visualization 12S-demux-subsample.qzv ##save tsv file of per-sample-fastq-counts.tsv for optional step below ##
+    
   
  ## OPTIONAL: filter out samples with less than 100 reads (can set this to any number) ##
 qiime demux filter-samples \
@@ -32,20 +47,55 @@ qiime demux filter-samples \
 #Now trim primers
 qiime cutadapt trim-paired \
 --i-demultiplexed-sequences 16S-combined-demux.qza \
---p-front-f AGCGYAATCACTTGTCTYTTAA \
---p-front-r CRBGGTCGCCCCAACCRAA \
+--p-cores 40 \
+--p-anywhere-f AGCGYAATCACTTGTCTYTTAA \
+--p-anywhere-r CRBGGTCGCCCCAACCRAA \
 --p-error-rate 0.11 \
+--p-discard-untrimmed True \
+--p-match-read-wildcards \
+--p-match-adapter-wildcards \
+--o-trimmed-sequences 16s-demux-trimmed.qza \
 --output-dir  trimmed \
 --verbose
+
+':
+=== Summary ===
+
+Total read pairs processed:          5,256,200
+  Read 1 with adapter:               3,544,875 (67.4%)
+  Read 2 with adapter:               3,531,749 (67.2%)
+
+== Read fate breakdown ==
+Pairs that were too short:                   0 (0.0%)
+Pairs discarded as untrimmed:        1,812,812 (34.5%)
+Pairs written (passing filters):     3,443,388 (65.5%)
+
+Total basepairs processed: 1,650,284,162 bp
+  Read 1:   825,252,162 bp
+  Read 2:   825,032,000 bp
+Total written (filtered):    943,244,238 bp (57.2%)
+  Read 1:   466,537,198 bp
+  Read 2:   476,707,040 bp
+'
 
 #denoise using dada2 which infers ASVs 
 #Note: using --p-n-threads = 0 will use all threads available 
 ### for 16S use --p-trunc-len-f 125 and --p-trunc-len-r 125; 12S use 116 and 108 ###
 # can add --p-min-overlap 12 or some other number if need be
+#16S
 qiime dada2 denoise-paired \
 --i-demultiplexed-seqs 16S-combined-demux.qza \
 --p-trim-left-f 10 \
---p-trim-left-r 10 \
+--p-trim-left-r 10 \ qiime feature-table summarize \
+  --i-table Denoised/table.qza \
+  --o-visualization Denoised/table.qzv \
+  --m-sample-metadata-file ../2021-sample-metadata_ESIonly.tsv &&
+qiime feature-table tabulate-seqs \
+  --i-data Denoised/representative_sequences.qza \
+  --o-visualization Denoised/rep-seqs.qzv &&
+qiime metadata tabulate \
+  --m-input-file Denoised/denoising_stats.qza \
+  --o-visualization Denoised/denoising-stats.qzv
 --p-trunc-len-f  128 \
 --p-trunc-len-r  128 \
 --p-n-threads 0 \
@@ -53,7 +103,19 @@ qiime dada2 denoise-paired \
 --output-dir trimmed/dada2out \
 --verbose
 
+#12S
+qiime dada2 denoise-paired \
+--i-demultiplexed-seqs 12S-combined-demux.qza \
+--p-trunc-len-f  116 \
+--p-trunc-len-r  108 \
+--p-n-threads 0 \
+--p-pooling-method independent \
+--output-dir Denoised \
+--verbose
+
+
 #Generate summaries of denoising stats and feature table
+#16S
 qiime feature-table summarize \
   --i-table trimmed/dada2out/table.qza \
   --o-visualization trimmed/dada2out/table.qzv \
@@ -65,6 +127,17 @@ qiime metadata tabulate \
   --m-input-file trimmed/dada2out/denoising_stats.qza \
   --o-visualization trimmed/dada2out/denoising-stats.qzv
  
+ #12S
+ qiime feature-table summarize \
+  --i-table Denoised/table.qza \
+  --o-visualization Denoised/table.qzv \
+  --m-sample-metadata-file ../2021-sample-metadata_ESIonly.tsv &&
+qiime feature-table tabulate-seqs \
+  --i-data Denoised/representative_sequences.qza \
+  --o-visualization Denoised/rep-seqs.qzv &&
+qiime metadata tabulate \
+  --m-input-file Denoised/denoising_stats.qza \
+  --o-visualization Denoised/denoising-stats.qzv
  ### export results to biom formatted file
 qiime tools export \
 --input-path trimmed/dada2out/table.qza \
@@ -96,8 +169,9 @@ biom convert -i trimmed/dada2out/ESI16S_filtered_table_biom/feature-table.biom \
   --m-metadata-file ../../../2021-sample-metadata.tsv \
   --output-dir core-metrics-results
  
-  
-###TAXONOMY####
+####################
+######TAXONOMY######
+#####################
 ## there are lots of ways to do taxonomy, including just blasting, or building a reference database using rescript (below), or using FuzzyID2 with a custom library
   #using rescript to train our classifier
   qiime rescript filter-taxa \
