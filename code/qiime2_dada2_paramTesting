@@ -30,3 +30,17 @@ qiime metadata tabulate \
   --m-input-file 16S_denoising_stats.qza \
   --o-visualization denoising-stats.qzv
 ##looks like most of the sequences were non-chimeric! some samples around 30-40 percent, but most above 80
+
+#12s
+#12S - trying some different r-len truncs
+qiime dada2 denoise-paired \
+--i-demultiplexed-seqs 12s-demux-trimmed.qza \
+--p-trunc-len-f  140 \
+--p-trunc-len-r  130 \
+--p-trim-left-f 10 \
+--p-trim-left-r 10 \
+--p-n-threads 0 \
+--p-min-overlap 10 \
+--p-pooling-method independent \
+--output-dir ESIDenoised2 \
+--verbose

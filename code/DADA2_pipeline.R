@@ -6,7 +6,7 @@ library(dada2)
 
 
 #these files are the output from cutadapt, after 12S primer removal
-path<-"/hdd5/eDNA_Data/Raw/12S/Gully/output/"
+path<-"/hdd5/eDNA_Data/Raw/16S"
 list.files(path)
 
 
@@ -14,11 +14,13 @@ list.files(path)
 fnFs <- sort(list.files(path, pattern="_R1.fastq", full.names = TRUE))
 fnRs <- sort(list.files(path, pattern="_R2.fastq", full.names = TRUE))
 # Extract sample names, assuming filenames have format: SAMPLENAME_XXX.fastq
-sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`, 3) #the three here means the third underscore in the filename 
+sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`, 2) #the three here means the third underscore in the filename 
 
 #visualize quality profiles
 plotQualityProfile(fnFs[1:2])
 plotQualityProfile(fnRs[1:2])
+
+plotComplexity(fnFs[1:2])
 
 
 # Place filtered files in filtered/ subdirectory
@@ -28,7 +30,7 @@ names(filtFs) <- sample.names
 names(filtRs) <- sample.names
 
 out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, 
-                     truncLen=c(120,120),
+                     truncLen=c(130,130),
                      maxN=0, maxEE=c(5,5), truncQ=2, rm.phix=TRUE,
                      compress=TRUE, multithread=TRUE)
 head(out)

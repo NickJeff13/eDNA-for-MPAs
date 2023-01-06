@@ -48,10 +48,10 @@ qiime demux filter-samples \
 qiime cutadapt trim-paired \
 --i-demultiplexed-sequences 16S-combined-demux.qza \
 --p-cores 40 \
---p-anywhere-f AGCGYAATCACTTGTCTYTTAA \
---p-anywhere-r CRBGGTCGCCCCAACCRAA \
+--p-front-f AGCGYAATCACTTGTCTYTTAA \
+--p-front-r CRBGGTCGCCCCAACCRAA \
 --p-error-rate 0.11 \
---p-discard-untrimmed True \
+--p-discard-untrimmed \
 --p-match-read-wildcards \
 --p-match-adapter-wildcards \
 --o-trimmed-sequences 16s-demux-trimmed.qza \
@@ -77,6 +77,29 @@ Total written (filtered):    943,244,238 bp (57.2%)
   Read 1:   466,537,198 bp
   Read 2:   476,707,040 bp
 '
+':
+MiFishU-F - these primers target ~180bp of the 12S rDNA region
+5 GTCGGTAAAACTCGTGCCAGC 3
+#MiFishU-R
+3 GTTTGACCCTAATCTATGGGGTGATAC 5 > need to reverse this so its read 5 prime to 3 prime in cutadapt
+' 
+#12S
+qiime cutadapt trim-paired \
+--i-demultiplexed-sequences 12S-combined-demux.qza \
+--p-cores 40 \
+--p-front-f GTCGGTAAAACTCGTGCCAGC \
+--p-front-r NNNNNNCATAGTGGGGTATCTAATCCCAGTTTG \
+--p-error-rate 0.15 \
+--p-discard-untrimmed \
+--p-match-read-wildcards \
+--p-match-adapter-wildcards \
+--p-minimum-length 30 \
+--o-trimmed-sequences 12s-demux-trimmed-2023-test2.qza \
+--output-dir trimmed \
+--verbose
+#visualize the trimming results
+qiime demux summarize --i-data 12s-demux-trimmed-2023.qza \
+--o-visualization 12s-trimmed-visual
 
 #denoise using dada2 which infers ASVs 
 #Note: using --p-n-threads = 0 will use all threads available 
@@ -84,18 +107,9 @@ Total written (filtered):    943,244,238 bp (57.2%)
 # can add --p-min-overlap 12 or some other number if need be
 #16S
 qiime dada2 denoise-paired \
---i-demultiplexed-seqs 16S-combined-demux.qza \
+--i-demultiplexed-seqs 16S-demuxed-trimmed.qza \
 --p-trim-left-f 10 \
---p-trim-left-r 10 \ qiime feature-table summarize \
-  --i-table Denoised/table.qza \
-  --o-visualization Denoised/table.qzv \
-  --m-sample-metadata-file ../2021-sample-metadata_ESIonly.tsv &&
-qiime feature-table tabulate-seqs \
-  --i-data Denoised/representative_sequences.qza \
-  --o-visualization Denoised/rep-seqs.qzv &&
-qiime metadata tabulate \
-  --m-input-file Denoised/denoising_stats.qza \
-  --o-visualization Denoised/denoising-stats.qzv
+--p-trim-left-r 10 \
 --p-trunc-len-f  128 \
 --p-trunc-len-r  128 \
 --p-n-threads 0 \
@@ -103,14 +117,15 @@ qiime metadata tabulate \
 --output-dir trimmed/dada2out \
 --verbose
 
-#12S
+#12S - trying some different r-len truncs
 qiime dada2 denoise-paired \
---i-demultiplexed-seqs 12S-combined-demux.qza \
---p-trunc-len-f  116 \
---p-trunc-len-r  108 \
+--i-demultiplexed-seqs 12s-demux-trimmed-2023.qza \
+--p-trunc-len-f  126 \
+--p-trunc-len-r  126 \
 --p-n-threads 0 \
+--p-min-overlap 8 \
 --p-pooling-method independent \
---output-dir Denoised \
+--output-dir ESIDenoised3 \
 --verbose
 
 
@@ -129,15 +144,15 @@ qiime metadata tabulate \
  
  #12S
  qiime feature-table summarize \
-  --i-table Denoised/table.qza \
-  --o-visualization Denoised/table.qzv \
+  --i-table ESIDenoised3/table.qza \
+  --o-visualization ESIDenoised3/table.qzv \
   --m-sample-metadata-file ../2021-sample-metadata_ESIonly.tsv &&
 qiime feature-table tabulate-seqs \
-  --i-data Denoised/representative_sequences.qza \
-  --o-visualization Denoised/rep-seqs.qzv &&
+  --i-data ESIDenoised3/representative_sequences.qza \
+  --o-visualization ESIDenoised3/rep-seqs.qzv &&
 qiime metadata tabulate \
-  --m-input-file Denoised/denoising_stats.qza \
-  --o-visualization Denoised/denoising-stats.qzv
+  --m-input-file ESIDenoised3/denoising_stats.qza \
+  --o-visualization ESIDenoised3/denoising-stats.qzv
  ### export results to biom formatted file
 qiime tools export \
 --input-path trimmed/dada2out/table.qza \
@@ -244,8 +259,10 @@ DADA2 didnt like the quality scores of my data (NovaSeq 6000 issue) so lets try 
 Actually not entirely true - it runs, though error plots look weird because of NovaSeq quality score binning. Regardless, shortening my sequences to 130bp seems to have worked for dada2.
 Below are commands to run vsearch to join pairs and then deblur 
 qiime vsearch join-pairs \
---i-demultiplexed-seqs trimmed/trimmed_sequences.qza \
---o-joined-sequences joined_reads.qza \
+--i-demultiplexed-seqs 12S-demux-trimmed.qza \
+--p-minlen 100 \
+--o-joined-sequences joined-trimmed-reads.qza \
+--verbose \
 --p-threads 8 #8 threads is the max here
 
 #Check out quality scores
