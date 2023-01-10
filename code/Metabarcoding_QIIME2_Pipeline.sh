@@ -54,10 +54,13 @@ qiime cutadapt trim-paired \
 --p-discard-untrimmed \
 --p-match-read-wildcards \
 --p-match-adapter-wildcards \
+--p-minimum-length 30 \
 --o-trimmed-sequences 16s-demux-trimmed.qza \
 --output-dir  trimmed \
 --verbose
-
+#visualize the trimming results
+qiime demux summarize --i-data 16s-demux-trimmed.qza \
+--o-visualization 16s-trimmed-visual
 ':
 === Summary ===
 
@@ -108,11 +111,10 @@ qiime demux summarize --i-data 12s-demux-trimmed-2023.qza \
 #16S
 qiime dada2 denoise-paired \
 --i-demultiplexed-seqs 16S-demuxed-trimmed.qza \
---p-trim-left-f 10 \
---p-trim-left-r 10 \
---p-trunc-len-f  128 \
---p-trunc-len-r  128 \
+--p-trunc-len-f  138 \
+--p-trunc-len-r  140 \
 --p-n-threads 0 \
+--p-n-reads-learn 3000000 \
 --p-pooling-method independent \
 --output-dir trimmed/dada2out \
 --verbose
@@ -132,16 +134,19 @@ qiime dada2 denoise-paired \
 #Generate summaries of denoising stats and feature table
 #16S
 qiime feature-table summarize \
-  --i-table trimmed/dada2out/table.qza \
-  --o-visualization trimmed/dada2out/table.qzv \
+  --i-table dada2out-test/table.qza \
+  --o-visualization dada2out-test/table.qzv \
   --m-sample-metadata-file ../2021-sample-metadata_ESIonly.tsv &&
 qiime feature-table tabulate-seqs \
-  --i-data trimmed/dada2out/representative_sequences.qza \
-  --o-visualization trimmed/dada2out/rep-seqs.qzv &&
+  --i-data dada2out-test/representative_sequences.qza \
+  --o-visualization dada2out-test/rep-seqs.qzv &&
 qiime metadata tabulate \
-  --m-input-file trimmed/dada2out/denoising_stats.qza \
-  --o-visualization trimmed/dada2out/denoising-stats.qzv
- 
+  --m-input-file dada2out-test/denoising_stats.qza \
+  --o-visualization dada2out-test/denoising-stats.qzv
+  
+  
+ qiime tools view /path_to_output_folder/filename_rep_seqs.qzv  ## export the ASV fasta file from the view for input into FuzzyID2 and BLAST
+
  #12S
  qiime feature-table summarize \
   --i-table ESIDenoised3/table.qza \
@@ -153,14 +158,17 @@ qiime feature-table tabulate-seqs \
 qiime metadata tabulate \
   --m-input-file ESIDenoised3/denoising_stats.qza \
   --o-visualization ESIDenoised3/denoising-stats.qzv
+  
+  qiime tools view /path_to_output_folder/filename_rep_seqs.qzv  ## export the ASV fasta file from the view for input into FuzzyID2 and BLAST
+
  ### export results to biom formatted file
 qiime tools export \
---input-path trimmed/dada2out/table.qza \
---output-path trimmed/dada2out/ESI16S_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
+--input-path dada2out-test/table.qza \
+--output-path dada2out-test/ESI16S_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
 
 ### convert biom to tsv
-biom convert -i trimmed/dada2out/ESI16S_filtered_table_biom/feature-table.biom \
--o trimmed/dada2out/ESI16S_filtered_table_biom/ESI16S_feature_table_export.tsv \
+biom convert -i dada2out-test/ESI16S_filtered_table_biom/feature-table.biom \
+-o dada2out-test/ESI16S_filtered_table_biom/ESI16S_feature_table_export.tsv \
 --to-tsv
 
 ### OPTIONAL filtering after exporting to tsv
@@ -168,7 +176,7 @@ biom convert -i trimmed/dada2out/ESI16S_filtered_table_biom/feature-table.biom \
 ## This is summing across columns in the exported feature table, calculating 0.1% of that sum, and removing all instances where read numbers were less than that number.
  
  #Generate a phylogenetic tree from our data
- cd trimmed/dada2out/
+ cd dada2out/
  qiime phylogeny align-to-tree-mafft-fasttree \
   --i-sequences representative_sequences.qza \
   --o-alignment aligned-rep-seqs.qza \
@@ -181,8 +189,9 @@ biom convert -i trimmed/dada2out/ESI16S_filtered_table_biom/feature-table.biom \
   --i-phylogeny rooted-tree.qza \
   --i-table table.qza \
   --p-sampling-depth 1500 \
-  --m-metadata-file ../../../2021-sample-metadata.tsv \
-  --output-dir core-metrics-results
+  --p-n-jobs-or-threads auto \
+  --m-metadata-file ../../2021-sample-metadata.tsv \
+  --output-dir 16S-core-metrics-results
  
 ####################
 ######TAXONOMY######

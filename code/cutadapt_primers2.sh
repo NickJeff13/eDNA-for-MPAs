@@ -1,4 +1,6 @@
+#!/usr/bin/bash
 #removing primers from the 5' end of both forward and reverse reads as illumina adapters have already been removed
+#Can tailor this to remove adapters or just one primer if only using forward reads
 for i in *_R1.fastq.gz;
 do
   SAMPLE=$(echo ${i} | sed "s/_R1.fastq.gz//") 
