@@ -6,7 +6,7 @@ do
   SAMPLE=$(echo ${i} | sed "s/_R1.fastq.gz//") 
   echo ${SAMPLE}_R1.fastq.gz ${SAMPLE}_R2.fastq.gz
   cutadapt -g ^AGCGYAATCACTTGTCTYTTAA -G ^CRBGGTCGCCCCAACCRAA \
-    --discard-untrimmed --nextseq-trim=20 -m 20 -q 20,20 -n 2 \
+    --discard-untrimmed --nextseq-trim 20 -m 20 -q 20,20 -n 2 \
     --match-read-wildcards \
      -o ${SAMPLE}_R1.fastq \
     -p ${SAMPLE}_R2.fastq \
