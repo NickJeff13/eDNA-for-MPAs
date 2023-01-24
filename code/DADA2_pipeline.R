@@ -6,7 +6,7 @@ library(dada2)
 
 
 #these files are the output from cutadapt, after 12S primer removal
-path<-"/hdd5/eDNA_Data/Raw/16S"
+path<-"/hdd5/eDNA_Data/Raw/12S/cutadapt"
 list.files(path)
 
 
@@ -30,18 +30,18 @@ names(filtFs) <- sample.names
 names(filtRs) <- sample.names
 
 out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, 
-                     truncLen=c(130,130),
+                     truncLen=c(120,112),
                      maxN=0, maxEE=c(5,5), truncQ=2, rm.phix=TRUE,
                      compress=TRUE, multithread=TRUE)
 head(out)
 
 
-errF <- learnErrors(filtFs, multithread=TRUE)
-errR <- learnErrors(filtRs, multithread=TRUE)
+errF <- learnErrors(filtFs, nbases=1e+09, multithread=TRUE, verbose=1)
+errR <- learnErrors(filtRs, nbases=1e+09, multithread=TRUE, verbose=1)
 #plot error distributions
 plotErrors(errF, nominalQ=TRUE)
 
-#Now run the core DADA alogrithm
+#Now run the core DADA algorithm
 dadaFs <- dada(filtFs, err=errF, multithread=TRUE)
 dadaRs <- dada(filtRs, err=errR, multithread=TRUE)
 #now merge forward and reverse reads to obtain full denoised sequences

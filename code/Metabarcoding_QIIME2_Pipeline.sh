@@ -14,9 +14,9 @@ qiime tools view /path_to_file/filename.qzv
 #16S
 qiime tools import \
 --type 'SampleData[PairedEndSequencesWithQuality]' \
---input-path pe33-16Smanifest \
+--input-path pe33-16Smanifest-GullySamples \
 --input-format PairedEndFastqManifestPhred33V2 \
---output-path 16S-combined-demux.qza
+--output-path 16SGUL-combined-demux.qza
 
 #12S
 qiime tools import \
@@ -54,8 +54,8 @@ qiime cutadapt trim-paired \
 --p-discard-untrimmed \
 --p-match-read-wildcards \
 --p-match-adapter-wildcards \
---p-minimum-length 30 \
---o-trimmed-sequences 16s-demux-trimmed.qza \
+--p-minimum-length 40 \
+--o-trimmed-sequences 16sGul-demux-trimmed.qza \
 --output-dir  trimmed \
 --verbose
 #visualize the trimming results
@@ -101,7 +101,7 @@ qiime cutadapt trim-paired \
 --output-dir trimmed \
 --verbose
 #visualize the trimming results
-qiime demux summarize --i-data 12s-demux-trimmed-2023.qza \
+qiime demux summarize --i-data 12s-demux-trimmed-2023-test2.qza \
 --o-visualization 12s-trimmed-visual
 
 #denoise using dada2 which infers ASVs 
@@ -111,8 +111,8 @@ qiime demux summarize --i-data 12s-demux-trimmed-2023.qza \
 #16S
 qiime dada2 denoise-paired \
 --i-demultiplexed-seqs 16S-demuxed-trimmed.qza \
---p-trunc-len-f  138 \
---p-trunc-len-r  140 \
+--p-trunc-len-f  125 \
+--p-trunc-len-r  125 \
 --p-n-threads 0 \
 --p-n-reads-learn 3000000 \
 --p-pooling-method independent \
