@@ -13,6 +13,6 @@ We use a combination of the R package *dada2* and the [QIIME2 Pipeline](https://
 3. Then use *dada2* to denoise paired sequences, ensuring to trim/truncate sequences to an appropriate length. 
 4. Create a phylogenetic tree which aligns sequences using MAFFT and creates an unrooted tree.
 5. Conduct diversity analyses (alpha and beta diversity, PCoA etc)
-6. Assign taxonomy to our sequence features using a classifier. 
+6. Assign taxonomy to our sequence features using a classifier, blast, or [FuzzyID2](https://onlinelibrary.wiley.com/doi/10.1111/1755-0998.12738)
 7. **Rescript** plugin for QIIME was used to create a reference database for 12S and 16S fish sequences. The downloaded sequences can be filtered and evaluated before using to assign our metabarcodes taxonomic classifications. 
 8. In QIIME we use the feature-classifier with our reference classifier object and our representative sequences, and generate a tsv table of classifications. 
