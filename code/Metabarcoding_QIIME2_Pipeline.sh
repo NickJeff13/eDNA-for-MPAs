@@ -1,7 +1,7 @@
 #Processing eDNA metabarcode data using QIIME2 and cutadapt, followed by DADA2 taxonomy assignments using custom fish reference databases
 #The qiime tutorials are useful and found at https://docs.qiime2.org/2022.2/tutorials/overview/#useful-points-for-beginners 
 #First activate QIIME if it hasn't been, can also reactivate qiime if you close the window 
-conda activate qiime2-2022.2 &&
+conda activate ~/Programs/miniconda3/envs/qiime2-2023.5 &&
 source tab-qiime #activate tab completion
 
 #check currently active conda environment
@@ -10,41 +10,56 @@ conda info
 # View plugin, used to view any .qzv file in html and export tsv and fasta files
 qiime tools view /path_to_file/filename.qzv
 
-#Now import our data using a 'manifest' file of all fastq file names
-#16S
-qiime tools import \
---type 'SampleData[PairedEndSequencesWithQuality]' \
---input-path pe33-16Smanifest-GullySamples \
---input-format PairedEndFastqManifestPhred33V2 \
---output-path 16SGUL-combined-demux.qza
+######Now import our data using a 'manifest' file of all fastq file names#####
+#create a manifest file maually with "sample-id","forward-absolute-filepath","reverse-absolute-filepath", save without a file extension but as a tsv
 
 #12S
 qiime tools import \
 --type 'SampleData[PairedEndSequencesWithQuality]' \
---input-path pe33-12Smanifest \
+--input-path pe33-12Smanifest-Musquash \
 --input-format PairedEndFastqManifestPhred33V2 \
---output-path 12S-combined-demux.qza
+--output-path Musquash-12S-combined-demux.qza  ##input-path is the manifest .tsv file listing the full path to each .gz file
 
-#check out the data for visualization
-#16S
+#COI
+qiime tools import \
+--type 'SampleData[PairedEndSequencesWithQuality]' \
+--input-path pe33-COImanifest-Musquash \
+--input-format PairedEndFastqManifestPhred33V2 \
+--output-path Musquash-COI-combined-demux.qza
+
+#18S
+qiime tools import \
+--type 'SampleData[PairedEndSequencesWithQuality]' \
+--input-path pe33-18Smanifest-Musquash \
+--input-format PairedEndFastqManifestPhred33V2 \
+--output-path Musquash-18S-combined-demux.qza
+
+#####check out the data for visualization#####
+#12S
 qiime demux summarize \
-  --i-data 16S-combined-demux.qza \
-  --o-visualization 16S-demux-subsample.qzv ##save tsv file of per-sample-fastq-counts.tsv for optional step below ##
+  --i-data Musquash-12S-combined-demux.qza \
+  --o-visualization Musquash-12S-combined-demux.qzv ##save tsv file of per-sample-fastq-counts.tsv for optional step below ##
   
-#12S
+#COI
 qiime demux summarize \
-  --i-data 12S-combined-demux.qza \
-  --o-visualization 12S-demux-subsample.qzv ##save tsv file of per-sample-fastq-counts.tsv for optional step below ##
+  --i-data Musquash-COI-combined-demux.qza \
+  --o-visualization Musquash-COI-combined-demux.qzv ##save tsv file of per-sample-fastq-counts.tsv for optional step below ##
     
+#18S
+qiime demux summarize \
+  --i-data Musquash-18S-combined-demux.qza \
+  --o-visualization Musquash-18S-combined-demux.qzv ##save tsv file of per-sample-fastq-counts.tsv for optional step below ##
   
- ## OPTIONAL: filter out samples with less than 100 reads (can set this to any number) ##
+  
+## OPTIONAL: filter out samples with less than 100 reads (can set this to any number) ##
 qiime demux filter-samples \
   --i-demux 16S-combined-demux.qza \
   --m-metadata-file /path_to_output_folder/per-sample-fastq-counts.tsv \
   --p-where 'CAST([forward sequence count] AS INT) > 100' \
   --o-filtered-demux /path_to_output_folder/filename_greater100reads.qza
 
-#Now trim primers
+#####Now trim primers#####
+#16S example
 qiime cutadapt trim-paired \
 --i-demultiplexed-sequences 16S-combined-demux.qza \
 --p-cores 40 \
@@ -61,8 +76,8 @@ qiime cutadapt trim-paired \
 #visualize the trimming results
 qiime demux summarize --i-data 16s-demux-trimmed.qza \
 --o-visualization 16s-trimmed-visual
-':
-=== Summary ===
+#Example output:
+'=== Summary ===
 
 Total read pairs processed:          5,256,200
   Read 1 with adapter:               3,544,875 (67.4%)
@@ -80,40 +95,40 @@ Total written (filtered):    943,244,238 bp (57.2%)
   Read 1:   466,537,198 bp
   Read 2:   476,707,040 bp
 '
-':
-MiFishU-F - these primers target ~180bp of the 12S rDNA region
-5 GTCGGTAAAACTCGTGCCAGC 3
-#MiFishU-R
-3 GTTTGACCCTAATCTATGGGGTGATAC 5 > need to reverse this so its read 5 prime to 3 prime in cutadapt
-' 
+# ':
+# MiFishU-F - these primers target ~180bp of the 12S rDNA region
+# 5 GTCGGTAAAACTCGTGCCAGC 3   NNNNNNGTCGGTAAAACTCGTGCCAGC
+# #MiFishU-R
+# 3 GTTTGACCCTAATCTATGGGGTGATAC 5 > need to reverse this so its read 5 prime to 3 prime in cutadapt
+# ' 
 #12S
 qiime cutadapt trim-paired \
---i-demultiplexed-sequences 12S-combined-demux.qza \
---p-cores 40 \
---p-front-f GTCGGTAAAACTCGTGCCAGC \
+--i-demultiplexed-sequences Musquash-12S-combined-demux.qza \
+--p-cores 60 \
+--p-front-f NNNNNNGTCGGTAAAACTCGTGCCAGC \
 --p-front-r NNNNNNCATAGTGGGGTATCTAATCCCAGTTTG \
 --p-error-rate 0.15 \
---p-discard-untrimmed \
 --p-match-read-wildcards \
 --p-match-adapter-wildcards \
 --p-minimum-length 30 \
---o-trimmed-sequences 12s-demux-trimmed-2023-test2.qza \
+--o-trimmed-sequences Musquash-12S-combined-demux-trimmed.qza \
 --output-dir trimmed \
 --verbose
 #visualize the trimming results
-qiime demux summarize --i-data 12s-demux-trimmed-2023-test2.qza \
---o-visualization 12s-trimmed-visual
+qiime demux summarize --i-data Musquash-12S-combined-demux-trimmed.qza \
+--o-visualization Musquash-12S-combined-demux-trimmed.qzv
 
-#denoise using dada2 which infers ASVs 
+
+#####denoise using dada2 which infers ASVs #####
 #Note: using --p-n-threads = 0 will use all threads available 
-### for 16S use --p-trunc-len-f 125 and --p-trunc-len-r 125; 12S use 116 and 108 ###
+### for 16S use --p-trunc-len-f 125 and --p-trunc-len-r 125; for 12S use 116 and 108 ###
 # can add --p-min-overlap 12 or some other number if need be
 #16S
 qiime dada2 denoise-paired \
---i-demultiplexed-seqs 16S-demuxed-trimmed.qza \
---p-trunc-len-f  125 \
---p-trunc-len-r  125 \
---p-n-threads 0 \
+--i-demultiplexed-seqs Musquash-12S-combined-demux-trimmed.qza \
+--p-trunc-len-f  116 \
+--p-trunc-len-r  108 \
+--p-n-threads 60 \
 --p-n-reads-learn 3000000 \
 --p-pooling-method independent \
 --output-dir trimmed/dada2out \
@@ -131,7 +146,7 @@ qiime dada2 denoise-paired \
 --verbose
 
 
-#Generate summaries of denoising stats and feature table
+#####Generate summaries of denoising stats and feature table#####
 #16S
 qiime feature-table summarize \
   --i-table dada2out-test/table.qza \
@@ -161,12 +176,12 @@ qiime metadata tabulate \
   
   qiime tools view /path_to_output_folder/filename_rep_seqs.qzv  ## export the ASV fasta file from the view for input into FuzzyID2 and BLAST
 
- ### export results to biom formatted file
+ #####export results to biom formatted file#####
 qiime tools export \
 --input-path dada2out-test/table.qza \
 --output-path dada2out-test/ESI16S_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
 
-### convert biom to tsv
+##### convert biom to tsv#####
 biom convert -i dada2out-test/ESI16S_filtered_table_biom/feature-table.biom \
 -o dada2out-test/ESI16S_filtered_table_biom/ESI16S_feature_table_export.tsv \
 --to-tsv

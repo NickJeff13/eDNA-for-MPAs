@@ -1,7 +1,7 @@
 #!/bin/bash
 #run a FastQC loop for all gzipped fastq's
 
-cd ~/eDNA/Musquash/Data/Raw/12S #change folder here per marker
+cd ~/eDNA/Musquash/Data/Raw/Musquash-18S #change folder here per marker
 
 #unzip if you want to
 # for i in $(ls *.fastq.gz ) ; do gunzip -c $i > ${i%.gz} ; done
