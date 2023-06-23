@@ -123,67 +123,48 @@ qiime demux summarize --i-data Musquash-12S-combined-demux-trimmed.qza \
 #Note: using --p-n-threads = 0 will use all threads available 
 ### for 16S use --p-trunc-len-f 125 and --p-trunc-len-r 125; for 12S use 116 and 108 ###
 # can add --p-min-overlap 12 or some other number if need be
-#16S
+#12S
 qiime dada2 denoise-paired \
 --i-demultiplexed-seqs Musquash-12S-combined-demux-trimmed.qza \
---p-trunc-len-f  116 \
---p-trunc-len-r  108 \
---p-n-threads 60 \
---p-n-reads-learn 3000000 \
---p-pooling-method independent \
---output-dir trimmed/dada2out \
---verbose
-
-#12S - trying some different r-len truncs
-qiime dada2 denoise-paired \
---i-demultiplexed-seqs 12s-demux-trimmed-2023.qza \
---p-trunc-len-f  126 \
---p-trunc-len-r  126 \
+--p-trunc-len-f  100 \
+--p-trunc-len-r  100 \
 --p-n-threads 0 \
---p-min-overlap 8 \
 --p-pooling-method independent \
---output-dir ESIDenoised3 \
+--output-dir dada2out_12S_Test5 \
 --verbose
 
+#arguments not used
+#how many reads to use in training the algorithm
+--p-n-reads-learn 3 000 000 \ 
+#merge overlap
+--p-min-overlap 8 \
 
 #####Generate summaries of denoising stats and feature table#####
-#16S
+#12S
 qiime feature-table summarize \
-  --i-table dada2out-test/table.qza \
-  --o-visualization dada2out-test/table.qzv \
-  --m-sample-metadata-file ../2021-sample-metadata_ESIonly.tsv &&
+  --i-table dada2out_12S_Test4/table.qza \
+  --o-visualization dada2out_12S_Test4/table.qzv \
+  --m-sample-metadata-file Musquash-12S-metadata_dada2.tsv &&
 qiime feature-table tabulate-seqs \
-  --i-data dada2out-test/representative_sequences.qza \
-  --o-visualization dada2out-test/rep-seqs.qzv &&
+  --i-data dada2out_12S_Test4/representative_sequences.qza \
+  --o-visualization dada2out_12S_Test4/representative_sequences.qzv &&
 qiime metadata tabulate \
-  --m-input-file dada2out-test/denoising_stats.qza \
-  --o-visualization dada2out-test/denoising-stats.qzv
+  --m-input-file dada2out_12S_Test4/denoising_stats.qza \
+  --o-visualization dada2out_12S_Test4/denoising_stats.qzv
   
-  
- qiime tools view /path_to_output_folder/filename_rep_seqs.qzv  ## export the ASV fasta file from the view for input into FuzzyID2 and BLAST
+qiime tools view dada2out_12S_Test3/table.qzv
+qiime tools view dada2out_12S_Test3/representative_sequences.qzv  ## export the ASV fasta file from the representative sequences view for input into FuzzyID2 and BLAST
+qiime tools view dada2out_12S_Test3/denoising_stats.qzv  ## export the table to compare read loss through filtering steps
 
- #12S
- qiime feature-table summarize \
-  --i-table ESIDenoised3/table.qza \
-  --o-visualization ESIDenoised3/table.qzv \
-  --m-sample-metadata-file ../2021-sample-metadata_ESIonly.tsv &&
-qiime feature-table tabulate-seqs \
-  --i-data ESIDenoised3/representative_sequences.qza \
-  --o-visualization ESIDenoised3/rep-seqs.qzv &&
-qiime metadata tabulate \
-  --m-input-file ESIDenoised3/denoising_stats.qza \
-  --o-visualization ESIDenoised3/denoising-stats.qzv
-  
-  qiime tools view /path_to_output_folder/filename_rep_seqs.qzv  ## export the ASV fasta file from the view for input into FuzzyID2 and BLAST
 
  #####export results to biom formatted file#####
 qiime tools export \
---input-path dada2out-test/table.qza \
---output-path dada2out-test/ESI16S_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
+--input-path dada2out_12S_Test4/table.qza \
+--output-path dada2out_12S_Test4/Musquash_12S_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
 
 ##### convert biom to tsv#####
-biom convert -i dada2out-test/ESI16S_filtered_table_biom/feature-table.biom \
--o dada2out-test/ESI16S_filtered_table_biom/ESI16S_feature_table_export.tsv \
+biom convert -i dada2out_12S_Test4/Musquash_12S_filtered_table_biom/feature-table.biom \
+-o dada2out_12S_Test4/Musquash_12S_filtered_table_biom/Musquash_12S_feature_table_export.tsv \
 --to-tsv
 
 ### OPTIONAL filtering after exporting to tsv
