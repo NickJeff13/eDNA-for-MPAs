@@ -118,6 +118,23 @@ qiime cutadapt trim-paired \
 qiime demux summarize --i-data Musquash-12S-combined-demux-trimmed.qza \
 --o-visualization Musquash-12S-combined-demux-trimmed.qzv
 
+#COI
+qiime cutadapt trim-paired \
+--i-demultiplexed-sequences Musquash-COI-combined-demux.qza \
+--p-cores 60 \
+--p-front-f  \
+--p-front-r  \
+--p-error-rate 0.15 \
+--p-match-read-wildcards \
+--p-match-adapter-wildcards \
+--p-minimum-length 30 \
+--o-trimmed-sequences Musquash-COI-combined-demux-trimmed.qza \
+--output-dir trimmed \
+--verbose
+#visualize the trimming results
+qiime demux summarize --i-data Musquash-COI-combined-demux-trimmed.qza \
+--o-visualization Musquash-COI-combined-demux-trimmed.qzv
+
 
 #####denoise using dada2 which infers ASVs #####
 #Note: using --p-n-threads = 0 will use all threads available 
@@ -157,7 +174,7 @@ qiime tools view dada2out_12S_Test3/representative_sequences.qzv  ## export the 
 qiime tools view dada2out_12S_Test3/denoising_stats.qzv  ## export the table to compare read loss through filtering steps
 
 
- #####export results to biom formatted file#####
+#####export results to biom formatted file#####
 qiime tools export \
 --input-path dada2out_12S_Test4/table.qza \
 --output-path dada2out_12S_Test4/Musquash_12S_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
@@ -172,7 +189,7 @@ biom convert -i dada2out_12S_Test4/Musquash_12S_filtered_table_biom/feature-tabl
 ## This is summing across columns in the exported feature table, calculating 0.1% of that sum, and removing all instances where read numbers were less than that number.
  
  #Generate a phylogenetic tree from our data
- cd dada2out/
+ cd dada2out_12S_Test4/
  qiime phylogeny align-to-tree-mafft-fasttree \
   --i-sequences representative_sequences.qza \
   --o-alignment aligned-rep-seqs.qza \
@@ -186,30 +203,91 @@ biom convert -i dada2out_12S_Test4/Musquash_12S_filtered_table_biom/feature-tabl
   --i-table table.qza \
   --p-sampling-depth 1500 \
   --p-n-jobs-or-threads auto \
-  --m-metadata-file ../../2021-sample-metadata.tsv \
-  --output-dir 16S-core-metrics-results
+  --m-metadata-file ../Musquash-12S-metadata_dada2.tsv \
+  --output-dir 12S-core-metrics-results
  
 ####################
 ######TAXONOMY######
 #####################
-## there are lots of ways to do taxonomy, including just blasting, or building a reference database using rescript (below), or using FuzzyID2 with a custom library
-  #using rescript to train our classifier
-  qiime rescript filter-taxa \
-  --i-taxonomy fish-16S-ref-tax.qza \
-  --m-ids-to-keep-file fish-16S-ref-seqs-keep.qza \
-  --o-filtered-taxonomy fish-16S-ref-taxa-keep.qza
-  
-  qiime rescript evaluate-taxonomy \
- --i-taxonomies fish-16S-ref-taxa-keep.qza \
- --o-taxonomy-stats fish-16S-ref-tax-keep-eval.qzv
+## there are lots of ways to do taxonomy, including just blasting, or building a reference database using rescript (see rescript_createReferenceDB.sh), or using FuzzyID2 with a custom library
+
+###blasting###
+#using the custom 12S database built with rescript
+qiime feature-classifier blast \
+--i-query representative_sequences.qza \
+--i-reference-reads ../../../DBs/fish-12S-ref-seqs-FINAL.qza \
+--p-maxaccepts 50 \
+--p-perc-identity 0.9 \
+--o-search-results Musqush_12S_blastOutput.qza \
+--o-visualization test.qzv
+
+qiime feature-classifier classify-consensus-blast \
+--i-query representative_sequences.qza \
+--i-reference-reads ../../../DBs/fish-12S-ref-seqs-FINAL.qza \
+--i-reference-taxonomy ../../../DBs/fish-12S-ref-tax-FINAL.qza \
+--p-maxaccepts 50 \
+--p-perc-identity 0.9 \
+--o-search-results Musqush_12S_blastclassifierOutput.qza \
+--o-classification Musquash_12S_blastclassifierOutput_tax.qza \
+--output-dir Tax
+
+#####rescript#####
+#using rescript to train our classifier
+ #Build and evaluate classifier
+ #here, the --o-classifier output is of type TaxonomicClassifier and the -o-observed-taxonomy is FeatureData[Taxonomy] (same as --i-taxonomy)
+ qiime rescript evaluate-fit-classifier \
+ --i-sequences fish-12S-ref-seqs-FINAL.qza \
+ --i-taxonomy fish-12S-ref-tax-FINAL.qza \
+ --p-n-jobs -1 \
+ --o-classifier ncbi-12S-fish-refseqs-classifier.qza \
+ --o-evaluation ncbi-12S-fish-refseqs-classifier-evaluation.qzv \
+ --o-observed-taxonomy ncbi-12S-fish-refseqs-predicted-taxonomy.qza \
+ --output-dir 12S-Classifier \
+ --verbose 
+
+ # FutureWarning: Passing a set as an indexer is deprecated and will raise in a future version. Use a list instead.
+ #  taxa = taxa.loc[seq_ids]
+ #UserWarning: The TaxonomicClassifier artifact that results from this method was trained using scikit-learn version 0.24.1. It cannot be used with other versions of scikit-learn. (While the classifier may complete successfully, the results will be unreliable.)
  
- qiime metadata tabulate \
- --m-input-file fish-16S-ref-taxa-keep.qza \
- --o-visualization fish-16S-ref-tax-keep.qzv &&
- qiime rescript evaluate-seqs \
- --i-sequences fish-16S-ref-seqs-keep.qza \
- --p-kmer-lengths 32 16 8 \
- --o-visualization fish-16S-ref-seqs-keep-eval.qzv
+ 
+ qiime rescript evaluate-taxonomy \
+ --i-taxonomies fish-16S-ref-taxa-keep.qza ncbi-16S-fish-refseqs-predicted-taxonomy.qza \
+ --p-labels ref-taxonomy predicted-taxonomy \
+ --o-taxonomy-stats 16S-ref-taxonomy-evaluation.qzv \
+ --verbose
+ 
+#Now back to qiime to do our taxonomy
+  qiime feature-classifier classify-sklearn \
+  --i-classifier ../../../../ReferenceData/ncbi-16S-fish-refseqs-classifier.qza \
+  --i-reads representative_sequences.qza \
+  --o-classification 16S-taxonomy.qza
+
+qiime metadata tabulate \
+  --m-input-file 16S-taxonomy.qza \
+  --o-visualization 16S-taxonomy.qzv
+
+#######16S############
+
+
+###rescript###
+
+#using rescript to train our classifier
+qiime rescript filter-taxa \
+--i-taxonomy fish-16S-ref-tax.qza \
+--m-ids-to-keep-file fish-12S-ref-seqs-FINAL.qza \
+--o-filtered-taxonomy fish-16S-ref-taxa-FINAL.qza
+
+qiime rescript evaluate-taxonomy \
+--i-taxonomies fish-16S-ref-taxa-keep.qza \
+--o-taxonomy-stats fish-16S-ref-tax-keep-eval.qzv
+
+qiime metadata tabulate \
+--m-input-file fish-16S-ref-taxa-keep.qza \
+--o-visualization fish-16S-ref-tax-keep.qzv &&
+qiime rescript evaluate-seqs \
+--i-sequences fish-16S-ref-seqs-keep.qza \
+--p-kmer-lengths 32 16 8 \
+--o-visualization fish-16S-ref-seqs-keep-eval.qzv
  
  #Build and evaluate classifier
  #here, the --o-classifier output is of type TaxonomicClassifier and the -o-observed-taxonomy is FeatureData[Taxonomy] (same as --i-taxonomy)
