@@ -122,8 +122,8 @@ qiime demux summarize --i-data Musquash-12S-combined-demux-trimmed.qza \
 qiime cutadapt trim-paired \
 --i-demultiplexed-sequences Musquash-COI-combined-demux.qza \
 --p-cores 60 \
---p-front-f  \
---p-front-r  \
+--p-front-f GGWACWGGWTGAACWGTWTAYCCYCC \
+--p-front-r GGRGGRTASACSGTTCASCCSGTSCC \
 --p-error-rate 0.15 \
 --p-match-read-wildcards \
 --p-match-adapter-wildcards \
@@ -143,11 +143,11 @@ qiime demux summarize --i-data Musquash-COI-combined-demux-trimmed.qza \
 #12S
 qiime dada2 denoise-paired \
 --i-demultiplexed-seqs Musquash-12S-combined-demux-trimmed.qza \
---p-trunc-len-f  100 \
---p-trunc-len-r  100 \
+--p-trunc-len-f  116 \
+--p-trunc-len-r  108 \
 --p-n-threads 0 \
 --p-pooling-method independent \
---output-dir dada2out_12S_Test5 \
+--output-dir dada2out_12S \
 --verbose
 
 #arguments not used
