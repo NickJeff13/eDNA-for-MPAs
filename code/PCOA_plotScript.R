@@ -1,43 +1,11 @@
-setwd("C:/Users/VANWYNGAARDENMA/Documents/eDNA/Musquash/Data/12S/dada2out_12S_Test4")
-library("ggplot2")
-library(RColorBrewer)
-library(viridis)
+#load libraries
 library("tidyverse")
+library("ggplot2")
+library("RColorBrewer")
+library("viridis")
 
-
-#load metadata and taxon list for ASVs
-metadata <- read.delim("C:/Users/VANWYNGAARDENMA/Documents/eDNA/Musquash/Data/12S/Musquash-12S-metadata_dada2.tsv", sep="\t")
-taxa <- read.csv("Musquash_12S_BlastClassifierTaxConsensus_ASV.csv")
-
-
-#load reads per site and calculate total reads per ASV
-readsPerSite <- read.csv("Musquash_12S_ASV_table_ReadsPerSite.csv") %>% 
-  left_join(select(taxa, ASV, Consensus)) %>%
-  relocate(Taxon, ASV, Consensus) %>% 
-  mutate_at(c(4:90), as.numeric) %>% #convert the read data to numeric
-  rowwise() %>% #ensure the rest of the command is done across each row
-  mutate(TotalReads = sum(c_across(4:90)), #sum all the reads per ASV across all samples
-         OnePercTotalReads = round(TotalReads*0.01,0)) %>% #calculate 1% of total reads per ASV
-  relocate(Taxon, ASV, Consensus, TotalReads, OnePercTotalReads)  #reorder the columns
-  
-#remove any ASV counts per site that are less than 1% total reads for the ASV
-readsPerSite_clean <- readsPerSite %>% 
-  rowwise() %>% #ensure the rest of the command is done across each row
-  mutate_at(vars(c(6:92)), funs(ifelse(.<OnePercTotalReads,0,.))) #in cols 6:92, if the value is < OnePercTotalReads for that row, replace with 0
-  
-#make a table that just lists the site, then which species it has in it
-readsPerSite_clean$Taxon <- factor(readsPerSite_clean$Taxon)
-
-readsPerSite_clean_long <- readsPerSite_clean %>%
-  gather(Sample, Reads, X2A01S1:PCR_blank_002, factor_key=TRUE) %>% 
-  relocate(Sample,Taxon,Reads,ASV) %>%
-  filter(Reads !=0) %>%
-  mutate(Sample = str_replace(Sample, "X","")) %>% 
-  left_join(metadata)
-  
-write.csv(readsPerSite_clean_long, "Musquash_12S_ASV_table_ReadsPerSite_clean_long.csv")
-
-
+#set working directory to the dada2/qiime2 denoising output
+setwd("~/eDNA/Musquash/Data/12S/dada2out_12S")
 
 #use bray-curtis matrix
 BC_PCOACoord <- read.csv("C:/Users/VANWYNGAARDENMA/Documents/eDNA/Musquash/Data/12S/dada2out_12S_Test4/12S-core-metrics-results/bray_curtis_PCOA_coord.csv") %>% 
