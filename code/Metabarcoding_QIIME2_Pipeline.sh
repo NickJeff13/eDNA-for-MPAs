@@ -1,7 +1,7 @@
 #Processing eDNA metabarcode data using QIIME2 and cutadapt, followed by DADA2 taxonomy assignments using custom fish reference databases
 #The qiime tutorials are useful and found at https://docs.qiime2.org/2022.2/tutorials/overview/#useful-points-for-beginners 
 #First activate QIIME if it hasn't been, can also reactivate qiime if you close the window 
-conda activate ~/Programs/miniconda3/envs/qiime2-2023.5 &&
+conda activate qiime2-2023.5 &&
 source tab-qiime #activate tab completion
 
 #check currently active conda environment
@@ -59,7 +59,8 @@ qiime demux filter-samples \
   --o-filtered-demux /path_to_output_folder/filename_greater100reads.qza
 
 #####Now trim primers#####
-#16S example
+#See FishPrimers.txt for list of primers to use
+#16S#
 qiime cutadapt trim-paired \
 --i-demultiplexed-sequences 16S-combined-demux.qza \
 --p-cores 40 \
@@ -95,13 +96,8 @@ Total written (filtered):    943,244,238 bp (57.2%)
   Read 1:   466,537,198 bp
   Read 2:   476,707,040 bp
 '
-# ':
-# MiFishU-F - these primers target ~180bp of the 12S rDNA region
-# 5 GTCGGTAAAACTCGTGCCAGC 3   NNNNNNGTCGGTAAAACTCGTGCCAGC
-# #MiFishU-R
-# 3 GTTTGACCCTAATCTATGGGGTGATAC 5 > need to reverse this so its read 5 prime to 3 prime in cutadapt
-# ' 
-#12S
+
+#12S#
 qiime cutadapt trim-paired \
 --i-demultiplexed-sequences Musquash-12S-combined-demux.qza \
 --p-cores 60 \
@@ -118,7 +114,7 @@ qiime cutadapt trim-paired \
 qiime demux summarize --i-data Musquash-12S-combined-demux-trimmed.qza \
 --o-visualization Musquash-12S-combined-demux-trimmed.qzv
 
-#COI
+#COI#
 qiime cutadapt trim-paired \
 --i-demultiplexed-sequences Musquash-COI-combined-demux.qza \
 --p-cores 60 \
@@ -137,8 +133,10 @@ qiime demux summarize --i-data Musquash-COI-combined-demux-trimmed.qza \
 
 
 #####denoise using dada2 which infers ASVs #####
+#####NOTE: for some reason I was unable to get this to work in RStudio, but it is working in the terminal on its own#####
+#Error code 255, something to do with being unable to find files
 #Note: using --p-n-threads = 0 will use all threads available 
-### for 16S use --p-trunc-len-f 125 and --p-trunc-len-r 125; for 12S use 116 and 108 ###
+### for 16S use --p-trunc-len-f 125 and --p-trunc-len-r 125; for 12S use 116 and 108; for COI use  ###
 # can add --p-min-overlap 12 or some other number if need be
 #12S
 qiime dada2 denoise-paired \
@@ -152,59 +150,75 @@ qiime dada2 denoise-paired \
 
 #arguments not used
 #how many reads to use in training the algorithm
---p-n-reads-learn 3 000 000 \ 
+--p-n-reads-learn 3000000 \ 
 #merge overlap
 --p-min-overlap 8 \
+
+
+#COI
+qiime dada2 denoise-paired \
+--i-demultiplexed-seqs Musquash-COI-combined-demux-trimmed.qza \
+--p-trunc-len-f  180 \
+--p-trunc-len-r  180 \
+--p-n-threads 0 \
+--p-pooling-method independent \
+--output-dir dada2out_COI \
+--verbose
+
 
 #####Generate summaries of denoising stats and feature table#####
 #12S
 qiime feature-table summarize \
-  --i-table dada2out_12S_Test4/table.qza \
-  --o-visualization dada2out_12S_Test4/table.qzv \
+  --i-table dada2out_12S/table.qza \
+  --o-visualization dada2out_12S/table.qzv \
   --m-sample-metadata-file Musquash-12S-metadata_dada2.tsv &&
 qiime feature-table tabulate-seqs \
-  --i-data dada2out_12S_Test4/representative_sequences.qza \
-  --o-visualization dada2out_12S_Test4/representative_sequences.qzv &&
+  --i-data dada2out_12S/representative_sequences.qza \
+  --o-visualization dada2out_12S/representative_sequences.qzv &&
 qiime metadata tabulate \
-  --m-input-file dada2out_12S_Test4/denoising_stats.qza \
-  --o-visualization dada2out_12S_Test4/denoising_stats.qzv
+  --m-input-file dada2out_12S/denoising_stats.qza \
+  --o-visualization dada2out_12S/denoising_stats.qzv
   
-qiime tools view dada2out_12S_Test3/table.qzv
-qiime tools view dada2out_12S_Test3/representative_sequences.qzv  ## export the ASV fasta file from the representative sequences view for input into FuzzyID2 and BLAST
-qiime tools view dada2out_12S_Test3/denoising_stats.qzv  ## export the table to compare read loss through filtering steps
+qiime tools view dada2out_12S/table.qzv 
+qiime tools view dada2out_12S/representative_sequences.qzv  ## export the ASV fasta file from the representative sequences view for input into FuzzyID2 and BLAST
+qiime tools view dada2out_12S/denoising_stats.qzv  ## export the table to compare read loss through filtering steps
 
 
 #####export results to biom formatted file#####
 qiime tools export \
---input-path dada2out_12S_Test4/table.qza \
---output-path dada2out_12S_Test4/Musquash_12S_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
+--input-path dada2out_12S/table.qza \
+--output-path dada2out_12S/Musquash_12S_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
 
 ##### convert biom to tsv#####
-biom convert -i dada2out_12S_Test4/Musquash_12S_filtered_table_biom/feature-table.biom \
--o dada2out_12S_Test4/Musquash_12S_filtered_table_biom/Musquash_12S_feature_table_export.tsv \
+biom convert -i dada2out_12S/Musquash_12S_filtered_table_biom/feature-table.biom \
+-o dada2out_12S/Musquash_12S_filtered_table_biom/Musquash_12S_feature_table_export.tsv \
 --to-tsv
 
-### OPTIONAL filtering after exporting to tsv
-## Remove rare ASV's by calculating if an ASV has a read number that is less than 0.1% of the total read number of that ASV across all samples. 
-## This is summing across columns in the exported feature table, calculating 0.1% of that sum, and removing all instances where read numbers were less than that number.
- 
- #Generate a phylogenetic tree from our data
- cd dada2out_12S_Test4/
- qiime phylogeny align-to-tree-mafft-fasttree \
-  --i-sequences representative_sequences.qza \
-  --o-alignment aligned-rep-seqs.qza \
-  --o-masked-alignment masked-aligned-rep-seqs.qza \
-  --o-tree unrooted-tree.qza \
-  --o-rooted-tree rooted-tree.qza
-  
-  #now use the rooted tree to generate some biodiversity stats
-  qiime diversity core-metrics-phylogenetic \
-  --i-phylogeny rooted-tree.qza \
-  --i-table table.qza \
-  --p-sampling-depth 1500 \
-  --p-n-jobs-or-threads auto \
-  --m-metadata-file ../Musquash-12S-metadata_dada2.tsv \
-  --output-dir 12S-core-metrics-results
+#Generate a phylogenetic tree from our data
+cd dada2out_12S/
+qiime phylogeny align-to-tree-mafft-fasttree \
+--i-sequences representative_sequences.qza \
+--o-alignment aligned-rep-seqs.qza \
+--o-masked-alignment masked-aligned-rep-seqs.qza \
+--o-tree unrooted-tree.qza \
+--o-rooted-tree rooted-tree.qza
+
+#now use the rooted tree to generate some biodiversity stats
+qiime diversity core-metrics-phylogenetic \
+--i-phylogeny rooted-tree.qza \
+--i-table table.qza \
+--p-sampling-depth 1500 \
+--p-n-jobs-or-threads auto \
+--m-metadata-file ../Musquash-12S-metadata_dada2.tsv \
+--output-dir 12S-core-metrics-results
+
+#once taxonomy is calculate, use R to calculate biodiversity stats, etc
+###Necessary filtering:
+## Remove rare ASV's by calculating if an ASV has a read number that is less than 1% of the total read number of that ASV across all samples. 
+## This is summing across columns in the exported feature table, calculating 1% of that sum, and removing all instances where read numbers were less than that number.
+##see eDNA_BiodiversityStats_AfterQIIME2.R
+
+
  
 ####################
 ######TAXONOMY######
@@ -218,8 +232,8 @@ qiime feature-classifier blast \
 --i-reference-reads ../../../DBs/fish-12S-ref-seqs-FINAL.qza \
 --p-maxaccepts 50 \
 --p-perc-identity 0.9 \
---o-search-results Musqush_12S_blastOutput.qza \
---o-visualization test.qzv
+--o-search-results Musquash_12S_blastOutput.qza \
+--o-visualization Musquash_12S_blastOutput.qzv
 
 qiime feature-classifier classify-consensus-blast \
 --i-query representative_sequences.qza \
@@ -227,9 +241,9 @@ qiime feature-classifier classify-consensus-blast \
 --i-reference-taxonomy ../../../DBs/fish-12S-ref-tax-FINAL.qza \
 --p-maxaccepts 50 \
 --p-perc-identity 0.9 \
---o-search-results Musqush_12S_blastclassifierOutput.qza \
+--o-search-results Musquash_12S_blastclassifierOutput.qza \
 --o-classification Musquash_12S_blastclassifierOutput_tax.qza \
---output-dir Tax
+--output-dir BlastClassifierTaxonomy
 
 #####rescript#####
 #using rescript to train our classifier
