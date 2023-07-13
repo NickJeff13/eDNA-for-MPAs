@@ -199,7 +199,7 @@ biom convert -i dada2out/SAB2216S_filtered_table_biom/feature-table.biom \
   --i-table table.qza \
   --p-sampling-depth 1500 \
   --p-n-jobs-or-threads auto \
-  --m-metadata-file ../../2021-sample-metadata.tsv \
+  --m-metadata-file ../../../2022-sample-metadata_SABonly.tsv \
   --output-dir 16S-core-metrics-results
  
 ####################
@@ -244,7 +244,7 @@ biom convert -i dada2out/SAB2216S_filtered_table_biom/feature-table.biom \
  
 #Now back to qiime to do our taxonomy
   qiime feature-classifier classify-sklearn \
-  --i-classifier ../../../../ReferenceData/ncbi-16S-fish-refseqs-classifier.qza \
+  --i-classifier ../../../../ReferenceData/Rescript_ReferenceDB/ncbi-16S-fish-refseqs-classifier.qza \
   --i-reads representative_sequences.qza \
   --o-classification 16S-taxonomy.qza
 

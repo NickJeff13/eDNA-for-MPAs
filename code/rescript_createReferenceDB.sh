@@ -73,6 +73,20 @@ qiime rescript dereplicate \
  --o-filtered-seqs fish-16S-ref-seqs-keep.qza \
  --o-discarded-seqs fish-16S-ref-seqs-discard.qza
  
- qiime rescript evaluate-taxonomy \
- --i-taxonomies fish-16S-ref-seqs-keep.qza \
- --o-taxonomy-stats fish-16S-ref-seqs-keep-eval.qzv
+  qiime rescript filter-taxa \
+  --i-taxonomy fish-16S-ref-tax.qza \
+  --m-ids-to-keep-file fish-16S-ref-seqs-keep.qza \
+  --o-filtered-taxonomy fish-16S-ref-taxa-keep.qza
+  
+  qiime rescript evaluate-taxonomy \
+ --i-taxonomies fish-16S-ref-taxa-keep.qza \
+ --o-taxonomy-stats fish-16S-ref-tax-keep-eval.qzv
+ 
+ qiime metadata tabulate \
+ --m-input-file fish-16S-ref-taxa-keep.qza \
+ --o-visualization fish-16S-ref-tax-keep.qzv &&
+ qiime rescript evaluate-seqs \
+ --i-sequences fish-16S-ref-seqs-keep.qza \
+ --p-kmer-lengths 32 16 8 \
+ --o-visualization fish-16S-ref-seqs-keep-eval.qzv
+ 
