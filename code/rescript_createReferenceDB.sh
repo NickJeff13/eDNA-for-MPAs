@@ -1,7 +1,16 @@
 #Obtain a custom "fish" 12S database using qiime and rescript
 #txid77766 is Gnathostomata and includes sharks, rays, and all jawed fishes
 qiime rescript get-ncbi-data \
-    --p-query "txid7776[ORGN] AND (12S[Title] OR 12S ribosomal RNA[Title] OR 12S rRNA[Title]) AND (mitochondrion[Filter] OR plastid[Filter]) NOT environmental sample[Title] NOT environmental samples[Title] NOT environmental[Title] NOT uncultured[Title] NOT unclassified[Title] NOT unidentified[Title] NOT unverified[Title]" \
+    --p-query "txid7776[ORGN] AND\
+    (12S[Title] OR 12S ribosomal RNA[Title] OR 12S rRNA[Title] OR 12S mitochondrial[Title] OR mitochondrion[Title] OR small subunit ribosomal[Title]) AND\
+    (mitochondrion[Filter] OR plastid[Filter]) NOT\
+    environmental sample[Title] NOT\
+    environmental samples[Title] NOT\
+    environmental[Title] NOT\
+    uncultured[Title] NOT\
+    unclassified[Title] NOT\
+    unidentified[Title] NOT\
+    unverified[Title]" \
     --p-ranks kingdom phylum class order family genus species \
     --p-rank-propagation \
     --p-n-jobs 20 \

@@ -212,9 +212,18 @@ qiime diversity core-metrics-phylogenetic \
 --m-metadata-file ../Musquash-12S-metadata_dada2.tsv \
 --output-dir 12S-core-metrics-results
 
-#once taxonomy is calculate, use R to calculate biodiversity stats, etc
+
+#Next, calculate the taxonomy for the ASVs using the code below, but much of the filtering and consolidating will be done in R
+#consolidate the taxonomy for the ASVs:
+  #manually BLAST anything that's unassigned
+  #assign things to the lowest common taxon if multiple mataches
+
+
+#once taxonomy is calculated and finalized, use R to calculate biodiversity stats, etc
 ###Necessary filtering:
 ## Remove rare ASV's by calculating if an ASV has a read number that is less than 1% of the total read number of that ASV across all samples. 
+    ## This is summing across columns in the exported feature table, calculating 1% of that sum, and removing all instances where read numbers were less than that number.
+## Remove ASVs that contain <1% of the total reads of that entire sample across all ASVs
 ## This is summing across columns in the exported feature table, calculating 1% of that sum, and removing all instances where read numbers were less than that number.
 ##see eDNA_BiodiversityStats_AfterQIIME2.R
 
@@ -227,10 +236,11 @@ qiime diversity core-metrics-phylogenetic \
 
 ###blasting###
 #using the custom 12S database built with rescript
+#for 12S, anything under ~97% perc. ident may not be valid down to species level
 qiime feature-classifier blast \
 --i-query representative_sequences.qza \
 --i-reference-reads ../../../DBs/fish-12S-ref-seqs-FINAL.qza \
---p-maxaccepts 50 \
+--p-maxaccepts 20 \
 --p-perc-identity 0.9 \
 --o-search-results Musquash_12S_blastOutput.qza \
 --o-visualization Musquash_12S_blastOutput.qzv
@@ -239,7 +249,7 @@ qiime feature-classifier classify-consensus-blast \
 --i-query representative_sequences.qza \
 --i-reference-reads ../../../DBs/fish-12S-ref-seqs-FINAL.qza \
 --i-reference-taxonomy ../../../DBs/fish-12S-ref-tax-FINAL.qza \
---p-maxaccepts 50 \
+--p-maxaccepts 20 \
 --p-perc-identity 0.9 \
 --o-search-results Musquash_12S_blastclassifierOutput.qza \
 --o-classification Musquash_12S_blastclassifierOutput_tax.qza \
