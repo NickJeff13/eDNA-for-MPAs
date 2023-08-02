@@ -4,27 +4,28 @@ library("ggplot2")
 library("janitor")
 
 #set working directory to the dada2/qiime2 denoising output
-setwd("~/eDNA/Musquash/Data/12S/dada2out_12S")
+setwd("/mnt/sda2/eDNA/Musquash/Data/12S/dada2out_12S")
 
 ##before working with the reads table, make sure the taxonomy is finalized for the ASVs
-BLASTOutput <- read.delim("~/eDNA/Musquash/Data/12S/dada2out_12S/Musquash_12S_BlastClassifierTax_ASV.tsv", sep="\t",
+BLASTOutput <- read.delim("/mnt/sda2/eDNA/Musquash/Data/12S/dada2out_12S/Musquash_12S_BlastClassifierTax_ASV.tsv", sep="\t",
                           col.names = c("ASV","Accession","PercIdent","AlignLength","Mismatches","GapOpens","QStart","QEnd","SStart","SEnd","Evalue","BitScore"))
 
-BLASTConsensus <- read.delim("~/eDNA/Musquash/Data/12S/dada2out_12S/Musquash_12S_BlastClassifierTaxConsensus_ASV.tsv", sep="\t")  #manually split up the taxonomy into appropriate categories before uploading
+BLASTConsensus <- read.delim("/mnt/sda2/eDNA/Musquash/Data/12S/dada2out_12S/Musquash_12S_BlastClassifierTaxConsensus_ASV.tsv", sep="\t")  #manually split up the taxonomy into separate columns categories before uploading
 
 BLASTOutputTax <- BLASTOutput %>% 
   left_join(select(BLASTConsensus, ASV, Taxon)) %>% 
   rename(ConsensusTaxon = Taxon) %>% 
   relocate(ASV, ConsensusTaxon) 
-write_delim(BLASTOutputTax, "~/eDNA/Musquash/Data/12S/dada2out_12S/Musquash_12S_BlastClassifierConsensusTax_ASV_working.tsv", delim="\t")
+write_delim(BLASTOutputTax, "/mnt/sda2/eDNA/Musquash/Data/12S/dada2out_12S/Musquash_12S_BlastClassifierConsensusTax_ASV_working.tsv", delim="\t")
 
 ##Manually edit the output to confirm taxonomy and BLAST unassigned ASVs, then load final list of ASV and Taxon
-BLASTOutput_FinalTax <- read.delim("~/eDNA/Musquash/Data/12S/dada2out_12S/Musquash_12S_BlastClassifierConsensusTax_ASV_FINAL.tsv", sep="\t", col.names = c("ASV","Taxon"))
+#This involves checking the PercIdent for each match, finding the lowest common taxon for matches >97%
+BLASTOutput_FinalTax <- read.delim("/mnt/sda2/eDNA/Musquash/Data/12S/dada2out_12S/Musquash_12S_BlastClassifierConsensusTax_ASV_FINAL.tsv", sep="\t", col.names = c("ASV","Taxon"))
 
 #load sample metadata ASVs
-metadata <- read.delim("~/eDNA/Musquash/Data/12S/Musquash-12S-metadata_dada2.tsv", sep="\t") %>%  #metadata needs the first field to be "sampleid", all others can be custom
+metadata <- read.delim("/mnt/sda2/eDNA/Musquash/Data/12S/Musquash-12S-metadata_dada2.tsv", sep="\t") %>%  #metadata needs the first field to be "sampleid", all others can be custom
   rename(Site = sampleid) #rename the first column to Site
-readsPerSite_raw <- read.delim("~/eDNA/Musquash/Data/12S/dada2out_12S/Musquash_12S_ASV_table_ReadsPerSite.tsv", sep="\t") #manually edit the ASV file to remove the first line of notes
+readsPerSite_raw <- read.delim("/mnt/sda2/eDNA/Musquash/Data/12S/dada2out_12S/Musquash_12S_ASV_table_ReadsPerSite.tsv", sep="\t") #manually edit the ASV file to remove the first line of notes
 
 #load reads per site and calculate total reads per ASV
 readsPerSite <- readsPerSite_raw %>% 
@@ -77,7 +78,7 @@ write.csv(readsPerSite_ReadFiltered_long, "Musquash_12S_ASV_table_ReadsPerSite_R
 AllTaxa <- unique(readsPerSite_ReadFiltered_long$Taxon) %>% #Create dataframe with all of the taxa
   as.data.frame() %>% 
   rename(Taxon = ".") 
-write.csv(AllTaxa, "Musquash_12S_ASV_AllTaxa.csv")
+# write.csv(AllTaxa, "Musquash_12S_ASV_AllTaxa.csv")
 #add in the common names manually, then re-import
 AllTaxa <- read.csv("Musquash_12S_ASV_AllTaxa.csv")
 
