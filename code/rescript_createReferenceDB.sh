@@ -119,7 +119,7 @@ qiime rescript dereplicate \
 #txid77766 is Gnathostomata and includes sharks, rays, and all jawed fishes
 qiime rescript get-ncbi-data \
     --p-query "txid7776[ORGN] AND\
-    (COI[Title] OR cytochrome oxidase[Title] OR COI rRNA[Title] OR COI mitochondrial[Title] OR mitochondrion[Title] OR small subunit ribosomal[Title]) AND\
+    (COI[Title] OR COX[Title] OR COX1[Title] OR CO1[Title] OR cytochrome c oxidase subunit 1[Title] OR cytochrome c oxidase subunit I[Title] OR cytochrome oxidase subunit 1[Title] OR cytochrome oxidase subunit I[Title] OR mitochondrion[Title] OR mitochondrial[Title]) AND\
     (mitochondrion[Filter] OR plastid[Filter]) NOT\
     environmental sample[Title] NOT\
     environmental samples[Title] NOT\
@@ -131,8 +131,8 @@ qiime rescript get-ncbi-data \
     --p-ranks kingdom phylum class order family genus species \
     --p-rank-propagation \
     --p-n-jobs 20 \
-    --o-sequences fish-12S-ref-seqs.qza \
-    --o-taxonomy fish-12S-ref-tax.qza \
+    --o-sequences fish-COI-ref-seqs.qza \
+    --o-taxonomy fish-COI-ref-tax.qza \
     --verbose
     
 #Dereplicate reference data - sequences and taxonomy
