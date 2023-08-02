@@ -492,7 +492,7 @@ qiime feature-table filter-samples \
   --m-metadata-column location \
   --o-visualization 16SBBL-ancom-subject.qzv
   
-:'OLD CODE and ISSUES: 
+:OLD CODE and ISSUES: 
 DADA2 didnt like the quality scores of my data (NovaSeq 6000 issue) so lets try merging reads with vsearch and denoising with DeBlur
 Actually not entirely true - it runs, though error plots look weird because of NovaSeq quality score binning. Regardless, shortening my sequences to 130bp seems to have worked for dada2.
 Below are commands to run vsearch to join pairs and then deblur 

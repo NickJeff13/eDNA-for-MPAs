@@ -137,46 +137,46 @@ qiime rescript get-ncbi-data \
     
 #Dereplicate reference data - sequences and taxonomy
 qiime rescript dereplicate \
- --i-sequences fish-12S-ref-seqs.qza \
- --i-taxa fish-12S-ref-tax.qza \
+ --i-sequences fish-COI-ref-seqs.qza \
+ --i-taxa fish-COI-ref-tax.qza \
  --p-mode 'uniq' \
  --p-threads 20 \
  --p-rank-handles 'disable' \
- --o-dereplicated-sequences fish-12S-ref-seqs-derep.qza \
- --o-dereplicated-taxa fish-12S-ref-tax-derep.qza
+ --o-dereplicated-sequences fish-COI-ref-seqs-derep.qza \
+ --o-dereplicated-taxa fish-COI-ref-tax-derep.qza
  
  #filter low-quality sequences and remove
  qiime rescript cull-seqs \
- --i-sequences fish-12S-ref-seqs-derep.qza \
+ --i-sequences fish-COI-ref-seqs-derep.qza \
  --p-n-jobs 20 \
  --p-num-degenerates 5 \
  --p-homopolymer-length 8 \
- --o-clean-sequences fish-12S-ref-seqs-cull.qza
+ --o-clean-sequences fish-COI-ref-seqs-cull.qza
  
  #now filter by sequence length
  qiime rescript filter-seqs-length \
- --i-sequences fish-12S-ref-seqs-cull.qza \
+ --i-sequences fish-COI-ref-seqs-cull.qza \
  --p-global-min 90 \
  --p-global-max 1000 \
- --o-filtered-seqs fish-12S-ref-seqs-FINAL.qza \
- --o-discarded-seqs fish-12S-ref-seqs-discard.qza
+ --o-filtered-seqs fish-COI-ref-seqs-FINAL.qza \
+ --o-discarded-seqs fish-COI-ref-seqs-discard.qza
  
 #filter the derep taxonomy to include only the seqs in the FINAL ref file
 qiime rescript filter-taxa \
---i-taxonomy fish-12S-ref-tax-derep.qza \
---m-ids-to-keep-file fish-12S-ref-seqs-FINAL.qza \
---o-filtered-taxonomy fish-12S-ref-tax-FINAL.qza
+--i-taxonomy fish-COI-ref-tax-derep.qza \
+--m-ids-to-keep-file fish-COI-ref-seqs-FINAL.qza \
+--o-filtered-taxonomy fish-COI-ref-tax-FINAL.qza
 
 #visualize for evaluation
 qiime rescript evaluate-taxonomy \
---i-taxonomies fish-12S-ref-tax-FINAL.qza \
---o-taxonomy-stats fish-12S-ref-tax-FINAL-eval.qzv
+--i-taxonomies fish-COI-ref-tax-FINAL.qza \
+--o-taxonomy-stats fish-COI-ref-tax-FINAL-eval.qzv
 
 #tabulate and visualize output
 qiime metadata tabulate \
---m-input-file fish-12S-ref-tax-FINAL.qza \
---o-visualization fish-12S-ref-tax-FINAL.qzv &&
+--m-input-file fish-COI-ref-tax-FINAL.qza \
+--o-visualization fish-COI-ref-tax-FINAL.qzv &&
 qiime rescript evaluate-seqs \
---i-sequences fish-12S-ref-seqs-FINAL.qza \
+--i-sequences fish-COI-ref-seqs-FINAL.qza \
 --p-kmer-lengths 32 16 8 \
---o-visualization fish-12S-ref-seqs-FINAL-eval.qzv
+--o-visualization fish-COI-ref-seqs-FINAL-eval.qzv
