@@ -3,6 +3,9 @@
 ############################################
 #Obtain a custom "fish" 12S database using qiime and rescript
 #txid77766 is Gnathostomata and includes sharks, rays, and all jawed fishes
+#activate the rescript environment
+conda activate rescript
+
 qiime rescript get-ncbi-data \
     --p-query "txid7776[ORGN] AND\
     (12S[Title] OR 12S ribosomal RNA[Title] OR 12S rRNA[Title] OR 12S mitochondrial[Title] OR mitochondrion[Title] OR small subunit ribosomal[Title]) AND\
@@ -57,6 +60,8 @@ qiime rescript filter-taxa \
 qiime rescript evaluate-taxonomy \
 --i-taxonomies fish-12S-ref-tax-FINAL.qza \
 --o-taxonomy-stats fish-12S-ref-tax-FINAL-eval.qzv
+
+
 
 #tabulate and visualize output
 qiime metadata tabulate \
@@ -117,9 +122,15 @@ qiime rescript dereplicate \
 ############################################
 #Obtain a custom "fish" COI database using qiime and rescript
 #txid77766 is Gnathostomata and includes sharks, rays, and all jawed fishes
+#activate the rescript environment
+conda activate rescript
+
 qiime rescript get-ncbi-data \
     --p-query "txid7776[ORGN] AND\
-    (COI[Title] OR COX[Title] OR COX1[Title] OR CO1[Title] OR cytochrome c oxidase subunit 1[Title] OR cytochrome c oxidase subunit I[Title] OR cytochrome oxidase subunit 1[Title] OR cytochrome oxidase subunit I[Title] OR mitochondrion[Title] OR mitochondrial[Title]) AND\
+    (COI[Title] OR COX[Title] OR COX1[Title] OR CO1[Title] OR\
+    cytochrome c oxidase subunit 1[Title] OR cytochrome c oxidase subunit I[Title] OR\
+    cytochrome oxidase subunit 1[Title] OR cytochrome oxidase subunit I[Title] OR\
+    mitochondrion[Title] OR mitochondrial[Title]) AND\
     (mitochondrion[Filter] OR plastid[Filter]) NOT\
     environmental sample[Title] NOT\
     environmental samples[Title] NOT\
@@ -165,6 +176,7 @@ qiime rescript dereplicate \
 qiime rescript filter-taxa \
 --i-taxonomy fish-COI-ref-tax-derep.qza \
 --m-ids-to-keep-file fish-COI-ref-seqs-FINAL.qza \
+--p-exclude "unassigned" \
 --o-filtered-taxonomy fish-COI-ref-tax-FINAL.qza
 
 #visualize for evaluation
@@ -172,11 +184,18 @@ qiime rescript evaluate-taxonomy \
 --i-taxonomies fish-COI-ref-tax-FINAL.qza \
 --o-taxonomy-stats fish-COI-ref-tax-FINAL-eval.qzv
 
+qiime tools view fish-COI-ref-tax-FINAL-eval.qzv
+
 #tabulate and visualize output
 qiime metadata tabulate \
 --m-input-file fish-COI-ref-tax-FINAL.qza \
---o-visualization fish-COI-ref-tax-FINAL.qzv &&
+--o-visualization fish-COI-ref-tax-FINAL.qzv
+
+qiime tools view fish-COI-ref-tax-FINAL.qzv 
+
 qiime rescript evaluate-seqs \
 --i-sequences fish-COI-ref-seqs-FINAL.qza \
 --p-kmer-lengths 32 16 8 \
 --o-visualization fish-COI-ref-seqs-FINAL-eval.qzv
+
+qiime tools view fish-COI-ref-seqs-FINAL-eval.qzv

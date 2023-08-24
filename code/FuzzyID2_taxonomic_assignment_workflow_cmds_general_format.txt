@@ -20,16 +20,17 @@ python3 FuzzyID2_makeDB.py
 
 ## Calculate the genetic distances between the query and reference sequences
 #d=database name, -in=path to representative seqs.fasta and out=outfile.csv
-./FuzzyID2_x86_64 -c ID -m K2P -d ESI16S -in /hdd5/eDNA_Data/Raw/16S/dada2out/16Srepresentative_ASVs.fasta -out /hdd5/eDNA_Data/Raw/16S/dada2out/16STaxonomyOut.csv
+./FuzzyID2_x86_64 -c ID -m K2P -d Fish_12S -in /mnt/sda2/eDNA/Musquash/Data/12S/dada2out_12S/Musquash-12S-ASV-fasta.fasta -out /mnt/sda2/eDNA/Musquash/Data/12S/dada2out_12S/12STaxonomy_FuzzyID2_GenDistOut.csv
 
 
-:' Assign taxonomy to ASVs, interpretation of the output file
+
+## Assign taxonomy to ASVs, interpretation of the output file
 ## FuzzyID2 will assign a fuzzy membership function value to the nearest neighbour barcode from the reference database with the smallest genetic distance to the query sequence. 
-When there are multiple reference database sequences with small genetic distances defined from the HMM rough assignment, these will show up as multiple hits to the same ASV in the output file. 
+# When there are multiple reference database sequences with small genetic distances defined from the HMM rough assignment, these will show up as multiple hits to the same ASV in the output file. 
 # We assign taxonomy to an ASV when the Fuzzy Membership Function is greater than 0.90. 
 # If there are multiple hits to one ASV, sometimes one hit will have an FMF > 0.90 and sometimes all hits will have an FMF of 0. Assign taxonomy where FMF > 0.90. 
 # Open csv file in excel, column A is ASV identifier from qiime2, columns B - D are the taxonomic lineage. Column E is the FMF value.
-'
+
 
 # My step by step guide to processing the FuzzyID2 csv file
 # 1. There is one or more entry per ASV, they will be in the same order as the biom feature table. Keep this order as it will allow you to copy and paste taxonomic identity into the biom feature table that was exported. 

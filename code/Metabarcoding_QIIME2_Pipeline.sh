@@ -1,7 +1,7 @@
 #Processing eDNA metabarcode data using QIIME2 and cutadapt, followed by DADA2 taxonomy assignments using custom fish reference databases
 #The qiime tutorials are useful and found at https://docs.qiime2.org/2022.2/tutorials/overview/#useful-points-for-beginners 
 #First activate QIIME if it hasn't been, can also reactivate qiime if you close the window 
-conda activate qiime2-2023.5 &&
+conda activate qiime2_2023_5 &&
 source tab-qiime #activate tab completion
 
 #check currently active conda environment
@@ -215,6 +215,8 @@ qiime cutadapt trim-paired \
 qiime demux summarize --i-data Musquash-COI-combined-demux-trimmed.qza \
 --o-visualization Musquash-COI-combined-demux-trimmed.qzv
 
+qiime tools view /mnt/sda2/eDNA/Musquash/Data/COI/Musquash-COI-combined-demux-trimmed.qzv
+
 #####################
 ##STEP 3 - Denoise using dada2##
 #####################
@@ -299,25 +301,42 @@ qiime diversity core-metrics-phylogenetic \
 # there are lots of ways to do taxonomy, including just blasting, or building a reference database using rescript (see rescript_createReferenceDB.sh), or using FuzzyID2 with a custom library
  
 ###BLAST###
-#using the custom 12S database built with rescript --> rescript_createReferenceDB.sh
-#for 12S, anything under ~97% perc. ident may not be valid down to species level
+#using the custom COI database built with rescript --> rescript_createReferenceDB.sh
+#for COI, anything under ~97% perc. ident may not be valid down to species level
 qiime feature-classifier blast \
 --i-query representative_sequences.qza \
---i-reference-reads ../../../DBs/fish-12S-ref-seqs-FINAL.qza \
+--i-reference-reads /home/ABL/eDNA/Musquash/DBs/COI/fish-COI-ref-seqs-FINAL.qza \
 --p-maxaccepts 20 \
 --p-perc-identity 0.9 \
---o-search-results Musquash_12S_blastOutput.qza \
---o-visualization Musquash_12S_blastOutput.qzv
+--o-search-results Musquash_COI_blastOutput.qza
+
+#export results
+qiime tools export \
+--input-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy/Musquash_COI_blastOutput.qza \
+--output-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy/Musquash_COI_blastOutput ##specifying a folder output here, 
+
 
 qiime feature-classifier classify-consensus-blast \
 --i-query representative_sequences.qza \
---i-reference-reads ../../../DBs/fish-12S-ref-seqs-FINAL.qza \
---i-reference-taxonomy ../../../DBs/fish-12S-ref-tax-FINAL.qza \
+--i-reference-reads /home/ABL/eDNA/Musquash/DBs/COI/fish-COI-ref-seqs-FINAL.qza \
+--i-reference-taxonomy /home/ABL/eDNA/Musquash/DBs/COI/fish-COI-ref-tax-FINAL.qza \
 --p-maxaccepts 20 \
 --p-perc-identity 0.9 \
---o-search-results Musquash_12S_blastclassifierOutput.qza \
---o-classification Musquash_12S_blastclassifierOutput_tax.qza \
+--o-search-results Musquash_COI_blastclassifierOutput.qza \
+--o-classification Musquash_COI_blastclassifierOutput_tax.qza \
+--o-visualization Musquash_COI_blastclassifierOutput.qzv \
 --output-dir BlastClassifierTaxonomy
+
+
+#export results
+qiime tools export \
+--input-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy/Musquash_COI_blastclassifierOutput.qza \
+--output-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy/Musquash_COI_blastclassifierOutput ##specifying a folder output here, 
+
+qiime tools export \
+--input-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy/Musquash_COI_blastclassifierOutput_tax.qza \
+--output-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy/Musquash_COI_blastclassifierOutput_tax ##specifying a folder output here, 
+
 
 ############################################
 ##################EXTRA CODE################
