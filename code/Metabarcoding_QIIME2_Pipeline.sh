@@ -305,37 +305,36 @@ qiime diversity core-metrics-phylogenetic \
 #for COI, anything under ~97% perc. ident may not be valid down to species level
 qiime feature-classifier blast \
 --i-query representative_sequences.qza \
---i-reference-reads /home/ABL/eDNA/Musquash/DBs/COI/fish-COI-ref-seqs-FINAL.qza \
+--i-reference-reads /home/ABL/eDNA/Musquash/DBs/COI/fish-COI-ref-seqs-25Aug2023-FINAL.qza \
 --p-maxaccepts 20 \
 --p-perc-identity 0.9 \
---o-search-results Musquash_COI_blastOutput.qza
+--o-search-results /BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastOutput-25Aug2023.qza
 
 #export results
 qiime tools export \
---input-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy/Musquash_COI_blastOutput.qza \
---output-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy/Musquash_COI_blastOutput ##specifying a folder output here, 
+--input-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastOutput-25Aug2023.qza \
+--output-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastOutput-25Aug2023 ##specifying a folder output here, 
 
 
 qiime feature-classifier classify-consensus-blast \
 --i-query representative_sequences.qza \
---i-reference-reads /home/ABL/eDNA/Musquash/DBs/COI/fish-COI-ref-seqs-FINAL.qza \
---i-reference-taxonomy /home/ABL/eDNA/Musquash/DBs/COI/fish-COI-ref-tax-FINAL.qza \
+--i-reference-reads /home/ABL/eDNA/Musquash/DBs/COI/fish-COI-ref-seqs-25Aug2023-FINAL.qza \
+--i-reference-taxonomy /home/ABL/eDNA/Musquash/DBs/COI/fish-COI-ref-tax-25Aug2023-FINAL.qza \
 --p-maxaccepts 20 \
 --p-perc-identity 0.9 \
---o-search-results Musquash_COI_blastclassifierOutput.qza \
---o-classification Musquash_COI_blastclassifierOutput_tax.qza \
---o-visualization Musquash_COI_blastclassifierOutput.qzv \
---output-dir BlastClassifierTaxonomy
+--o-search-results /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastclassifierOutput-25Aug2023.qza \
+--o-classification /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastclassifierOutput_tax-25Aug2023.qza \
+# --output-dir BlastClassifierTaxonomy25Aug2023
 
 
 #export results
 qiime tools export \
---input-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy/Musquash_COI_blastclassifierOutput.qza \
---output-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy/Musquash_COI_blastclassifierOutput ##specifying a folder output here, 
+--input-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastclassifierOutput-25Aug2023.qza \
+--output-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastclassifierOutput-25Aug2023 ##specifying a folder output here, 
 
 qiime tools export \
---input-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy/Musquash_COI_blastclassifierOutput_tax.qza \
---output-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy/Musquash_COI_blastclassifierOutput_tax ##specifying a folder output here, 
+--input-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastclassifierOutput_tax-25Aug2023.qza \
+--output-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastclassifierOutput_tax-25Aug2023 ##specifying a folder output here, 
 
 
 ############################################
