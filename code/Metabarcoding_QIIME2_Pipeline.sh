@@ -303,6 +303,7 @@ qiime diversity core-metrics-phylogenetic \
 ###BLAST###
 #using the custom COI database built with rescript --> rescript_createReferenceDB.sh
 #for COI, anything under ~97% perc. ident may not be valid down to species level
+#blast only
 qiime feature-classifier blast \
 --i-query representative_sequences.qza \
 --i-reference-reads /home/ABL/eDNA/Musquash/DBs/COI/fish-COI-ref-seqs-25Aug2023-FINAL.qza \
@@ -315,16 +316,15 @@ qiime tools export \
 --input-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastOutput-25Aug2023.qza \
 --output-path /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastOutput-25Aug2023 ##specifying a folder output here, 
 
-
+#blast and taxonomy consensus
 qiime feature-classifier classify-consensus-blast \
 --i-query representative_sequences.qza \
 --i-reference-reads /home/ABL/eDNA/Musquash/DBs/COI/fish-COI-ref-seqs-25Aug2023-FINAL.qza \
 --i-reference-taxonomy /home/ABL/eDNA/Musquash/DBs/COI/fish-COI-ref-tax-25Aug2023-FINAL.qza \
---p-maxaccepts 20 \
---p-perc-identity 0.9 \
---o-search-results /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastclassifierOutput-25Aug2023.qza \
---o-classification /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastclassifierOutput_tax-25Aug2023.qza \
-# --output-dir BlastClassifierTaxonomy25Aug2023
+--p-maxaccepts 10 \
+--p-perc-identity 0.75 \
+--o-search-results /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastclassifierOutput-18Sept2023.qza \
+--o-classification /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastclassifierOutput_tax-18Sept2023.qza
 
 
 #export results
