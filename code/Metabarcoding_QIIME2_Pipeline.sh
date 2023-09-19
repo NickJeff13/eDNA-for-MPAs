@@ -322,9 +322,9 @@ qiime feature-classifier classify-consensus-blast \
 --i-reference-reads /home/ABL/eDNA/Musquash/DBs/COI/fish-COI-ref-seqs-25Aug2023-FINAL.qza \
 --i-reference-taxonomy /home/ABL/eDNA/Musquash/DBs/COI/fish-COI-ref-tax-25Aug2023-FINAL.qza \
 --p-maxaccepts 10 \
---p-perc-identity 0.75 \
---o-search-results /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastclassifierOutput-18Sept2023.qza \
---o-classification /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy25Aug2023/Musquash_COI_blastclassifierOutput_tax-18Sept2023.qza
+--p-perc-identity 0.8 \
+--o-search-results /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy_DB25Aug2023/Musquash_COI_blastclassifierOutput-18Sept2023.qza \
+--o-classification /mnt/sda2/eDNA/Musquash/Data/COI/dada2out_COI/BlastClassifierTaxonomy_DB25Aug2023/Musquash_COI_blastclassifierOutput_tax-18Sept2023.qza
 
 
 #export results
