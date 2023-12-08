@@ -1,7 +1,7 @@
 #Processing eDNA metabarcode data using QIIME2 and cutadapt, followed by DADA2 taxonomy assignments using custom fish reference databases
 #The qiime tutorials are useful and found at https://docs.qiime2.org/2022.2/tutorials/overview/#useful-points-for-beginners 
 #First activate QIIME if it hasn't been, can also reactivate qiime if you close the window 
-conda activate qiime2-2022.2 &&
+conda activate qiime2-2023.5 &&
 source tab-qiime #activate tab completion
 
 #check currently active conda environment
