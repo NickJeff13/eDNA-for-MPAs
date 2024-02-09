@@ -3,7 +3,7 @@
 #Processing eDNA metabarcode data using QIIME2 and cutadapt, followed by DADA2 taxonomy assignments using custom fish reference databases
 #The qiime tutorials are useful and found at https://docs.qiime2.org/2022.2/tutorials/overview/#useful-points-for-beginners 
 #First activate QIIME if it hasn't been, can also reactivate qiime if you close the window 
-conda activate qiime2-2023.5 &&
+conda activate qiime2-amplicon-2023.9 &&
 source tab-qiime #activate tab completion
 
 #check currently active conda environment
@@ -27,6 +27,13 @@ qiime tools import \
 --input-format PairedEndFastqManifestPhred33V2 \
 --output-path 12S-combined-demux.qza
 
+#COI 
+qiime tools import \
+--type 'SampleData[PairedEndSequencesWithQuality]' \
+--input-path pe33-COImanifest \
+--input-format PairedEndFastqManifestPhred33V2 \
+--output-path COI-combined-demux.qza
+
 #check out the data for visualization
 #16S
 qiime demux summarize \
@@ -37,7 +44,12 @@ qiime demux summarize \
 qiime demux summarize \
   --i-data 12S-combined-demux.qza \
   --o-visualization 12S-demux-subsample.qzv ##save tsv file of per-sample-fastq-counts.tsv for optional step below ##
-    
+  
+#COI
+qiime demux summarize \
+  --i-data COI-combined-demux.qza \
+  --o-visualization COI-SAB-demux.qzv
+
   
  ## OPTIONAL: filter out samples with less than 100 reads (can set this to any number) ##
 qiime demux filter-samples \
@@ -62,6 +74,8 @@ do
     -p ${SAMPLE}_R2trimmed.fastq \
     ${SAMPLE}_R1.fastq.gz  ${SAMPLE}_R2.fastq.gz ;
 done
+
+
 
 #can also trim primers/adapters in Qiime with cutadapt but we will skip this
 '
@@ -200,7 +214,7 @@ biom convert -i dada2out/SAB2216S_filtered_table_biom/feature-table.biom \
   --p-sampling-depth 1500 \
   --p-n-jobs-or-threads auto \
   --m-metadata-file ../../../2022-sample-metadata_SABonly.tsv \
-  --output-dir 16S-core-metrics-results
+  --output-dir COI-core-metrics-results
  
 ####################
 ######TAXONOMY######
