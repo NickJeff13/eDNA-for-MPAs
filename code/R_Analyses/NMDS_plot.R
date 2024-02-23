@@ -6,6 +6,15 @@ library(ggplot2)
 #read in our data table for species accummulation curves and NMDS plots
 taxtable <- read.table("data/2022Data/SAB/COI/COI_FilteredASVtable.txt", header = T)
 
+#Make a barplot of taxa
+tt<-pivot_longer(taxtable, cols=starts_with("X"))
+ggplot()+geom_bar(data=tt, aes(x=V27, y=log(value)),stat="identity")+
+  xlab(label = "Species")+
+  ylab(label="Log(Read Count)")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle=90))
+
+
 meta <- read.table("data/2022Data/SAB/R_2022-sample-metadata_SABonly.tsv", header = T)
 rownames(meta)<-meta$watersample
 meta<-meta[1:79,]
@@ -52,7 +61,7 @@ data.scores$Surface <- groups$V3
 xx = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
   geom_point(size = 4, aes(shape = Surface, colour = Depth))+ 
   theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
-        axis.text.x = element_text(colour = "black", face = "bold", size = 12), 
+        axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
         legend.text = element_text(size = 12, face ="bold", colour ="black"), 
         legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
         axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
@@ -60,7 +69,7 @@ xx = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) +
         panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         legend.key=element_blank()) + 
   labs(x = "NMDS1", colour = "Depth", y = "NMDS2", shape = "Surface")  + 
-  scale_colour_continuous(trans="reverse") 
+  geom_text(aes(x=Inf, y=Inf, vjust=65,hjust=1.2,label=paste("Stress =",round(sab.coi.nmds$stress,3),"k =",sab.coi.nmds$ndim)))+  scale_colour_continuous(trans="reverse")
 
 xx
 
@@ -71,11 +80,11 @@ ggsave(filename = "SAB2022_COI_NMDS.png",plot = xx, device = "png", path = "figu
 sp_list.coi <- taxtable$V27
 raremin<-min(rowSums(commat2))
 
-sRare <- rarefy(commat2, raremin)
-rarecurve(commat2, col="blue")
+yy<-specaccum(commat2,method="exact", permutations = 1000)
 
+##############################################################################################
 ###Now do the same thing for 12S! 
-
+######################################
 fishdat <- read.table("data/2022Data/SAB/16S/16S_FilteredASVtable.txt", sep="\t",header = T)
 
 head(fishdat)
