@@ -82,6 +82,25 @@ raremin<-min(rowSums(commat2))
 
 yy<-specaccum(commat2,method="exact", permutations = 1000)
 
+tidy_specaccum <- function(x) {
+  data.frame(
+    site = x$sites,
+    richness = x$richness,
+    sd = x$sd)
+}
+yyy <- tidy_specaccum(yy)
+
+p3<-ggplot() +
+  geom_line(data=yyy, aes(x=site, y=richness), linewidth=2, color="firebrick") +
+  geom_linerange(data=yyy,aes(x = site, ymin = richness - 2*sd, ymax = richness + 2*sd)) +
+  ylim(0, NA)+
+  ylab(label = "Species Richness")+
+  xlab(label="Site")+
+  theme_bw()+
+  theme(text = element_text(size=20))
+
+ggsave(filename = "2022SAB_COI_Specaccum.png", plot = p3, device = "png", path = "figures/", width = 10, height=8, units="in",dpi = 400, bg="white")
+
 ##############################################################################################
 ###Now do the same thing for 12S! 
 ######################################
