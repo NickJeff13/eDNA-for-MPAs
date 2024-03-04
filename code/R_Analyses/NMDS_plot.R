@@ -2,6 +2,7 @@ library(vegan)
 library(dplyr)
 library(janitor)
 library(ggplot2)
+library(tidyverse)
 
 #read in our data table for species accummulation curves and NMDS plots
 taxtable <- read.table("data/2022Data/SAB/COI/COI_FilteredASVtable.txt", header = T)
@@ -12,22 +13,15 @@ ggplot()+geom_bar(data=tt, aes(x=V27, y=log(value)),stat="identity")+
   xlab(label = "Species")+
   ylab(label="Log(Read Count)")+
   theme_bw()+
-  theme(axis.text.x = element_text(angle=90))
+  theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.2), text=element_text(size=14))
 
+ggsave(filename = "SAB2022_COI_barplot.png",plot = last_plot(), device = "png", path = "figures/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
 
 meta <- read.table("data/2022Data/SAB/R_2022-sample-metadata_SABonly.tsv", header = T)
 rownames(meta)<-meta$watersample
 meta<-meta[1:79,]
 head(meta)
-#select some columns for this specific analysis 
-#Sample key
-#Aspy Bay = Samples 1-3
-#Chebogue = Samples 5-7
-#Lingan = Samples 8-10
-#Mira = Samples 12-14
-#Cheticamp = Samples 16-18
-#North R = Samples 20-22
-#EastBay = Samples 24-26
+
 
 commat <- taxtable #%>% select(V26, Sample.1,  Sample.2, Sample.3,  Sample.5, Sample.6, Sample.7, Sample.8, Sample.9,Sample.10, Sample.12, Sample.13, Sample.14, Sample.16, Sample.17, Sample.18, Sample.20, Sample.21, Sample.22, Sample.24, Sample.25, Sample.26) #removed samples 4, 11, 15, 19, 23, 27 as these are the negatives
 
@@ -58,9 +52,14 @@ data.scores$Depth <- groups$V2
 data.scores$Surface <- groups$V3
 
 
+species.scores <- as.data.frame(scores(sab.coi.nmds, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
+species.scores$species <- rownames(species.scores) 
+
+
 xx = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
+  geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
   geom_point(size = 4, aes(shape = Surface, colour = Depth))+ 
-  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+    theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
         axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
         legend.text = element_text(size = 12, face ="bold", colour ="black"), 
         legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
@@ -98,23 +97,32 @@ p3<-ggplot() +
   xlab(label="Site")+
   theme_bw()+
   theme(text = element_text(size=20))
-
+p3
 ggsave(filename = "2022SAB_COI_Specaccum.png", plot = p3, device = "png", path = "figures/", width = 10, height=8, units="in",dpi = 400, bg="white")
 
 ##############################################################################################
 ###Now do the same thing for 12S! 
 ######################################
 fishdat <- read.table("data/2022Data/SAB/16S/16S_FilteredASVtable.txt", sep="\t",header = T)
-
+s.groups <- read.csv("data/2022Data/SAB/SAB16S_GroupData.csv")
 head(fishdat)
 #get rid of row 1 which is non-fish animals
-fishdat <- fishdat[-1,]
+fishdat <- fishdat[-c(1,16),]
+
+mm<-pivot_longer(fishdat, cols=starts_with("X"))
+ggplot()+geom_bar(data=mm, aes(x=Species, y=log(value)),stat="identity")+
+  xlab(label = "Species")+
+  ylab(label="log(Read Count)")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1), text=element_text(size=18))
+
+ggsave(filename = "2022SAB_16S_barplot.png", plot = last_plot(), device = "png", path = "figures/", width = 10, height=8, units="in",dpi = 400, bg="white")
 
 fishdat.t<-t(fishdat[,2:length(colnames(fishdat))])
 fishdat.t<-fishdat.t[rowSums(fishdat.t[])>0,]
 colnames(fishdat.t)<-fishdat[,1]
 
-sab.16s.nmds <-metaMDS(fishdat.t, distance="bray", k=3, trymax = 300, maxit=500)
+sab.16s.nmds <-metaMDS(fishdat.t, distance="bray", k=6, trymax = 200, maxit=200)
 plot(sab.16s.nmds)
 
 
@@ -122,12 +130,16 @@ plot(sab.16s.nmds)
 data.scores.16s = as.data.frame(scores(sab.16s.nmds)$sites)
 
 data.scores.16s$Sample <- rownames(data.scores.16s)
-data.scores.16s$Depth <- groups$V2
-data.scores.16s$Surface <- groups$V3
+data.scores.16s$Depth <- s.groups$depth
+data.scores.16s$Surface <- s.groups$surface
+
+species.scores <- as.data.frame(scores(sab.16s.nmds, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
+species.scores$species <- rownames(species.scores) 
 
 
 ff = ggplot(data.scores.16s, aes(x = NMDS1, y = NMDS2)) + 
   geom_point(size = 4, aes(shape = Surface, colour = Depth))+ 
+  geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species))+
   theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
         axis.text.x = element_text(colour = "black", face = "bold", size = 12), 
         legend.text = element_text(size = 12, face ="bold", colour ="black"), 
@@ -140,3 +152,5 @@ ff = ggplot(data.scores.16s, aes(x = NMDS1, y = NMDS2)) +
   scale_colour_continuous(trans="reverse") 
 
 ff
+
+ggsave(filename = "SAB2022_16S_NMDS.png",plot = ff, device = "png", path = "figures/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
