@@ -153,4 +153,28 @@ ff = ggplot(data.scores.16s, aes(x = NMDS1, y = NMDS2)) +
 
 ff
 
-ggsave(filename = "SAB2022_16S_NMDS.png",plot = ff, device = "png", path = "figures/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
+ggsave(filename = "SAB2022_16S_NMDS.png",plot = ff, device = "png", path = "figures/", width = 12, height=8, units = "in", dpi = 400, bg = "white")
+
+
+ww<-specaccum(fishdat.t,method="exact", permutations = 1000)
+
+tidy_specaccum <- function(x) {
+  data.frame(
+    site = x$sites,
+    richness = x$richness,
+    sd = x$sd)
+}
+www <- tidy_specaccum(ww)
+
+p6<-ggplot() +
+  geom_line(data=yyy, aes(x=site, y=richness), linewidth=2, color="firebrick") +
+  geom_linerange(data=yyy,aes(x = site, ymin = richness - 2*sd, ymax = richness + 2*sd)) +
+  geom_line(data=www, aes(x=site, y=richness), linewidth=2, color="dodgerblue") +
+  geom_linerange(data=www,aes(x = site, ymin = richness - 2*sd, ymax = richness + 2*sd)) +
+  ylim(0, NA)+
+  ylab(label = "Species Richness")+
+  xlab(label="Site")+
+  theme_bw()+
+  theme(text = element_text(size=20))
+p6
+ggsave(filename = "2022SAB_COIand16S_Specaccum.png", plot = p6, device = "png", path = "figures/", width = 10, height=8, units="in",dpi = 400, bg="white")
