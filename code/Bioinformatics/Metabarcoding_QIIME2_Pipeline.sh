@@ -122,14 +122,25 @@ qiime dada2 denoise-paired \
 #12S - trying some different r-len truncs
 qiime dada2 denoise-paired \
 --i-demultiplexed-seqs 12s-demux-trimmed-2023.qza \
---p-trunc-len-f  126 \
---p-trunc-len-r  126 \
+--p-trunc-len-f  128 \
+--p-trunc-len-r  128 \
 --p-n-threads 0 \
 --p-min-overlap 8 \
 --p-pooling-method independent \
---output-dir ESIDenoised3 \
+--p-n-reads-learn 3000000 \
+--output-dir ESIDenoised \
 --verbose
 
+
+#12S - trying some different r-len truncs
+qiime dada2 denoise-single \
+--i-demultiplexed-seqs 12s-demux-trimmed-2023.qza \
+--p-trunc-len 125 \
+--p-n-threads 0 \
+--p-pooling-method independent \
+--p-n-reads-learn 2000000 \
+--output-dir ESIDenoisedSingle \
+--verbose
 
 #Generate summaries of denoising stats and feature table
 #16S
@@ -149,15 +160,26 @@ qiime metadata tabulate \
 
  #12S
  qiime feature-table summarize \
-  --i-table ESIDenoised3/table.qza \
-  --o-visualization ESIDenoised3/table.qzv \
+  --i-table ESIDenoised/table.qza \
+  --o-visualization ESIDenoised/table.qzv \
   --m-sample-metadata-file ../2021-sample-metadata_ESIonly.tsv &&
 qiime feature-table tabulate-seqs \
-  --i-data ESIDenoised3/representative_sequences.qza \
-  --o-visualization ESIDenoised3/rep-seqs.qzv &&
+  --i-data ESIDenoised/representative_sequences.qza \
+  --o-visualization ESIDenoised/rep-seqs.qzv &&
 qiime metadata tabulate \
-  --m-input-file ESIDenoised3/denoising_stats.qza \
-  --o-visualization ESIDenoised3/denoising-stats.qzv
+  --m-input-file ESIDenoised/denoising_stats.qza \
+  --o-visualization ESIDenoised/denoising-stats.qzv
+  
+   qiime feature-table summarize \
+  --i-table ESIDenoisedSingle/table.qza \
+  --o-visualization ESIDenoisedSingle/table.qzv \
+  --m-sample-metadata-file ../2021-sample-metadata_ESIonly.tsv &&
+qiime feature-table tabulate-seqs \
+  --i-data ESIDenoisedSingle/representative_sequences.qza \
+  --o-visualization ESIDenoisedSingle/rep-seqs.qzv &&
+qiime metadata tabulate \
+  --m-input-file ESIDenoisedSingle/denoising_stats.qza \
+  --o-visualization ESIDenoisedSingle/denoising-stats.qzv
   
   qiime tools view /path_to_output_folder/filename_rep_seqs.qzv  ## export the ASV fasta file from the view for input into FuzzyID2 and BLAST
 
@@ -191,7 +213,7 @@ biom convert -i dada2out-test/ESI16S_filtered_table_biom/feature-table.biom \
   --p-sampling-depth 1500 \
   --p-n-jobs-or-threads auto \
   --m-metadata-file ../../2021-sample-metadata.tsv \
-  --output-dir 16S-core-metrics-results
+  --output-dir 12S-core-metrics-results
  
 ####################
 ######TAXONOMY######

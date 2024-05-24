@@ -16,9 +16,9 @@ qiime tools view /path_to_file/filename.qzv
 #16S
 qiime tools import \
 --type 'SampleData[PairedEndSequencesWithQuality]' \
---input-path  ../pe33-16Smanifest \
+--input-path  pe33-DOT12Smanifest \
 --input-format PairedEndFastqManifestPhred33V2 \
---output-path 16S-SAB-combined-demux.qza
+--output-path 12S-DOT-combined-demux.qza
 
 #12S
 qiime tools import \
@@ -42,8 +42,8 @@ qiime demux summarize \
   
 #12S
 qiime demux summarize \
-  --i-data 12S-combined-demux.qza \
-  --o-visualization 12S-demux-subsample.qzv ##save tsv file of per-sample-fastq-counts.tsv for optional step below ##
+  --i-data 12S-DOT-combined-demux.qza \
+  --o-visualization 12S-DOT-demux-subsample.qzv ##save tsv file of per-sample-fastq-counts.tsv for optional step below ##
   
 #COI
 qiime demux summarize \
@@ -120,7 +120,7 @@ MiFishU-F - these primers target ~180bp of the 12S rDNA region
 #MiFishU-R
 3 GTTTGACCCTAATCTATGGGGTGATAC 5 > need to reverse this so its read 5 prime to 3 prime in cutadapt
 
-#12S
+#12S MiFish primers
 qiime cutadapt trim-paired \
 --i-demultiplexed-sequences 12S-combined-demux.qza \
 --p-cores 40 \
