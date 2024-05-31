@@ -1,6 +1,26 @@
 library(dplyr)
 library(tidyr)
+library(tidyverse)
 
+###########################2021 DATA###################################
+##ESI
+
+esi12s <- read.table(file = "data/2021Data/12s results/mergedspecies.tsv", header = T, sep="\t")
+esi12_filt <- esi12s %>%
+  select(!ASV) %>%
+  filter(pident>96 & Group %in% c("birds","bony fishes", "crustaceans", "gastropods", "hemichordates","isopods", "jellyfishes", "lancelets","ribbon worms","sea cucumbers","sea urchins","segmented worms","sharks & rays","starfish","whales & dolphins")) %>% 
+  group_by(Species)
+
+dim(esi12_filt) #649 104
+#remove some other columns
+esi12_filt <- esi12_filt[,-c(2:4)]
+#run this object in NMDS_plot.R script next
+
+
+
+
+
+###############2022 DATA#########################################################
 sab16s<-read.table(data/2022Data/SAB/16S/SAB2216S_feature_table_FILTERED_forAPP.csv, sep=\t,header = T)
 dim(sab16s) #2026 85
 
