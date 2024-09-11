@@ -86,3 +86,20 @@ coi.filt <- taxtable.final %>%
 dim(coi.filt) #124 84
 write.table(x = coi.filt, file = "data/2022Data/SAB/COI/FilteredASVtable.txt",quote = F, sep = "\t")
 
+
+##########################################################################################################################################################
+################################################### Musquash 2023 data ###################################################################################
+##########################################################################################################################################################
+
+#Read in blast data and ASV table for 2023 12S data first
+blasts <- read.csv("data/Musquash/2023/12Sblast_results_rarereads_filtered.csv",header = F,sep = "\t")
+colnames(blasts)<-c("ASV","NCBIname","percentmatch","evalue","length","species","taxongroup","commonname")
+head(blasts)
+
+asvs <- read.csv("data/Musquash/2023/Musquash2023_filtered_table_biom/Musquash2023_feature_table_filtered.csv", header = T, sep="\t")
+head(asvs)
+dim(asvs)
+dim(blasts)
+
+asv_taxa <- left_join(asvs, blasts, by="ASV") %>% distinct() %>%  filter(taxongroup %in% c("bony fishes","birds","carnivores","rodents","whales & dolphins","starfish","insectivores","sharks & rays"))
+write.table(asv_taxa, file = "data/Musquash/2023/Musquash2023_TaxonTable_Filtered.tsv",sep = "\t",row.names = F)
