@@ -86,11 +86,29 @@ MiFishU-F - these primers target ~180bp of the 12S rDNA region
 #MiFishU-R
 3 GTTTGACCCTAATCTATGGGGTGATAC 5 > need to reverse this so its read 5 prime to 3 prime in cutadapt
 ' 
-#12S
+#12S -Mifish
 qiime cutadapt trim-paired \
 --i-demultiplexed-sequences 12S-combined-demux.qza \
 --p-cores 40 \
 --p-front-f GTCGGTAAAACTCGTGCCAGC \
+--p-front-r NNNNNNCATAGTGGGGTATCTAATCCCAGTTTG \
+--p-error-rate 0.15 \
+--p-discard-untrimmed \
+--p-match-read-wildcards \
+--p-match-adapter-wildcards \
+--p-minimum-length 30 \
+--o-trimmed-sequences 12s-demux-trimmed-2023-test2.qza \
+--output-dir trimmed \
+--verbose
+#visualize the trimming results
+qiime demux summarize --i-data 12s-demux-trimmed-2023-test2.qza \
+--o-visualization 12s-trimmed-visual
+
+#12S -248S-Forward with MiFishU-R
+qiime cutadapt trim-paired \
+--i-demultiplexed-sequences 12S-combined-demux.qza \
+--p-cores 40 \
+--p-front-f CGTGCCAGCCACCGCGGTT \
 --p-front-r NNNNNNCATAGTGGGGTATCTAATCCCAGTTTG \
 --p-error-rate 0.15 \
 --p-discard-untrimmed \
