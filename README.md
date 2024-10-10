@@ -6,10 +6,10 @@ Workflow and scripts for processing eDNA metabarcoding data from Marine Protecte
 Since 2019, data is included from the [Eastern Shore Islands Area of Interest](https://www.dfo-mpo.gc.ca/oceans/aoi-si/easternshore-ilescoteest-eng.html), [St. Anns Bank MPA](https://www.dfo-mpo.gc.ca/oceans/mpa-zpm/stanns-sainteanne/index-eng.html), the [Fundian Channel-Browns Bank AOI](https://www.dfo-mpo.gc.ca/oceans/aoi-si/fundian-fundy-browns-eng.html) and the [Gully MPA](https://www.dfo-mpo.gc.ca/oceans/mpa-zpm/gully/index-eng.html). 
 
 The following repositories include other analyses conducted for various Maritimes conservation areas: 
-[Eastern Shore Islands AOI](https://github.com/dfo-mar-mpas/easternshoreislands_aoi)
-[Fundian Channel - Browns Bank](https://github.com/dfo-mar-mpas/fundian_aoi) 
-[St. Anns Bank MPA](https://github.com/dfo-mar-mpas/stannsbank_mpa) 
-[Musquash Estuary](https://github.com/dfo-mar-mpas/musquash_mpa)
+1. [Eastern Shore Islands AOI](https://github.com/dfo-mar-mpas/easternshoreislands_aoi)
+2. [Fundian Channel - Browns Bank](https://github.com/dfo-mar-mpas/fundian_aoi) 
+3. [St. Anns Bank MPA](https://github.com/dfo-mar-mpas/stannsbank_mpa) 
+4. [Musquash Estuary](https://github.com/dfo-mar-mpas/musquash_mpa)
 
 #2. Bioinformatics
 
