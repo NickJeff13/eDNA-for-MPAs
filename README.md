@@ -3,7 +3,7 @@ Workflow and scripts for processing eDNA metabarcoding data from Marine Protecte
 
 #1. Study sites
 
-Since 2019, data is included from the [Eastern Shore Islands Area of Interest](https://www.dfo-mpo.gc.ca/oceans/aoi-si/easternshore-ilescoteest-eng.html), [St. Anns Bank MPA](https://www.dfo-mpo.gc.ca/oceans/mpa-zpm/stanns-sainteanne/index-eng.html), the [Fundian Channel-Browns Bank AOI](https://www.dfo-mpo.gc.ca/oceans/aoi-si/fundian-fundy-browns-eng.html) and the [Gully MPA](https://www.dfo-mpo.gc.ca/oceans/mpa-zpm/gully/index-eng.html). 
+Since 2019, data is included from the [Eastern Shore Islands Area of Interest](https://www.dfo-mpo.gc.ca/oceans/aoi-si/easternshore-ilescoteest-eng.html), [St. Anns Bank MPA](https://www.dfo-mpo.gc.ca/oceans/mpa-zpm/stanns-sainteanne/index-eng.html), the [Fundian Channel-Browns Bank AOI](https://www.dfo-mpo.gc.ca/oceans/aoi-si/fundian-fundy-browns-eng.html), the [Musquash Estuary MPA](https://www.dfo-mpo.gc.ca/oceans/mpa-zpm/musquash/index-eng.html), and the [Gully MPA](https://www.dfo-mpo.gc.ca/oceans/mpa-zpm/gully/index-eng.html). 
 
 The following repositories include other analyses conducted for various Maritimes conservation areas: 
 1. [Eastern Shore Islands AOI](https://github.com/dfo-mar-mpas/easternshoreislands_aoi)
