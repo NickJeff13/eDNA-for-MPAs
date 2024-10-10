@@ -12,6 +12,7 @@ The following repositories include other analyses conducted for various Maritime
 [Musquash Estuary](https://github.com/dfo-mar-mpas/musquash_mpa)
 
 #2. Bioinformatics
+
 We use a combination of the R package *dada2* and the [QIIME2 Pipeline](https://docs.qiime2.org/2022.2/interfaces/q2cli/) to trim raw reads, de-noise, and assign taxonomy to our reads. 
 ## Workflow
 1. Import data and summarize if de-multiplexed. Check read quality with FastQC.
