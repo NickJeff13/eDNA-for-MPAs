@@ -14,6 +14,10 @@ The following repositories include other analyses conducted for various Maritime
 #2. Bioinformatics
 
 We use a combination of the R package *dada2* and the [QIIME2 Pipeline](https://docs.qiime2.org/2022.2/interfaces/q2cli/) to trim raw reads, de-noise, create an amplicon sequence variant (ASV) table, and assign taxonomy to our sequences. 
+
+#3. Analyses in R  
+
+Analyses of ASV tables, typically with taxonomy associated, are conducted in [R](https://www.r-project.org/) using combinations of the *ape*, *vegan*, and *ggplot2* packages.  
 ## Workflow
 1. Import data and summarize if de-multiplexed. Check read quality with FastQC.
 2. Use **cutadapt** either on its own or in QIIME to remove primers and/or adapters.
