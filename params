@@ -1,0 +1,28 @@
+#locations
+#main project directory
+projdir=/mnt/nvme1n1p1/eDNA_Data
+#name markers - for the MPA work, usually one or more of 12S, COI, 16S, 18S
+marker1=12S
+marker2=COI
+markerN=16S
+
+## Set up forward and reverse primer pairs for cutadapt
+#COI Leray primers
+LERAYXT=GGWACWRGWTGRACTITITAYCCYCC
+LERAYF=GGWACWGGWTGAACWGTWTAYCCYCC
+LERAYR=TAIACYTCIGGRTCICCRAARAAYCA
+
+#MiFish forward and reverse and modified forward primers
+MIFISHUF=GTCGGTAAAACTCGTGCCAGC
+MIFISHUR=NNNNNNCATAGTGGGGTATCTAATCCCAGTTTG
+MIFISHMOD=CGTGCCAGCCACCGCGGTT #this is the 248S_F primer developed by Royce Steeves
+
+#16S Teleo
+TeleoF=AGCGYAATCACTTGTCTYTTAA
+TeleoR=CRBGGTCGCCCCAACCRAA
+
+#18S primer sets - Comeau et al 2011 - E572F-E1009R
+COMEF=CYGCGGTAATTCCAGCTC
+COMER=AYGGTATCTRATCRTCTTYG
+
+echo Primers for 12S, COI, 16S, and 18S are now loaded, please add any others you might need!

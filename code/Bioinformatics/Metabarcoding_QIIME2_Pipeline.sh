@@ -10,6 +10,9 @@ conda info
 # View plugin, used to view any .qzv file in html and export tsv and fasta files
 qiime tools view /path_to_file/filename.qzv
 
+#load our params file which has location and marker/primer info
+source /home/mcrg/Documents/Github/eDNA-for-MPAs/params
+
 #Now import our data using a 'manifest' file of all fastq file names
 #16S
 qiime tools import \
@@ -100,6 +103,9 @@ qiime cutadapt trim-paired \
 --o-trimmed-sequences 12s-demux-trimmed-2023-test2.qza \
 --output-dir trimmed \
 --verbose
+&&
+echo Trimming primer sequences complete!
+
 #visualize the trimming results
 qiime demux summarize --i-data 12s-demux-trimmed-2023-test2.qza \
 --o-visualization 12s-trimmed-visual
@@ -115,7 +121,7 @@ qiime cutadapt trim-paired \
 --p-match-read-wildcards \
 --p-match-adapter-wildcards \
 --p-minimum-length 30 \
---o-trimmed-sequences 12s-demux-trimmed-2023-test2.qza \
+--o-trimmed-sequences 12s-Musq-demux-trimmed-2023-both.qza \
 --output-dir trimmed \
 --verbose
 #visualize the trimming results
@@ -139,14 +145,14 @@ qiime dada2 denoise-paired \
 
 #12S - trying some different r-len truncs
 qiime dada2 denoise-paired \
---i-demultiplexed-seqs 12s-demux-trimmed-2023.qza \
---p-trunc-len-f  128 \
---p-trunc-len-r  128 \
+--i-demultiplexed-seqs 12s-Musq-demux-trimmed-2023.qza \
+--p-trunc-len-f  129 \
+--p-trunc-len-r  129 \
 --p-n-threads 0 \
 --p-min-overlap 8 \
 --p-pooling-method independent \
 --p-n-reads-learn 3000000 \
---output-dir ESIDenoised \
+--output-dir denoised \
 --verbose
 
 
@@ -160,6 +166,18 @@ qiime dada2 denoise-single \
 --output-dir ESIDenoisedSingle \
 --verbose
 
+#COI
+qiime dada2 denoise-paired \
+--i-demultiplexed-seqs COI-combined-demux.qza \
+--p-trunc-len-f  301 \
+--p-trunc-len-r  301 \
+--p-n-threads 0 \
+--p-min-overlap 10 \
+--p-pooling-method independent \
+--p-n-reads-learn 3000000 \
+--output-dir dada2-testing \
+--verbose
+
 #Generate summaries of denoising stats and feature table
 #16S
 qiime feature-table summarize \
@@ -167,12 +185,23 @@ qiime feature-table summarize \
   --o-visualization dada2out-test/table.qzv \
   --m-sample-metadata-file ../2021-sample-metadata_ESIonly.tsv &&
 qiime feature-table tabulate-seqs \
-  --i-data dada2out-test/representative_sequences.qza \
-  --o-visualization dada2out-test/rep-seqs.qzv &&
+  --i-data denoised/representative_sequences.qza \
+  --o-visualization denoised/rep-seqs.qzv &&
 qiime metadata tabulate \
   --m-input-file dada2out-test/denoising_stats.qza \
   --o-visualization dada2out-test/denoising-stats.qzv
   
+#COI
+qiime feature-table summarize \
+  --i-table dada2out/table.qza \
+  --o-visualization dada2out/table.qzv \
+  --m-sample-metadata-file ../seining2023-sample-metadata.tsv &&
+qiime feature-table tabulate-seqs \
+  --i-data dada2out/representative_sequences.qza \
+  --o-visualization dada2out/rep-seqs.qzv &&
+qiime metadata tabulate \
+  --m-input-file dada2out/denoising_stats.qza \
+  --o-visualization dada2out/denoising-stats.qzv
   
  qiime tools view /path_to_output_folder/filename_rep_seqs.qzv  ## export the ASV fasta file from the view for input into FuzzyID2 and BLAST
 
