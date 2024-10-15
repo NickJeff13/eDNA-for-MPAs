@@ -4,6 +4,17 @@ library(janitor)
 library(ggplot2)
 library(tidyverse)
 
+# ESI 2021 data
+esi12smat <- esi12_filt %>% group_by(Species) %>% summarise(across(everything(), sum)) %>% data.frame()
+esi12tt <- t(esi12smat[,2:length(colnames(esi12smat))])
+colnames(esi12tt)<-esi12smat[,1]
+esi12ttt<-esi12tt[rowSums(esi12tt[])>0,]
+
+groupz <- read.table("data/2021Data/metadata/2021-sample-metadata_ESIonly.tsv", sep="\t",header = T)
+
+nmds.esi12s <- metaMDS(esi12ttt,distance = "bray", k=4, trymax = 100, maxit=500)
+plot(nmds.esi12s)
+
 #read in our data table for species accummulation curves and NMDS plots
 taxtable <- read.table("data/2022Data/SAB/COI/COI_FilteredASVtable.txt", header = T)
 
