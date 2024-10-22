@@ -2,6 +2,14 @@ library(dplyr)
 library(tidyr)
 library(tidyverse)
 
+#simple function to filter reads in an ASV file - set to 0.01% now but can be changed to 0.1% etc
+filter_low_read_species <- function(df) {
+  numeric_df <-df[sapply(df,is.numeric)]
+  total_reads <- sum(numeric_df, na.rm = TRUE)  # Total reads across species and sites
+  species_sums <- rowSums(numeric_df, na.rm = TRUE)  # Sum of reads per species
+  df_filtered <- df[species_sums >= 0.0001 * total_reads, ]  # Keep species with at least 1% of total reads
+  return(df_filtered)
+}
 ###########################2021 DATA###################################
 ##ESI
 
@@ -103,3 +111,31 @@ dim(blasts)
 
 asv_taxa <- left_join(asvs, blasts, by="ASV") %>% distinct() %>%  filter(taxongroup %in% c("bony fishes","birds","carnivores","rodents","whales & dolphins","starfish","insectivores","sharks & rays"))
 write.table(asv_taxa, file = "data/Musquash/2023/Musquash2023_TaxonTable_Filtered.tsv",sep = "\t",row.names = F)
+
+
+###############################################################################################
+#############################Beach Seining 2023################################################
+###############################################################################################
+#load in the fish 12S ASV table and blast taxonomy 
+
+seining_asvs <- read.table("data/2023Seining/12S/Seining12S_feature_table_export.tsv",header = T) %>% glimpse()
+
+fishies <- read.delim("data/2023Seining/12S/seining23_blast.tsv", header = F, sep="\t") %>% distinct(V1,.keep_all = T) #For fish we will just keep the top hit for each ASV, but some rules need to be followed 
+
+#Rules for Fish taxonomy
+#1. All Pholis are likely to be P. gunnelus. However, we'll just go with Pholis sp. for analyses
+#2. Shorthorn and Grubby sculpin have very similar sequences are difficult to tell apart. Any Myoxocephalus should just be Myoxocephalus sp.
+#3. Pacific and Atlantic herring are almost indistinguishable with 12S. Change all Pacific herring to Atlantic (Clupea harengus)
+
+seining_spp <- left_join(seining_asvs, fishies, by=c("ID"="V1"))
+seining_spp <- seining_spp  %>% dplyr::select(-contains("PCRBlank"),-V2,-V3,-V6,-V8,-V9,-V10, -V11, -V12, -V13,-V14, -V15, -V16,-V17, -V18, -V20,-V22)
+#Write the output 
+write.csv(seining_spp, file="data/2023Seining/12S/Seining_ASV_TaxonTable_Filtered.csv", row.names = F)
+
+#did some processing by hand, just removing non-fish. Do some more filtering for low reads and low percent matches 
+
+m <-read.csv("data/2023Seining/12S/Seining_ASV_TaxonTable_Filtered_FishOnly.csv", header = T) %>% glimpse()
+                                       
+mm <- m %>% filter(PercentID > 98)
+
+mmm <-filter_low_read_species(mm)
