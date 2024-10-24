@@ -17,9 +17,9 @@ source /home/mcrg/Documents/Github/eDNA-for-MPAs/params
 #16S
 qiime tools import \
 --type 'SampleData[PairedEndSequencesWithQuality]' \
---input-path pe33-16Smanifest-GullySamples \
+--input-path pe33-16Smanifest \
 --input-format PairedEndFastqManifestPhred33V2 \
---output-path 16SGUL-combined-demux.qza
+--output-path 16S-combined-demux.qza
 
 #12S
 qiime tools import \
@@ -58,7 +58,7 @@ qiime cutadapt trim-paired \
 --p-match-read-wildcards \
 --p-match-adapter-wildcards \
 --p-minimum-length 40 \
---o-trimmed-sequences 16sGul-demux-trimmed.qza \
+--o-trimmed-sequences 16S-demux-trimmed.qza \
 --output-dir  trimmed \
 --verbose
 #visualize the trimming results
@@ -141,6 +141,18 @@ qiime dada2 denoise-paired \
 --p-n-reads-learn 3000000 \
 --p-pooling-method independent \
 --output-dir trimmed/dada2out \
+--verbose
+
+#trying longer with 16S as the sequences are 240bp long
+
+qiime dada2 denoise-paired \
+--i-demultiplexed-seqs 16S-combined-demux.qza \
+--p-trunc-len-f  210 \
+--p-trunc-len-r  210 \
+--p-n-threads 0 \
+--p-n-reads-learn 3000000 \
+--p-pooling-method independent \
+--output-dir dada2out \
 --verbose
 
 #12S - trying some different r-len truncs
@@ -259,8 +271,8 @@ biom convert -i dada2out-test/ESI16S_filtered_table_biom/feature-table.biom \
   --i-table table.qza \
   --p-sampling-depth 1500 \
   --p-n-jobs-or-threads auto \
-  --m-metadata-file ../../2021-sample-metadata.tsv \
-  --output-dir 12S-core-metrics-results
+  --m-metadata-file ../../seining2023-sample-metadata.tsv \
+  --output-dir COI-core-metrics-results
  
 ####################
 ######TAXONOMY######
