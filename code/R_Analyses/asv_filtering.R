@@ -10,6 +10,7 @@ filter_low_read_species <- function(df) {
   df_filtered <- df[species_sums >= 0.0001 * total_reads, ]  # Keep species with at least 1% of total reads
   return(df_filtered)
 }
+
 ###########################2021 DATA###################################
 ##ESI
 
@@ -139,3 +140,7 @@ m <-read.csv("data/2023Seining/12S/Seining_ASV_TaxonTable_Filtered_FishOnly.csv"
 mm <- m %>% filter(PercentID > 98)
 
 mmm <-filter_low_read_species(mm)
+
+
+###################################
+#Once we have our filtered ASV tables, can move to the NMDS scripts to make these plots
