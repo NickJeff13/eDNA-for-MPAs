@@ -5,3 +5,8 @@
 
 #fasta files
 .fasta
+data/Musquash/2022/COI/fish-COI-ref-seqs-FINAL.fasta
+data/Musquash/2022/COI/fish-COI-ref-tax-FINAL_FuzzyID2.tsv
+data/Musquash/2022/COI/fish-COI-ref-seqs-FINALFuzzyID2.fasta
+data/Musquash/2022/COI/per-sample-fastq-counts-COI.tsv
+data/Musquash/2022/MiFishU/Musquash_12S_workspace.RData
