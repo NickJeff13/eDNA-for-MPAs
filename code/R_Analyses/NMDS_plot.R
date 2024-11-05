@@ -194,7 +194,7 @@ ggsave(filename = "2022SAB_COIand16S_Specaccum.png", plot = p6, device = "png", 
 ##################################################################################################################################################################2023 Seining Data###################################################
 ###################################################################################################################
 #12S 
-#Remove columns we don't need
+#Remove columns we don't need from the mmm thing made in the asv_filtering.R script
 mmmm<-mmm[,-c(1,3,4,5)]
 #Group by to make some stats easier, but we should run the NMDS on the raw ASVs not grouped as species
 esi23smat <- mmmm %>% group_by(Species) %>% summarise(across(everything(), sum)) %>% data.frame()
@@ -202,43 +202,34 @@ esi23tt <- t(esi23smat[,2:length(colnames(esi23smat))])
 colnames(esi23tt)<-esi23smat$Species
 esi23ttt<-esi23tt[rowSums(esi23tt[])>0,]
 
-groupz <- read.table("data/2023Seining/seining2023-sample-metadata.tsv", sep="\t",header = T) %>% glimpse()
+esi23.metadata <- read.table("data/2023Seining/seining2023-sample-metadata.tsv", sep="\t",header = T) %>% glimpse()
+groupz<-c(rep("Spring", 19),rep("Summer",20),rep("Fall", 20),rep("Summer",4))
+nmds.esi23.grouped <- metaMDS(esi23ttt,distance = "bray", k=2, trymax = 100, maxit=500)
+plot(nmds.esi23.grouped)
 
-nmds.esi12s <- metaMDS(esi12ttt,distance = "bray", k=4, trymax = 100, maxit=500)
-plot(nmds.esi12s)
-
-#read in our data table for species accummulation curves and NMDS plots
-taxtable <- read.table("data/2022Data/SAB/COI/COI_FilteredASVtable.txt", header = T)
 
 #Make a barplot of taxa
-tt<-pivot_longer(taxtable, cols=starts_with("X"))
-ggplot()+geom_bar(data=tt, aes(x=V27, y=log(value)),stat="identity")+
+tt<-pivot_longer(mmm, cols=starts_with("X"))
+ggplot()+geom_bar(data=tt, aes(x=Species, y=value),stat="identity")+
   xlab(label = "Species")+
-  ylab(label="Log(Read Count)")+
+  ylab(label="Read Count")+
   theme_bw()+
   theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.2), text=element_text(size=14))
 
-ggsave(filename = "SAB2022_COI_barplot.png",plot = last_plot(), device = "png", path = "figures/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
-
-meta <- read.table("data/2022Data/SAB/R_2022-sample-metadata_SABonly.tsv", header = T)
-rownames(meta)<-meta$watersample
-meta<-meta[1:79,]
-head(meta)
+ggsave(filename = "ESI23_12S_barplot.png",plot = last_plot(), device = "png", path = "figures/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
 
 
-commat <- taxtable #%>% select(V26, Sample.1,  Sample.2, Sample.3,  Sample.5, Sample.6, Sample.7, Sample.8, Sample.9,Sample.10, Sample.12, Sample.13, Sample.14, Sample.16, Sample.17, Sample.18, Sample.20, Sample.21, Sample.22, Sample.24, Sample.25, Sample.26) #removed samples 4, 11, 15, 19, 23, 27 as these are the negatives
+
 
 #Transpose the table for vegan
-commat2<-t(commat[,2:length(colnames(commat))])
+commat2<-t(mmmm[,2:length(colnames(mmmm))])
 commat2<-commat2[rowSums(commat2[])>0,]
-colnames(commat2)<-commat[,1]
-
-groups <- read.csv("data/2022Data/SAB/SAB_COI_depthdata.csv", header = F)
+colnames(commat2)<-mmmm[,1]
 
 
 
-sab.coi.nmds <-metaMDS(commat2, distance="bray", k=6, trymax = 100, maxit=500)
-plot(sab.coi.nmds) #this is not very informative without labels!
+nmds.esi23.12s <-metaMDS(commat2, distance="bray", k=3, trymax = 100, maxit=500)
+plot(nmds.esi23.12s) #this is not very informative without labels!
 
 
 
