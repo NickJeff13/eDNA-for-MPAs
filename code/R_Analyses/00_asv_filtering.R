@@ -142,5 +142,13 @@ mm <- m %>% filter(PercentID > 98)
 mmm <-filter_low_read_species(mm)
 
 
+#Now the 2023 COI seining data
+seining_coi <- read.table("data/2023Seining/COI-LERAYXT/ESI2023_featuretable_export.tsv", header = F)
+inverts <- read.delim("data/2023Seining/COI-LERAYXT/rdp.output",header = F)
+
+#merge the taxonomy from rdp.output and the feature table, and start by removing all mentions of bacteria
+seine.inverts <-full_join(seining_coi, inverts, by = "V1") %>% filter(!grepl("bacteria", V6.y, ignore.case=TRUE))
+
+
 ###################################
-#Once we have our filtered ASV tables, can move to the NMDS scripts to make these plots
+#Once we have our filtered ASV tables, move to the NMDS scripts to make these plots

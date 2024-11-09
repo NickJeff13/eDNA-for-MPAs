@@ -73,15 +73,17 @@ fish.yyy$Season<-factor(fish.yyy$Season, levels=c("Spring","Summer","Fall"))
 
 ggplot(data=fish.yyy, aes(as.numeric(Total_Length..mm.),fill=Site))+
   geom_histogram(binwidth=10, color="black", alpha=0.8)+
-  facet_grid(rows = vars(SpeciesName), cols=vars(Season),scales="free")+
+  facet_grid(rows = vars(Season), cols=vars(SpeciesName),scales="free")+
   scale_x_continuous(breaks = scales::pretty_breaks(n = 8)) +
   labs(x="Fish Length (mm)", y="Frequency")+
   theme_minimal()+
   theme(strip.text.x=element_text(size=14, face="bold"),
         strip.text.y=element_text(size=12, face="bold"),
-        axis.text = element_text(size=14),
+        axis.text = element_text(size=10),
         text=element_text(size=20),
         legend.position = "bottom")
 
-ggsave("2023_FishLength_Histogram_FacetBySeason.png",plot=last_plot(),width=16, height=14, dpi=300, path = "figures/", bg = "white")
+ggsave("2023_FishLength_Histogram_FacetBySeason.png",plot=last_plot(),width=18, height=14, dpi=300, path = "figures/", bg = "white")
 
+
+###2024 data###

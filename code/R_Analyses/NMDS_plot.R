@@ -203,7 +203,10 @@ colnames(esi23tt)<-esi23smat$Species
 esi23ttt<-esi23tt[rowSums(esi23tt[])>0,]
 
 esi23.metadata <- read.table("data/2023Seining/seining2023-sample-metadata.tsv", sep="\t",header = T) %>% glimpse()
-groupz<-c(rep("Spring", 19),rep("Summer",20),rep("Fall", 20),rep("Summer",4))
+groupz<-c(rep("Spring",5), "Field Blank", rep("Spring",4),"Field Blank","Field Blank", rep("Spring",5),rep("Summer",14),"Field Blank", rep("Fall",6),"Field Blank", rep("Fall",3), "Field Blank", rep("Fall",6), "Field Blank", rep("Summer",2), "Field Blank")
+sample.sites<-c("LH","MOS","CON","MOS","GOLD","Blank","CON","CON","TAY","GOLD","Blank","Blank","LH","TAY","GOLD","LH","TAY",rep("TAY",3),rep("CON",3),rep("LH",3),rep("GOLD",3),"MOS","MOS","Blank",rep("TAY",3), rep("MOS",3),"Blank",rep("GOLD",3),"Blank",rep("LH",3),rep("CON",3),"Blank",rep("WOLF",2),"Blank")
+          
+#Run the NMDS          
 nmds.esi23.grouped <- metaMDS(esi23ttt,distance = "bray", k=2, trymax = 100, maxit=500)
 plot(nmds.esi23.grouped)
 
@@ -227,32 +230,27 @@ commat2<-commat2[rowSums(commat2[])>0,]
 colnames(commat2)<-mmmm[,1]
 
 
-
-nmds.esi23.12s <-metaMDS(commat2, distance="bray", k=3, trymax = 100, maxit=500)
+#try distance='bray' and 'jaccard'
+nmds.esi23.12s <-metaMDS(commat2, distance="jaccard", k=4, trymax = 100, maxit=500)
 plot(nmds.esi23.12s) #this is not very informative without labels!
 
 
-
-ordiplot(sab.coi.nmds, type='n')
-ordihull(sab.coi.nmds,groups=groups$V2,draw="polygon",col="cyan",label=F)
-#orditorp(sab.coi.nmds,display="species",col="red",air=0.01)
-orditorp(sab.coi.nmds,display="sites",   air=0.01,cex=0.75)
-
 #extract nmds scores for ggplot
-data.scores = as.data.frame(scores(sab.coi.nmds)$sites)
+data.scores = as.data.frame(scores(nmds.esi23.12s)$sites)
 
 data.scores$Sample <- rownames(data.scores)
-data.scores$Depth <- groups$V2
-data.scores$Surface <- groups$V3
+data.scores$Season <- groupz
+data.scores$Location<-sample.sites
 
 
-species.scores <- as.data.frame(scores(sab.coi.nmds, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
+
+species.scores <- as.data.frame(scores(nmds.esi23.12s, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
 species.scores$species <- rownames(species.scores) 
 
 
-xx = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
-  geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
-  geom_point(size = 4, aes(shape = Surface, colour = Depth))+ 
+r = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
+  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+  geom_point(size = 4, aes(colour = Season))+ 
   theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
         axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
         legend.text = element_text(size = 12, face ="bold", colour ="black"), 
@@ -261,13 +259,13 @@ xx = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) +
         legend.title = element_text(size = 14, colour = "black", face = "bold"), 
         panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         legend.key=element_blank()) + 
-  labs(x = "NMDS1", colour = "Depth", y = "NMDS2", shape = "Surface")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=65,hjust=1.2,label=paste("Stress =",round(sab.coi.nmds$stress,3),"k =",sab.coi.nmds$ndim)))+  scale_colour_continuous(trans="reverse")
-
-xx
+  labs(x = "NMDS1", colour = "Season", y = "NMDS2", shape = "Surface")  + 
+  geom_text(aes(x=Inf, y=Inf, vjust=65,hjust=1.2,label=paste("Stress =",round(nmds.esi23.12s$stress,3),"k =",nmds.esi23.12s$ndim)));r
 
 
-ggsave(filename = "SAB2022_COI_NMDS.png",plot = xx, device = "png", path = "figures/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
+
+
+ggsave(filename = "ESISeining_2023_12S_NMDS1_2_Bray_WithFieldBlanks_ByLocation.png",plot = r, device = "png", path = "figures/2024CSAS/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
 
 #Accumulation curves
 sp_list.coi <- taxtable$V27
