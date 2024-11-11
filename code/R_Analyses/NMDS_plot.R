@@ -5,6 +5,9 @@ library(ggplot2)
 library(tidyverse)
 
 # ESI 2021 data
+#metadata
+esi21meta <-read.table("data/2021Data/metadata/2021-sample-metadata_ESIonly.tsv",header = T, sep = "\t")
+esi21meta$sample.id<-gsub("-",".",esi21meta$sample.id)
 esi12smat <- esi12_filt %>% group_by(Species) %>% summarise(across(everything(), sum)) %>% data.frame()
 esi12tt <- t(esi12smat[,2:length(colnames(esi12smat))])
 colnames(esi12tt)<-esi12smat[,1]
@@ -15,6 +18,43 @@ groupz <- read.table("data/2021Data/metadata/2021-sample-metadata_ESIonly.tsv", 
 nmds.esi12s <- metaMDS(esi12ttt,distance = "bray", k=4, trymax = 100, maxit=500)
 plot(nmds.esi12s)
 
+#16S
+glimpse(esi16s.filt)
+spec.mat<-as.data.frame(t(esi16s.filt[,2:101]))
+colnames(spec.mat)<-esi16s.filt$species
+spec.mat<-spec.mat[rowSums(spec.mat)>0,]
+
+
+#run the NMDS with jaccard and bray
+esi16s.nmds.jac<-metaMDS(comm = spec.mat, distance = "jaccard", k=3, trymax=100)
+esi16s.nmds.bray<-metaMDS(comm = spec.mat, distance = "bray", k=3, trymax=100)
+
+#extract nmds scores for ggplot
+data.scores = as.data.frame(scores(esi16s.nmds.bray)$sites)
+data.scores$Sample <- rownames(data.scores)
+data.scores.metadat <-left_join(data.scores,esi21meta, by=c("Sample"="sample.id"))
+
+
+species.scores <- as.data.frame(scores(esi16s.nmds.jac, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
+species.scores$species <- rownames(species.scores) 
+
+#plot it up
+ggplot(data.scores.metadat %>% filter(surface !="BLANK"), aes(x = NMDS2, y = NMDS3)) + 
+  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+  geom_point(size = 4, aes(fill = surface),shape=21)+ 
+  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+        axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
+        legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+        legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
+        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+        legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        legend.key=element_blank()) + 
+  labs(x = "NMDS2", y = "NMDS3")  + 
+  geom_text(aes(x=Inf, y=Inf, vjust=27,hjust=1.1,label=paste("Stress =",round(esi16s.nmds.bray$stress,3),"k =",esi16s.nmds.bray$ndim)))
+
+ggsave(filename = "ESI21_16S_NMDS2_NMDS3_Bray_FishOnly.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 320)
+#####################SAB 2022 data#######################################################################
 #read in our data table for species accummulation curves and NMDS plots
 taxtable <- read.table("data/2022Data/SAB/COI/COI_FilteredASVtable.txt", header = T)
 
@@ -57,7 +97,6 @@ orditorp(sab.coi.nmds,display="sites",   air=0.01,cex=0.75)
 
 #extract nmds scores for ggplot
 data.scores = as.data.frame(scores(sab.coi.nmds)$sites)
-
 data.scores$Sample <- rownames(data.scores)
 data.scores$Depth <- groups$V2
 data.scores$Surface <- groups$V3
@@ -111,7 +150,6 @@ p3<-ggplot() +
 p3
 ggsave(filename = "2022SAB_COI_Specaccum.png", plot = p3, device = "png", path = "figures/", width = 10, height=8, units="in",dpi = 400, bg="white")
 
-##############################################################################################
 ###Now do the same thing for 12S! 
 ######################################
 fishdat <- read.table("data/2022Data/SAB/16S/16S_FilteredASVtable.txt", sep="\t",header = T)
@@ -250,7 +288,7 @@ species.scores$species <- rownames(species.scores)
 
 r = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
   #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
-  geom_point(size = 4, aes(colour = Season))+ 
+  geom_point(size = 4, shape=21, aes(fill=Season),colour="black")+ 
   theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
         axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
         legend.text = element_text(size = 12, face ="bold", colour ="black"), 

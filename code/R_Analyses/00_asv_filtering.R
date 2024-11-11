@@ -25,9 +25,15 @@ dim(esi12_filt) #649 104
 esi12_filt <- esi12_filt[,-c(2:4)]
 #run this object in NMDS_plot.R script next
 
-
-
-
+#16S Teleo
+#ASV table
+esi16s<-read.table(file = "data/2021Data/16s results/ESI16S_feature_table_export.tsv", header = T, sep = "\t")
+#taxonomy
+esi16s.taxa <-read.table(file = "data/2021Data/16s results/2116Sblast_results.tsv",header = F,sep="\t")
+colnames(esi16s.taxa)<-c("ASV","NCBI","percentID", "evalue","length","species","group","score","commonname")
+esi16s.asvs <-left_join(esi16s, esi16s.taxa, by="ASV")
+dim(esi16s.asvs)
+esi16s.filt<-esi16s.asvs %>% filter(percentID>98 & group=="bony fishes") #use this for NMDS and species accum plots
 
 ###############2022 DATA#########################################################
 sab16s<-read.table(data/2022Data/SAB/16S/SAB2216S_feature_table_FILTERED_forAPP.csv, sep=\t,header = T)
@@ -110,6 +116,7 @@ head(asvs)
 dim(asvs)
 dim(blasts)
 
+#only use 'distinct()' if there are multiple blast hits per ASV
 asv_taxa <- left_join(asvs, blasts, by="ASV") %>% distinct() %>%  filter(taxongroup %in% c("bony fishes","birds","carnivores","rodents","whales & dolphins","starfish","insectivores","sharks & rays"))
 write.table(asv_taxa, file = "data/Musquash/2023/Musquash2023_TaxonTable_Filtered.tsv",sep = "\t",row.names = F)
 
