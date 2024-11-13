@@ -87,3 +87,52 @@ ggsave("2023_FishLength_Histogram_FacetBySeason.png",plot=last_plot(),width=18, 
 
 
 ###2024 data###
+
+fish.u <-read.csv("~/GitHub/easternshoreislands_aoi/data/Seining/Seining_FishMeasurements_2024.csv") %>% glimpse()
+
+fish.uu <- fish.u %>% 
+  select(Site, Season, Species, FunctionalGroup, Total_Length..mm.) %>% 
+  filter(FunctionalGroup=="BonyFishes", Total_Length..mm.>0) %>%
+  data.frame()
+
+fish.uuu <-fish.uu %>% group_by(Species) %>%
+  summarise(occurences=n()) %>%
+  filter(occurences >5) %>%
+  inner_join(fish.uu, by="Species") %>%
+  data.frame()
+
+#Wrap species names to fit the ggplot better
+fish.uuu$Species<-str_wrap(fish.uuu$Species, width=1)
+fish.uuu$SpeciesName<-str_replace_all(fish.uuu$SpeciesName, "Pseudopleuronectes", "P.")
+fish.uuu$SpeciesName<-str_replace_all(fish.uuu$SpeciesName, "Tautogolabrus", "T.")
+
+
+ggplot(data=fish.uuu, aes(as.numeric(Total_Length..mm.),fill=Species))+
+  geom_histogram(binwidth = 5, color="black", alpha=0.7)+
+  facet_grid(rows = vars(Site), cols=vars(Species),scales="free")+
+  labs(x="Fish Length (mm)", y="Frequency")+
+  theme_minimal()+
+  theme(strip.text.x=element_text(size=10, face="bold"),
+        strip.text.y=element_text(size=10, face="bold"),
+        axis.text = element_text(size=12),
+        legend.position = "none")
+
+ggsave("2024_FishLength_Histogram_bySite.png",plot=last_plot(), width=14, height=10, dpi=300, path="figures/2024CSAS/", bg="white")
+
+fish.uuu$Season<-factor(fish.uuu$Season, levels=c("Spring","Summer","Fall"))
+
+#filter to just Taylor Head and Moosehead for seasonal comparison 
+ggplot(data=fish.uuu %>% filter(Site==c("Taylor Head","Moosehead")), aes(as.numeric(Total_Length..mm.),fill=Site))+
+  geom_histogram(binwidth=20, color="black", alpha=0.8)+
+  facet_grid(rows = vars(Season), cols=vars(Species),scales="free_y")+
+  #scale_x_continuous(breaks = scales::pretty_breaks(n = 8)) +
+  labs(x="Fish Length (mm)", y="Frequency")+
+  theme_minimal()+
+  theme(strip.text.x=element_text(size=10, face="bold"),
+        strip.text.y=element_text(size=12, face="bold"),
+        axis.text = element_text(size=10),
+        text=element_text(size=20),
+        legend.position = "bottom")
+
+ggsave("2024_FishLength_Histogram_FacetBySeason.png",plot=last_plot(),width=18, height=14, dpi=300, path = "figures/2024CSAS/", bg = "white")
+
