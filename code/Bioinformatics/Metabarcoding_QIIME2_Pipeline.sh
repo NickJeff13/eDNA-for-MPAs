@@ -140,9 +140,18 @@ qiime dada2 denoise-paired \
 --p-n-threads 0 \
 --p-n-reads-learn 3000000 \
 --p-pooling-method independent \
---output-dir trimmed/dada2out \
+--output-dir dada2out-test \
 --verbose
 
+qiime dada2 denoise-paired \
+--i-demultiplexed-seqs 16S-demuxed-trimmed.qza \
+--p-trunc-len-f  145 \
+--p-trunc-len-r  129 \
+--p-n-threads 0 \
+--p-n-reads-learn 3000000 \
+--p-pooling-method independent \
+--output-dir dada2out-test-2 \
+--verbose
 #trying longer with 16S as the sequences are 240bp long
 
 qiime dada2 denoise-paired \
@@ -157,7 +166,7 @@ qiime dada2 denoise-paired \
 
 #12S - trying some different r-len truncs
 qiime dada2 denoise-paired \
---i-demultiplexed-seqs 12s-Musq-demux-trimmed-2023.qza \
+--i-demultiplexed-seqs 12S-combined-demux.qza \
 --p-trunc-len-f  129 \
 --p-trunc-len-r  129 \
 --p-n-threads 0 \
@@ -191,17 +200,17 @@ qiime dada2 denoise-paired \
 --verbose
 
 #Generate summaries of denoising stats and feature table
-#16S
+
 qiime feature-table summarize \
-  --i-table dada2out-test/table.qza \
-  --o-visualization dada2out-test/table.qzv \
+  --i-table denoised/table.qza \
+  --o-visualization denoised/table.qzv \
   --m-sample-metadata-file ../2021-sample-metadata_ESIonly.tsv &&
 qiime feature-table tabulate-seqs \
   --i-data denoised/representative_sequences.qza \
   --o-visualization denoised/rep-seqs.qzv &&
 qiime metadata tabulate \
-  --m-input-file dada2out-test/denoising_stats.qza \
-  --o-visualization dada2out-test/denoising-stats.qzv
+  --m-input-file denoised/denoising_stats.qza \
+  --o-visualization denoised/denoising-stats.qzv
   
 #COI
 qiime feature-table summarize \
