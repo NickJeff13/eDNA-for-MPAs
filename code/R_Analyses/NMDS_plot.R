@@ -3,6 +3,7 @@ library(dplyr)
 library(janitor)
 library(ggplot2)
 library(tidyverse)
+library(ggalluvial)
 
 # ESI 2021 data
 #metadata
@@ -49,8 +50,8 @@ species.scores$species <- rownames(species.scores)
 
 #plot it up
 ggplot(data.scores.metadat %>% filter(surface !="BLANK"), aes(x = NMDS1, y = NMDS2)) + 
-  geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
-  geom_point(size = 4, aes(fill = surface),shape=21)+ 
+  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+  geom_point(size = 4, aes(fill = depth),shape=21)+ 
   theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
         axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
         legend.text = element_text(size = 12, face ="bold", colour ="black"), 
@@ -337,3 +338,9 @@ p3<-ggplot() +
   theme_bw()+
   theme(text = element_text(size=20))
 p3
+
+
+
+
+#Save RData
+save.image(file = "data/eDNA_NMDS_plots.RData")
