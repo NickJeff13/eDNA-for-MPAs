@@ -1,0 +1,1 @@
+rdp_classifier -Xmx40g classify -t ~/Programs/RDPClassifier/mydata/rRNAClassifier.properties -o ~/eDNA/COI_2019/CO1_2019samples_9205ASVs_dna-sequences_output CO1_2019samples_9205ASVs_dna-sequences.fasta

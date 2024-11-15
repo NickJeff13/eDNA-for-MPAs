@@ -1,0 +1,91 @@
+Sample	type	location	site	zone	Lat	Long
+301B1	sample	bottom	301	3	45.13879 N	66.25691 W
+301B2	sample	bottom	301	3	45.13879 N	66.25691 W
+301B3	sample	bottom	301	3	45.13879 N	66.25691 W
+301S1	sample	surface	301	3	45.13879 N	66.25691 W
+301S2	sample	surface	301	3	45.13879 N	66.25691 W
+301S3	sample	surface	301	3	45.13879 N	66.25691 W
+302S1	sample	surface	302	3	45.14597 N	66.24249 W
+302S2	sample	surface	302	3	45.14597 N	66.24249 W
+302S3	sample	surface	302	3	45.14597 N	66.24249 W
+303S1	sample	surface	303	3	45.14245 N	66.25058 W
+303S2	sample	surface	303	3	45.14245 N	66.25058 W
+303S3	sample	surface	303	3	45.14245 N	66.25058 W
+2A01S1	sample	surface	2A01	2A	45.15794 N	66.25781 W
+2A01S2	sample	surface	2A01	2A	45.15794 N	66.25781 W
+2A01S3	sample	surface	2A01	2A	45.15794 N	66.25781 W
+2A10S3	sample	surface	2A10	2A	45.15411 N	66.25410 W
+2A12B1	sample	bottom	2A12	2A	45.15398 N	66.23505 W
+2A12B2	sample	bottom	2A12	2A	45.15398 N	66.23505 W
+2A12B3	sample	bottom	2A12	2A	45.15398 N	66.23505 W
+2A12S1	sample	surface	2A12	2A	45.15398 N	66.23505 W
+2A12S2	sample	surface	2A12	2A	45.15398 N	66.23505 W
+2A12S3	sample	surface	2A12	2A	45.15398 N	66.23505 W
+2B01S1	sample	surface	2B01	2B	45.14080 N	66.25800 W
+2B01S2	sample	surface	2B01	2B	45.14080 N	66.25800 W
+2B02S1	sample	surface	2B02	2B	45.14356 N	66.26273 W
+2B02S2	sample	surface	2B02	2B	45.14356 N	66.26273 W
+2B03B1	sample	bottom	2B03	2B	45.14180 N	66.25995 W
+2B03B2	sample	bottom	2B03	2B	45.14180 N	66.25995 W
+2B03B3	sample	bottom	2B03	2B	45.14180 N	66.25995 W
+2B03S1	sample	surface	2B03	2B	45.14180 N	66.25995 W
+2B03S2	sample	surface	2B03	2B	45.14180 N	66.25995 W
+2B03S3	sample	surface	2B03	2B	45.14180 N	66.25995 W
+B0912	fieldblank	blank	B0912	blank		
+B0913	fieldblank	blank	B0913	blank		
+Extraction_blank_001	extractionblank	blank	Extraction_blank_001	blank		
+Extraction_blank_002	extractionblank	blank	Extraction_blank_002	blank		
+Extraction_blank_003	extractionblank	blank	Extraction_blank_003	blank		
+LB01	labblank	blank	LB01	blank		
+LB02	labblank	blank	LB02	blank		
+M01S1	sample	surface	M01	Musq	45.19198 N	 66.31992 W
+M01S2	sample	surface	M01	Musq	45.19198 N	 66.31992 W
+M01S3	sample	surface	M01	Musq	45.19198 N	 66.31992 W
+M02S1	sample	surface	M02	Musq	45.18982 N	66.31968 W
+M04S1	sample	surface	M04	Musq	45.18288 N	66.31908 W
+M04S2	sample	surface	M04	Musq	45.18288 N	66.31908 W
+M04S3	sample	surface	M04	Musq	45.18288 N	66.31908 W
+M06S2	sample	surface	M06	Musq	45.17537 N	66.31197 W
+M06S3	sample	surface	M06	Musq	45.17537 N	66.31197 W
+M07S1	sample	surface	M07	Musq	45.17169 N	66.30805 W
+M07S2	sample	surface	M07	Musq	45.17169 N	66.30805 W
+M08B1	sample	bottom	M08	Musq	45.16940 N	66.30277 W
+M08S2	sample	bottom	M08	Musq	45.16940 N	66.30277 W
+M08S3	sample	bottom	M08	Musq	45.16940 N	66.30277 W
+M11S1	sample	surface	M11	Musq	45.17898 N	66.29429 W
+M11S2	sample	surface	M11	Musq	45.17898 N	66.29429 W
+M11S3	sample	surface	M11	Musq	45.17898 N	66.29429 W
+M15S1	sample	surface	M15	Musq	45.18655 N	66.28346 W
+M15S2	sample	surface	M15	Musq	45.18655 N	66.28346 W
+M15S3	sample	surface	M15	Musq	45.18655 N	66.28346 W
+M16S2	sample	surface	M16	Musq	45.19069 N	66.28051 W
+M16S3	sample	surface	M16	Musq	45.19069 N	66.28051 W
+M19S1	sample	surface	M19	Musq	45.19024 N	66.26321 W
+M19S2	sample	surface	M19	Musq	45.19024 N	66.26321 W
+M19S3	sample	surface	M19	Musq	45.19024 N	66.26321 W
+M20B1	sample	bottom	M20	Musq	45.18728 N	66.25850 W
+M20B2	sample	bottom	M20	Musq	45.18728 N	66.25850 W
+M20B3	sample	bottom	M20	Musq	45.18728 N	66.25850 W
+M22S1	sample	surface	M22	Musq	45.18092 N	66.24884 W
+M22S2	sample	surface	M22	Musq	45.18092 N	66.24884 W
+M22S3	sample	surface	M22	Musq	45.18092 N	66.24884 W
+M24S1	sample	surface	M24	Musq	45.17369 N	66.24174 W
+M24S2	sample	surface	M24	Musq	45.17369 N	66.24174 W
+M24S3	sample	surface	M24	Musq	45.17369 N	66.24174 W
+M26S1	sample	surface	M26	Musq	45.16529 N	66.24461 W
+M26S2	sample	surface	M26	Musq	45.16529 N	66.24461 W
+M28S1	sample	surface	M28	Musq	45.15721 N	66.24971 W
+M28S2	sample	surface	M28	Musq	45.15721 N	66.24971 W
+M28S3	sample	surface	M28	Musq	45.15721 N	66.24971 W
+M30B1	sample	bottom	M30	Musq	45.14826 N	66.24730 W
+M30B2	sample	bottom	M30	Musq	45.14826 N	66.24730 W
+M30B3	sample	bottom	M30	Musq	45.14826 N	66.24730 W
+M30S1	sample	surface	M30	Musq	45.14826 N	66.24730 W
+M30S2	sample	surface	M30	Musq	45.14826 N	66.24730 W
+M32B1	sample	bottom	M32	Musq	45.14379 N	66.24604 W
+M32B2	sample	bottom	M32	Musq	45.14379 N	66.24604 W
+M32B3	sample	bottom	M32	Musq	45.14379 N	66.24604 W
+M32S2	sample	surface	M32	Musq	45.14379 N	66.24604 W
+M32S3	sample	surface	M32	Musq	45.14379 N	66.24604 W
+PCR_blank_001	pcrblank	blank	PCR_blank_001	blank		
+PCR_blank_002	pcrblank	blank	PCR_blank_002	blank		
