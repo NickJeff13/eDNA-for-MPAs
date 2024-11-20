@@ -1,0 +1,29 @@
+sample-id	location	replicate	type
+#q2:types	categorical	numeric	categorical
+Sample-1	AspyBay	1	sample
+Sample-2	AspyBay	2	sample
+Sample-3	AspyBay	3	sample
+Sample-4	AspyBay	0	field blank
+Sample-5	Chebogue	1	sample
+Sample-6	Chebogue	2	sample
+Sample-7	Chebogue	3	sample
+Sample-8	Lingan	1	sample
+Sample-9	Lingan	2	sample
+Sample-10	Lingan	3	sample
+Sample-11	Lingan	0	field blank
+Sample-12	Mira	1	sample
+Sample-13	Mira	2	sample
+Sample-14	Mira	3	sample
+Sample-15	ENEG	0	extraction negative
+Sample-16	Cheticamp	1	sample
+Sample-17	Cheticamp	2	sample
+Sample-18	Cheticamp	3	sample
+Sample-19	Cheticamp	0	field blank
+Sample-20	NorthRiver	1	sample
+Sample-21	NorthRiver	2	sample
+Sample-22	NorthRiver	3	sample
+Sample-23	NorthRiver	0	field blank
+Sample-24	EastBay	1	sample
+Sample-25	EastBay	2	sample
+Sample-26	EastBay	3	sample
+Sample-27	EastBay	0	field blank
