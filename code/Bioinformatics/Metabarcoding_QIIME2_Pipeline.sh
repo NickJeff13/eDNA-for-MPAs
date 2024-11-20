@@ -28,6 +28,14 @@ qiime tools import \
 --input-format PairedEndFastqManifestPhred33V2 \
 --output-path 12S-combined-demux.qza
 
+#COI
+qiime tools import \
+--type 'SampleData[PairedEndSequencesWithQuality]' \
+--input-path pe33-COImanifest \
+--input-format PairedEndFastqManifestPhred33V2 \
+--output-path COI-combined-demux.qza
+
+
 #check out the data for visualization
 #16S
 qiime demux summarize \
@@ -187,16 +195,16 @@ qiime dada2 denoise-single \
 --output-dir ESIDenoisedSingle \
 --verbose
 
-#COI
+#COI - trunc len 201 201 seems to work better than >220
 qiime dada2 denoise-paired \
 --i-demultiplexed-seqs COI-combined-demux.qza \
---p-trunc-len-f  301 \
---p-trunc-len-r  301 \
+--p-trunc-len-f  221 \
+--p-trunc-len-r  221 \
 --p-n-threads 0 \
 --p-min-overlap 10 \
 --p-pooling-method independent \
 --p-n-reads-learn 3000000 \
---output-dir dada2-testing \
+--output-dir denoised \
 --verbose
 
 #Generate summaries of denoising stats and feature table
@@ -204,7 +212,7 @@ qiime dada2 denoise-paired \
 qiime feature-table summarize \
   --i-table denoised/table.qza \
   --o-visualization denoised/table.qzv \
-  --m-sample-metadata-file ../2021-sample-metadata_ESIonly.tsv &&
+  --m-sample-metadata-file ../../2022-sample-metadata_ESI.tsv &&
 qiime feature-table tabulate-seqs \
   --i-data denoised/representative_sequences.qza \
   --o-visualization denoised/rep-seqs.qzv &&
