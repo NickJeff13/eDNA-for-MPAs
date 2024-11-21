@@ -9,7 +9,7 @@ colnames(fish.x)<-gsub("Total_Length..mm.", "length", colnames(fish.x))
 
 fish.xx <- fish.x %>% group_by(Species) %>%
   summarise(occurrences=n()) %>% 
-  filter(occurrences > 40) %>% 
+  filter(occurrences > 30) %>% 
   inner_join(fish.x, by="Species") %>%
   data.frame()
   
