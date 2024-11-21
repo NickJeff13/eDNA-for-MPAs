@@ -31,11 +31,12 @@ ggplot(data=fish.xx, aes(as.numeric(length),fill=Site))+
   labs(x="Fish Total Length (mm)", y="Frequency")+
   theme_minimal()+
   theme(strip.text.y=element_text(size=10, face="bold"),
+        strip.text.x=element_text(size=14, face="bold", angle=45),
         axis.text = element_text(size=12),
-        legend.position = "bottom")
+        legend.position = "bottom", panel.spacing=unit(1, "lines"))
 
 
-ggsave("2019_FishLength_Histogram_nonfacet.png",plot=last_plot(),width=14, height=8, dpi=300, path = "figures/", bg = "white")
+ggsave("2019_FishLength_Histogram_nonfacet.png",plot=last_plot(),width=16, height=10, dpi=300, path = "figures/", bg = "white")
 
 
 ###2023 data###
