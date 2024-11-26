@@ -4,6 +4,7 @@ library(janitor)
 library(ggplot2)
 library(tidyverse)
 library(ggalluvial)
+library(patchwork)
 
 # ESI 2021 data
 #metadata
@@ -11,13 +12,19 @@ esi21meta <-read.table("data/2021Data/metadata/2021-sample-metadata_ESIonly.tsv"
 esi21meta$sample.id<-gsub("-",".",esi21meta$sample.id)
 
 #12S
-esi12smat <- esi12_filt %>% group_by(Species) %>% summarise(across(everything(), sum)) %>% data.frame()
-esi12tt <- t(esi12smat[,2:length(colnames(esi12smat))])
-colnames(esi12tt)<-esi12smat[,1]
+glimpse(esi12s.filt)
+#esi12smat <- esi12s.filt %>% group_by(Species) %>% summarise(across(everything(), sum)) %>% data.frame()
+esi12tt <- t(esi12s.filt.fish[,2:length(colnames(esi12s.filt.fish))])
+colnames(esi12tt)<-esi12s.filt.fish$Species
 esi12ttt<-esi12tt[rowSums(esi12tt[])>0,]
 
-nmds.esi12s <- metaMDS(esi12ttt,distance = "bray", k=4, trymax = 100, maxit=500)
-plot(nmds.esi12s)
+#Make a barplot of taxa
+tt<-pivot_longer(esi12s.filt.fish, cols=starts_with("Sample"))
+a<- ggplot()+geom_bar(data=tt%>%filter(value>2000), aes(x=Species, y=log(value)),stat="identity")+
+  xlab(label = "")+
+  ylab(label="12S Log(Read Count)")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));a
 
 #16S
 glimpse(esi16s.filt)
@@ -27,31 +34,37 @@ spec.mat<-spec.mat[rowSums(spec.mat)>0,]
 
 #Make a barplot of taxa
 tt<-pivot_longer(esi16s.filt, cols=starts_with("Sample"))
-ggplot()+geom_bar(data=tt%>%filter(value>1000), aes(x=species, y=log(value)),stat="identity")+
+b <- ggplot()+geom_bar(data=tt%>%filter(value>3000), aes(x=species, y=log(value)),stat="identity")+
   xlab(label = "Species")+
-  ylab(label="Log(Read Count)")+
+  ylab(label="16S Log(Read Count)")+
   theme_bw()+
-  theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.2), text=element_text(size=14))
+  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));b
 
-ggsave(filename = "ESI21_16S_barplot.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
+#plot with patchwork
+a/b
 
-#run the NMDS with jaccard and bray
+ggsave(filename = "ESI2021_FishBarplots_Combined.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 300, bg = "white")
+
+# Run NMDS on the ungrouped 12S and 16S datasets - better to leave ungrouped as the ASVs contribute to beta diversity better this way 
 esi16s.nmds.jac<-metaMDS(comm = spec.mat, distance = "jaccard", k=3, trymax=100)
 esi16s.nmds.bray<-metaMDS(comm = spec.mat, distance = "bray", k=3, trymax=100)
 
 #extract nmds scores for ggplot
-data.scores = as.data.frame(scores(esi16s.nmds.bray)$sites)
+data.scores = as.data.frame(scores(esi16s.nmds.jac)$sites)
 data.scores$Sample <- rownames(data.scores)
 data.scores.metadat <-left_join(data.scores,esi21meta, by=c("Sample"="sample.id"))
 
 
-species.scores <- as.data.frame(scores(esi16s.nmds.bray, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
+species.scores <- as.data.frame(scores(esi16s.nmds.jac, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
 species.scores$species <- rownames(species.scores) 
 
 #plot it up
 ggplot(data.scores.metadat %>% filter(surface !="BLANK"), aes(x = NMDS1, y = NMDS2)) + 
   #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
-  geom_point(size = 4, aes(fill = depth),shape=21)+ 
+  geom_jitter(size = 4, aes(fill = depth, shape = surface), 
+              width = 10, height = 10) +
+  scale_fill_viridis_c(option="viridis") + # Continuous color scale for depth
+  scale_shape_manual(values = c(21, 24)) +         # Discrete shapes (e.g., circle and triangle)
   theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
         axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
         legend.text = element_text(size = 12, face ="bold", colour ="black"), 
@@ -61,9 +74,11 @@ ggplot(data.scores.metadat %>% filter(surface !="BLANK"), aes(x = NMDS1, y = NMD
         panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         legend.key=element_blank()) + 
   labs(x = "NMDS1", y = "NMDS2")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=27,hjust=1.1,label=paste("Stress =",round(esi16s.nmds.bray$stress,3),"k =",esi16s.nmds.bray$ndim)))
+  geom_text(aes(x=Inf, y=Inf, vjust=41,hjust=1.1,label=paste("Stress =",round(esi16s.nmds.jac$stress,3),"k =",esi16s.nmds.jac$ndim)))
 
-ggsave(filename = "ESI21_16S_NMDS2_NMDS3_Bray_FishOnly.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 320)
+ggsave(filename = "ESI21_16S_NMDS1_NMDS1_Jaccard_FishOnly.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 320)
+
+
 #####################SAB 2022 data#######################################################################
 #read in our data table for species accummulation curves and NMDS plots
 taxtable <- read.table("data/2022Data/SAB/COI/COI_FilteredASVtable.txt", header = T)
@@ -340,7 +355,8 @@ p3<-ggplot() +
 p3
 
 
-
+### Make a Venn diagaram of fish caught vs fish detected in eDNA
+fish.catch <-read.csv("~/GitHub/easternshoreislands_aoi/data/Seining/Seining_FishMeasurements_2023.csv") %>% filter(FunctionalGroup=="BonyFish") %>% filter(!Species == "Juvenile gadid")
 
 #Save RData
 save.image(file = "data/eDNA_NMDS_plots.RData")

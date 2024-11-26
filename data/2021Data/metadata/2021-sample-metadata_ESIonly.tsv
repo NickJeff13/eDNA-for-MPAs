@@ -1,24 +1,24 @@
 sample-id	watersample	concentration	depth	surface	location	station	temperature	ph	dissolvedoxy	salinity
 #q2:types	categorical	numeric	numeric	categorical	categorical	categorical	numeric	numeric	numeric	numeric
-Sample-1	485525	621	111	Bottom	EasternShore	ESI-8				
-Sample-2	485526	1650	111	Surface	EasternShore	ESI-8				
-Sample-3	485532	383	112	Bottom	EasternShore	ESI-8				
-Sample-4	485533	1995	112	Surface	EasternShore	ESI-8				
-Sample-5	485539	741	111	Bottom	EasternShore	ESI-8				
-Sample-6	485540	1213	111	Surface	EasternShore	ESI-8				
-Sample-7	485543	707	70.8	Bottom	EasternShore	ESI-7				
-Sample-8	485544	1049	70.8	Surface	EasternShore	ESI-7				
-Sample-9	485545	807	73.2	Bottom	EasternShore	ESI-7				
-Sample-10	485546	1893	73.2	Surface	EasternShore	ESI-7				
-Sample-11	485547	523	72.4	Bottom	EasternShore	ESI-7				
-Sample-12	485548	2082	72.4	Surface	EasternShore	ESI-7				
-Sample-13	485549	0		BLANK	EasternShore	ESI-7				
-Sample-14	485563	1792	36.5	Bottom	EasternShore	ESI-6				
-Sample-15	485564	1882	36.5	Surface	EasternShore	ESI-6				
-Sample-16	485568	334	39.6	Bottom	EasternShore	ESI-6				
-Sample-17	485569	2161	39.6	Surface	EasternShore	ESI-6				
-Sample-18	485573	822	33.6	Bottom	EasternShore	ESI-6				
-Sample-19	485574	1821	33.6	Surface	EasternShore	ESI-6				
+Sample-1	485525	621	111	Bottom	EasternShore	ESI_08				
+Sample-2	485526	1650	111	Surface	EasternShore	ESI_08				
+Sample-3	485532	383	112	Bottom	EasternShore	ESI_08				
+Sample-4	485533	1995	112	Surface	EasternShore	ESI_08				
+Sample-5	485539	741	111	Bottom	EasternShore	ESI_08				
+Sample-6	485540	1213	111	Surface	EasternShore	ESI_08				
+Sample-7	485543	707	70.8	Bottom	EasternShore	ESI_07				
+Sample-8	485544	1049	70.8	Surface	EasternShore	ESI_07				
+Sample-9	485545	807	73.2	Bottom	EasternShore	ESI_07				
+Sample-10	485546	1893	73.2	Surface	EasternShore	ESI_07				
+Sample-11	485547	523	72.4	Bottom	EasternShore	ESI_07				
+Sample-12	485548	2082	72.4	Surface	EasternShore	ESI_07				
+Sample-13	485549	0		BLANK	EasternShore	ESI_07				
+Sample-14	485563	1792	36.5	Bottom	EasternShore	ESI_06				
+Sample-15	485564	1882	36.5	Surface	EasternShore	ESI_06				
+Sample-16	485568	334	39.6	Bottom	EasternShore	ESI_06				
+Sample-17	485569	2161	39.6	Surface	EasternShore	ESI_06				
+Sample-18	485573	822	33.6	Bottom	EasternShore	ESI_06				
+Sample-19	485574	1821	33.6	Surface	EasternShore	ESI_06				
 Sample-20	485589	1135	17.5	Bottom	EasternShore	ESI_05				
 Sample-21	485590	1644	17.5	Surface	EasternShore	ESI_05				
 Sample-22	485594	1928	18.2	Bottom	EasternShore	ESI_05				

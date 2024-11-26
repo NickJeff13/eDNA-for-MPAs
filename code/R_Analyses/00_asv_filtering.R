@@ -15,14 +15,20 @@ filter_low_read_species <- function(df) {
 ##ESI
 
 esi12s <- read.table(file = "data/2021Data/12s results/mergedspecies.tsv", header = T, sep="\t")
-esi12_filt <- esi12s %>%
+esi12s.filt <- esi12s %>%
   select(!ASV) %>%
-  filter(pident>96 & Group %in% c("birds","bony fishes", "crustaceans", "gastropods", "hemichordates","isopods", "jellyfishes", "lancelets","ribbon worms","sea cucumbers","sea urchins","segmented worms","sharks & rays","starfish","whales & dolphins")) %>% 
+  filter(pident>97 & Group %in% c("birds","bony fishes", "crustaceans", "gastropods", "hemichordates","isopods", "jellyfishes", "lancelets","ribbon worms","sea cucumbers","sea urchins","segmented worms","sharks & rays","starfish","whales & dolphins")) %>% 
   group_by(Species)
 
-dim(esi12_filt) #649 104
-#remove some other columns
-esi12_filt <- esi12_filt[,-c(2:4)]
+esi12s.filt.fish <- esi12s %>% select(!ASV) %>%
+  filter(pident>98 & Group %in% "bony fishes") %>% 
+  group_by(Species)
+
+dim(esi12s.filt) #649 104
+#remove Group, pident, and evalue columns next
+esi12s.filt <- esi12s.filt[,-c(2:4)]
+esi12s.filt.fish <- esi12s.filt.fish[,-c(2:4)]
+
 #run this object in NMDS_plot.R script next
 
 #16S Teleo
@@ -33,7 +39,7 @@ esi16s.taxa <-read.table(file = "data/2021Data/16s results/2116Sblast_results.ts
 colnames(esi16s.taxa)<-c("ASV","NCBI","percentID", "evalue","length","species","group","score","commonname")
 esi16s.asvs <-left_join(esi16s, esi16s.taxa, by="ASV")
 dim(esi16s.asvs)
-esi16s.filt<-esi16s.asvs %>% filter(percentID>98 & group=="bony fishes") #use this for NMDS and species accum plots
+esi16s.filt<-esi16s.asvs %>% filter(percentID>98 & group=="bony fishes" & !species %in% c("Artediellus pacificus", "Liopsetta pinnifasciata", "Myzopsetta punctatissima")) #use this for NMDS and species accum plots
 
 ###############2022 DATA#########################################################
 sab16s<-read.table(data/2022Data/SAB/16S/SAB2216S_feature_table_FILTERED_forAPP.csv, sep=\t,header = T)
