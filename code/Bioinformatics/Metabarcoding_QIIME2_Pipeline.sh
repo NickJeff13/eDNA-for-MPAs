@@ -55,7 +55,25 @@ qiime demux filter-samples \
   --p-where 'CAST([forward sequence count] AS INT) > 100' \
   --o-filtered-demux /path_to_output_folder/filename_greater100reads.qza
 
-#Now trim primers
+#Now trim primers - COI 
+qiime cutadapt trim-paired \
+--i-demultiplexed-sequences COI-combined-demux.qza \
+--p-cores 40 \
+--p-front-f GGWACWGGWTGAACWGTWTAYCCYCC \
+--p-front-r TAIACYTCIGGRTGICCRAARAAYCA \
+--p-error-rate 0.11 \
+--p-discard-untrimmed \
+--p-match-read-wildcards \
+--p-match-adapter-wildcards \
+--p-minimum-length 40 \
+--o-trimmed-sequences COI-demux-trimmed.qza \
+--output-dir  trimmed \
+--verbose
+#visualize the trimming results
+qiime demux summarize --i-data COI-demux-trimmed.qza \
+--o-visualization COI-trimmed-visual
+
+#tTrim primers
 qiime cutadapt trim-paired \
 --i-demultiplexed-sequences 16S-combined-demux.qza \
 --p-cores 40 \
@@ -174,9 +192,9 @@ qiime dada2 denoise-paired \
 
 #12S - trying some different r-len truncs
 qiime dada2 denoise-paired \
---i-demultiplexed-seqs 12S-combined-demux.qza \
---p-trunc-len-f  129 \
---p-trunc-len-r  129 \
+--i-demultiplexed-seqs 12S-demux-trimmed-2023.qza \
+--p-trunc-len-f  189 \
+--p-trunc-len-r  189 \
 --p-n-threads 0 \
 --p-min-overlap 8 \
 --p-pooling-method independent \
@@ -197,9 +215,9 @@ qiime dada2 denoise-single \
 
 #COI - trunc len 201 201 seems to work better than >220
 qiime dada2 denoise-paired \
---i-demultiplexed-seqs COI-combined-demux.qza \
---p-trunc-len-f  221 \
---p-trunc-len-r  221 \
+--i-demultiplexed-seqs COI-demux-trimmed.qza \
+--p-trunc-len-f  201 \
+--p-trunc-len-r  201 \
 --p-n-threads 0 \
 --p-min-overlap 10 \
 --p-pooling-method independent \
@@ -212,7 +230,7 @@ qiime dada2 denoise-paired \
 qiime feature-table summarize \
   --i-table denoised/table.qza \
   --o-visualization denoised/table.qzv \
-  --m-sample-metadata-file ../../2022-sample-metadata_ESI.tsv &&
+  --m-sample-metadata-file ../../2023Perley-sample-metadata_ESI.tsv &&
 qiime feature-table tabulate-seqs \
   --i-data denoised/representative_sequences.qza \
   --o-visualization denoised/rep-seqs.qzv &&
@@ -238,7 +256,7 @@ qiime metadata tabulate \
  qiime feature-table summarize \
   --i-table ESIDenoised/table.qza \
   --o-visualization ESIDenoised/table.qzv \
-  --m-sample-metadata-file ../2021-sample-metadata_ESIonly.tsv &&
+  --m-sample-metadata-file ../2022-sample-metadata_ESIonly.tsv &&
 qiime feature-table tabulate-seqs \
   --i-data ESIDenoised/representative_sequences.qza \
   --o-visualization ESIDenoised/rep-seqs.qzv &&
@@ -288,8 +306,8 @@ biom convert -i dada2out-test/ESI16S_filtered_table_biom/feature-table.biom \
   --i-table table.qza \
   --p-sampling-depth 1500 \
   --p-n-jobs-or-threads auto \
-  --m-metadata-file ../../seining2023-sample-metadata.tsv \
-  --output-dir COI-core-metrics-results
+  --m-metadata-file ../../../2023Perley-sample-metadata_ESI.tsv \
+  --output-dir 12S-core-metrics-results
  
 ####################
 ######TAXONOMY######
