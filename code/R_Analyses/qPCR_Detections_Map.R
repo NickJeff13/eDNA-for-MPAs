@@ -51,13 +51,18 @@ qPCR.plot <- ggplot()+
   geom_sf(data=sabshape,fill=NA,linewidth=1,colour="black")+
   #coord_sf(xlim=plotlims[c(1,3)],ylim=plotlims[c(2,4)])+
   coord_sf(xlim=c(-60, -58.2), ylim=c(45.6,46.5), expand=F)+
-  geom_point(data=filter(qpcr.long,!is.na(Long)), aes(x=Long, y=Lat,shape=value),size=2)+
+  geom_point(data=filter(qpcr.long,!is.na(Long)), aes(x=Long, y=Lat,shape=value),size=3)+
   scale_shape_manual(values=c("Detected"=16, "Not Detected"=4, "Inconclusive"=10))+
   facet_grid(.~Species)+
   theme_bw()+
   #scale_fill_viridis(option="A",direction = -1,na.value="transparent")+
   labs(x="",y="",fill="Benthoscape")+
-  theme(legend.position = "bottom",
-        text=element_text(size=15), 
+  theme(legend.position = "right",
+        text=element_text(size=16), 
         legend.key.width = unit(1.5, "cm"),
         strip.background = element_rect(fill="white"));qPCR.plot
+
+ggsave(filename = "SAB_qPCR_SummaryPlot.png", plot = qPCR.plot, device = "png", path = "figures/2024_StAnnsBank", create.dir = TRUE, width = 18, height=14, dpi = 300)
+
+
+#Now a map with actual Ct values and points based on these values

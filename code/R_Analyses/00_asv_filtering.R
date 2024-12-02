@@ -41,7 +41,15 @@ esi16s.asvs <-left_join(esi16s, esi16s.taxa, by="ASV")
 dim(esi16s.asvs)
 esi16s.filt<-esi16s.asvs %>% filter(percentID>98 & group=="bony fishes" & !species %in% c("Artediellus pacificus", "Liopsetta pinnifasciata", "Myzopsetta punctatissima")) #use this for NMDS and species accum plots
 
-###############2022 DATA#########################################################
+
+###############2022 Eastern Shore Data: 3 markers################################################################
+#MiFishU 
+esi22.12s <-read.table(file = "data/2022Data/ESI/MiFishU/ESI22_12S_feature_table_export.tsv", header = T, sep = "\t") %>% glimpse()
+esi22.12s.taxa<-read.table("data/2022Data/ESI/MiFishU/12Sblast_results.tsv", sep="\t")
+
+esi22.12s.merge <-left_join(esi22.12s, esi22.12s.taxa, by =c("ASV"="V1")) %>% distinct() %>% filter(V7 %in% c("bony fishes","whales & dolphins", "sharks & rays"), V3>97.99)
+
+###############2022 SAB DATA#########################################################
 sab16s<-read.table(data/2022Data/SAB/16S/SAB2216S_feature_table_FILTERED_forAPP.csv, sep=\t,header = T)
 dim(sab16s) #2026 85
 
@@ -65,7 +73,6 @@ write.table(x = filt, file = "data/2022Data/SAB/16S/FilteredASVtable.txt",quote 
 
 #############COI##############
 #Merging taxonomy and read count tables, and filtering taxonomy
-library(dplyr)
 
 #load in our two data tables - these paths will only work if you open the Courtney-Trask github R project, or set the working directory to your local github folder
 tax <- read.table(file = "data/2022Data/SAB/COI/SABrdp5.output", header = F, sep = "\t") #here the \t is short for tab separation
