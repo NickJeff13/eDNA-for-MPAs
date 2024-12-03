@@ -213,7 +213,7 @@ qiime dada2 denoise-single \
 --output-dir ESIDenoisedSingle \
 --verbose
 
-#COI - trunc len 201 201 seems to work better than >220
+#COI - trunc len 201 201 seems to work better than >220, and 191 191 did even better with some datasets
 qiime dada2 denoise-paired \
 --i-demultiplexed-seqs COI-demux-trimmed.qza \
 --p-trunc-len-f  201 \
@@ -240,9 +240,9 @@ qiime metadata tabulate \
   
 #COI
 qiime feature-table summarize \
-  --i-table dada2out/table.qza \
-  --o-visualization dada2out/table.qzv \
-  --m-sample-metadata-file ../seining2023-sample-metadata.tsv &&
+  --i-table denoised/table.qza \
+  --o-visualization denoised/table.qzv \
+  --m-sample-metadata-file ../../seining2023-sample-metadata.tsv &&
 qiime feature-table tabulate-seqs \
   --i-data dada2out/representative_sequences.qza \
   --o-visualization dada2out/rep-seqs.qzv &&
