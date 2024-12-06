@@ -1,3 +1,5 @@
+# Script for running species accumulation curves, NMDS, and other diversity metrics on a whole bunch of eDNA metabarcoding data
+## Load libraries ----
 library(vegan)
 library(dplyr)
 library(janitor)
@@ -6,19 +8,30 @@ library(tidyverse)
 library(ggalluvial)
 library(patchwork)
 
-# ESI 2021 data
-#metadata
+## Add NMDS theme
+nmdstheme <- theme_bw()+
+  theme(#axis.text.x=element_blank(),
+    #axis.ticks.x=element_blank(),
+    #axis.text.y=element_blank(),
+    #axis.ticks.y=element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    text=element_text(size=18))
+
+# Start loading the data 
+### ESI 2021 data
+#### metadata
 esi21meta <-read.table("data/2021Data/metadata/2021-sample-metadata_ESIonly.tsv",header = T, sep = "\t")
 esi21meta$sample.id<-gsub("-",".",esi21meta$sample.id)
 
-#12S
+#### 12S
 glimpse(esi12s.filt)
 #esi12smat <- esi12s.filt %>% group_by(Species) %>% summarise(across(everything(), sum)) %>% data.frame()
 esi12tt <- t(esi12s.filt.fish[,2:length(colnames(esi12s.filt.fish))])
 colnames(esi12tt)<-esi12s.filt.fish$Species
 esi12ttt<-esi12tt[rowSums(esi12tt[])>0,]
 
-#Make a barplot of taxa
+##### Make a barplot of taxa
 tt<-pivot_longer(esi12s.filt.fish, cols=starts_with("Sample"))
 a<- ggplot()+geom_bar(data=tt%>%filter(value>2000), aes(x=Species, y=log(value)),stat="identity")+
   xlab(label = "")+
@@ -43,7 +56,7 @@ b <- ggplot()+geom_bar(data=tt%>%filter(value>3000), aes(x=species, y=log(value)
 #plot with patchwork
 a/b
 
-ggsave(filename = "ESI2021_FishBarplots_Combined.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 300, bg = "white")
+#ggsave(filename = "ESI2021_FishBarplots_Combined.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 300, bg = "white")
 
 # Run NMDS on the ungrouped 12S and 16S datasets - better to leave ungrouped as the ASVs contribute to beta diversity better this way 
 esi16s.nmds.jac<-metaMDS(comm = spec.mat, distance = "jaccard", k=3, trymax=100)
@@ -266,40 +279,35 @@ colnames(esi23tt)<-esi23smat$Species
 esi23ttt<-esi23tt[rowSums(esi23tt[])>0,]
 
 esi23.metadata <- read.table("data/2023Seining/seining2023-sample-metadata.tsv", sep="\t",header = T) %>% glimpse()
-groupz<-c(rep("Spring",5), "Field Blank", rep("Spring",4),"Field Blank","Field Blank", rep("Spring",5),rep("Summer",14),"Field Blank", rep("Fall",6),"Field Blank", rep("Fall",3), "Field Blank", rep("Fall",6), "Field Blank", rep("Summer",2), "Field Blank")
-sample.sites<-c("LH","MOS","CON","MOS","GOLD","Blank","CON","CON","TAY","GOLD","Blank","Blank","LH","TAY","GOLD","LH","TAY",rep("TAY",3),rep("CON",3),rep("LH",3),rep("GOLD",3),"MOS","MOS","Blank",rep("TAY",3), rep("MOS",3),"Blank",rep("GOLD",3),"Blank",rep("LH",3),rep("CON",3),"Blank",rep("WOLF",2),"Blank")
-          
-#Run the NMDS          
-nmds.esi23.grouped <- metaMDS(esi23ttt,distance = "bray", k=2, trymax = 100, maxit=500)
-plot(nmds.esi23.grouped)
-
+#don't include field blanks
+groupz<-c(rep("Spring",14),rep("Summer",14), rep("Fall",15),   rep("Summer",2))
+sample.sites<-c("LH","MOS","CON","MOS","GOLD","CON","CON","TAY","GOLD","LH","TAY","GOLD","LH","TAY",rep("TAY",3),rep("CON",3),rep("LH",3),rep("GOLD",3),"MOS","MOS",rep("TAY",3), rep("MOS",3),rep("GOLD",3),rep("LH",3),rep("CON",3),rep("WOLF",2))
 
 #Make a barplot of taxa
-tt<-pivot_longer(mmm, cols=starts_with("X"))
-ggplot()+geom_bar(data=tt, aes(x=Species, y=value),stat="identity")+
-  xlab(label = "Species")+
-  ylab(label="Read Count")+
+tt<-pivot_longer(esi23smat, cols=starts_with("X"))
+tt$Species<-gsub(pattern = "Clupea pallasii", replacement = "Clupea harengus", tt$Species)
+
+g<- ggplot()+geom_bar(data=tt%>%filter(value>200, !Species=="Oncorhynchus keta"), aes(x=Species, y=log(value)),stat="identity")+
+  xlab(label = "")+
+  ylab(label="12S Log(Read Count)")+
   theme_bw()+
-  theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.2), text=element_text(size=14))
+  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));g
+ 
+ggsave(filename = "figures/2023Seining/ESI23_Seining_12S_barplot.png",plot = last_plot(), device = "png", path = "figures/", width = 10, height=8, units = "in", dpi = 400, bg = "white")    
 
-ggsave(filename = "ESI23_12S_barplot.png",plot = last_plot(), device = "png", path = "figures/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
-
-
-
-
-#Transpose the table for vegan
-commat2<-t(mmmm[,2:length(colnames(mmmm))])
-commat2<-commat2[rowSums(commat2[])>0,]
-colnames(commat2)<-mmmm[,1]
-
-
-#try distance='bray' and 'jaccard'
-nmds.esi23.12s <-metaMDS(commat2, distance="jaccard", k=4, trymax = 100, maxit=500)
-plot(nmds.esi23.12s) #this is not very informative without labels!
+#Run the NMDS        
+#transpose the non-grouped ASV table first
+esi23.m <-t(mmmm[,2:length(colnames(mmmm))])
+colnames(esi23.m) <-mmmm$Species
+esi23.m<-esi23.m[rowSums(esi23.m[])>0,]
+#Remove field blanks
+esi23.mm <-esi23.m[-c(6,11:12,31,39,43,50,53),]
+nmds.esi23.fish <- metaMDS(esi23.mm, distance = "jaccard", k=4, trymax = 200, maxit=900)
+plot(nmds.esi23.fish)
 
 
 #extract nmds scores for ggplot
-data.scores = as.data.frame(scores(nmds.esi23.12s)$sites)
+data.scores = as.data.frame(scores(nmds.esi23.fish)$sites)
 
 data.scores$Sample <- rownames(data.scores)
 data.scores$Season <- groupz
@@ -307,12 +315,18 @@ data.scores$Location<-sample.sites
 
 
 
-species.scores <- as.data.frame(scores(nmds.esi23.12s, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
+species.scores <- as.data.frame(scores(nmds.esi23.fish, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
 species.scores$species <- rownames(species.scores) 
 
+hull.data <- data.scores %>%
+  as.data.frame() %>%
+  group_by(Season) %>%
+  slice(chull(x=NMDS1,y=NMDS3))
 
-r = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
-  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+
+r = ggplot(data.scores, aes(x = NMDS1, y = NMDS3)) + 
+  geom_polygon(data=hull.data,aes(x=NMDS1,y=NMDS3,fill=Season),alpha=0.30) + # add the hulls
+    #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
   geom_point(size = 4, shape=21, aes(fill=Season),colour="black")+ 
   theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
         axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
@@ -322,19 +336,16 @@ r = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) +
         legend.title = element_text(size = 14, colour = "black", face = "bold"), 
         panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         legend.key=element_blank()) + 
-  labs(x = "NMDS1", colour = "Season", y = "NMDS2", shape = "Surface")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=65,hjust=1.2,label=paste("Stress =",round(nmds.esi23.12s$stress,3),"k =",nmds.esi23.12s$ndim)));r
+  labs(x = "NMDS1", colour = "Season", y = "NMDS3", shape = "Surface")  + 
+  geom_text(aes(x=Inf, y=Inf, vjust=65,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
+  nmdstheme;r
 
 
-
-
-ggsave(filename = "ESISeining_2023_12S_NMDS1_2_Bray_WithFieldBlanks_ByLocation.png",plot = r, device = "png", path = "figures/2024CSAS/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
+ggsave(filename = "ESISeining_2023_12S_NMDS1_2_Bray_bySeason.png",plot = r, device = "png", path = "figures/2024CSAS/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
 
 #Accumulation curves
-sp_list.coi <- taxtable$V27
-raremin<-min(rowSums(commat2))
 
-yy<-specaccum(commat2,method="exact", permutations = 1000)
+esi23.12s.spec <-specaccum(esi23.mm,method="exact", permutations = 10000)
 
 tidy_specaccum <- function(x) {
   data.frame(
@@ -342,21 +353,104 @@ tidy_specaccum <- function(x) {
     richness = x$richness,
     sd = x$sd)
 }
-yyy <- tidy_specaccum(yy)
+esi23.12s.spec.tidy <- tidy_specaccum(esi23.12s.spec)
 
-p3<-ggplot() +
-  geom_line(data=yyy, aes(x=site, y=richness), linewidth=2, color="firebrick") +
-  geom_linerange(data=yyy,aes(x = site, ymin = richness - 2*sd, ymax = richness + 2*sd)) +
+p20<-ggplot() +
+  geom_line(data=esi23.12s.spec.tidy, aes(x=site, y=richness), linewidth=2, color="firebrick") +
+  geom_linerange(data=esi23.12s.spec.tidy,aes(x = site, ymin = richness - 2*sd, ymax = richness + 2*sd)) +
   ylim(0, NA)+
   ylab(label = "Species Richness")+
   xlab(label="Site")+
   theme_bw()+
-  theme(text = element_text(size=20))
-p3
+  theme(text = element_text(size=20));p20
 
+ggsave(filename = "ESISeining_2023_12S_SpecAccum.png",plot = r, device = "png", path = "figures/2024CSAS/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
 
-### Make a Venn diagaram of fish caught vs fish detected in eDNA
-fish.catch <-read.csv("~/GitHub/easternshoreislands_aoi/data/Seining/Seining_FishMeasurements_2023.csv") %>% filter(FunctionalGroup=="BonyFish") %>% filter(!Species == "Juvenile gadid")
+### Make a Venn diagram of fish caught vs fish detected in eDNA
+library(eulerr)
+fish.catch <-read.csv("~/GitHub/easternshoreislands_aoi/data/Seining/Seining_FishMeasurements_2023.csv") %>% filter(FunctionalGroup=="BonyFish") %>% select(SpeciesName)  %>% unique()
+
+fish.catch$SpeciesName<- gsub("Gadidae","Microgadus tomcod", fish.catch$SpeciesName)
+fish.catch$SpeciesName<- gsub("Cottoidei","Myoxocephalus spp.", fish.catch$SpeciesName)
+fish.catch$SpeciesName<- gsub("Pholis sp.","Pholis gunnellus", fish.catch$SpeciesName)
+
+mifish.fish$. <-gsub("Myoxocephalus scorpius","Myoxocephalus spp.", mifish.fish$.)
+mifish.fish<-unique(tt$Species) %>% as.data.frame()
+
+fish.match<-list(Seining=unique(fish.catch$SpeciesName), eDNA=mifish.fish$.)
+
+p21<- plot(euler(fish.match), fills=list(fill=c("Seining"="#56B4E9",
+                                          "eDNA"="firebrick"), alpha=0.9),
+     labels=list(col="black",font=2),
+     quantities=list(col="black", font=2))
+
+p20 + p21
+
+ggsave(filename = "ESI2023_Seining_12S_SpecAccum_andVenn.png", plot = last_plot(),device = "png", width = 10, height=8, dpi = 320, path = "figures/2023Seining/" )
+
+#Look at alpha diversity
+shan <- data.frame(diversity(esi23.mm, index="shannon"))
+shan <-shan %>% rename(Shannon=diversity.esi23.mm..index....shannon..)
+#we can aggregate these so we get a site level index
+shan$site <-sample.sites
+shan$season<-groupz
+
+levels=c("Spring","Summer","Fall")
+ggplot()+
+  geom_boxplot(data=shan,aes(x=site, y=Shannon,fill=site,alpha=0.7))+
+  #geom_point(data=shan, aes(x=site,y=Shannon))+
+  facet_wrap(.~factor(season, level=levels))+
+  theme_bw()+
+  theme(strip.background = element_rect(fill="white"))
+#get species richness as n species too
+rich_df<-as.data.frame(commat2)
+
+df_rich_rep <- rich_df %>%
+  rownames_to_column(var="site") %>%
+  mutate(Code=substr(site, start=1, stop=3)) %>%
+  group_by(Code) %>%
+  summarize(avg_richness = mean(rowSums(across(where(is.numeric))>0))) %>%
+  ungroup() %>%
+  data.frame()
+
+### 2023 Seining COI data - read in from 00_asv_filtering.R
+head(esi23.coi.filt)
+
+##Create a stacked barplot per site of animal class 
+esi23.coi.long <- esi23.coi.filt %>% 
+  gather(Site_Rep, Count,-c(OTU.ID, Phylum, Class, Species, V24,V26,V29)) %>% 
+  separate(Site_Rep, into=c("Site", "Replicate"), sep="\\.")
+
+spec_summary<- tax_long %>%
+  group_by(Site, Class) %>% 
+  summarise(TotalCount =sum(Count)) %>%
+  ungroup()
+
+#could probably combine this with the above piping 
+spec_summary <- spec_summary %>% 
+  group_by(Site) %>%
+  mutate(RelativeCount = TotalCount/sum(TotalCount)) %>%
+  ungroup() %>%
+  mutate(Site=str_replace(Site, "WRK02","WRK"))
+
+level_order <- c("CHB","RSE","FAI","FRK","WRK","CON","PLS","CAB","TAW","TAE","MOS","ESB","MIR","NOR","LIN","CHT","ASB")
+#colour Site names by their colours in the map
+axis_pal <- c(rep("#d1495b",3), rep("#edae49",8), rep("#00798c",6))
+colourCount = length(unique(spec_summary$Class))
+getPalette = colorRampPalette(brewer.pal(9, "Set1"))
+
+ggplot(spec_summary, aes(x = factor(Site, level=level_order), y = RelativeCount, fill = Class)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values=getPalette(colourCount)) +
+  labs(x = "Site",
+       y = "Relative Count") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  theme_minimal()+
+  theme(text=element_text(size=16),
+        axis.text.x=element_text(colour=axis_pal,face="bold"))
+
+ggsave(filename = "Site_ClassBarPlots.png", plot = last_plot(),device = "png", path = "output/", width = 10, height = 8, units = "in", dpi = 300)
+
 
 #Save RData
-save.image(file = "data/eDNA_NMDS_plots.RData")
+save.image(file = "data/eDNA_NMDS_and_Diversity.RData")
