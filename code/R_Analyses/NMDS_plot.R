@@ -18,7 +18,8 @@ nmdstheme <- theme_bw()+
     panel.grid.minor = element_blank(),
     text=element_text(size=18))
 
-# Start loading the data 
+# Start loading the data
+#########################################################################################################################
 ### ESI 2021 data
 #### metadata
 esi21meta <-read.table("data/2021Data/metadata/2021-sample-metadata_ESIonly.tsv",header = T, sep = "\t")
@@ -90,6 +91,64 @@ ggplot(data.scores.metadat %>% filter(surface !="BLANK"), aes(x = NMDS1, y = NMD
   geom_text(aes(x=Inf, y=Inf, vjust=41,hjust=1.1,label=paste("Stress =",round(esi16s.nmds.jac$stress,3),"k =",esi16s.nmds.jac$ndim)))
 
 ggsave(filename = "ESI21_16S_NMDS1_NMDS1_Jaccard_FishOnly.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 320)
+
+
+#########################################################################################################################
+### ESI 2022 Perley data
+##################
+
+# load mtadata
+esi22.meta <-read.csv("data/2022Data/2022-sample-metadata_ESI.csv", header = T, sep="\t") %>% glimpse()
+
+###### 12S Data ##
+head(esi22.12s.merge)
+esi22.12s.merge$V6 <- gsub("Clupea pallasii", "Clupea harengus", esi22.12s.merge$V6)
+esi22.12s.merge$V6 <- gsub("Sebastes baramenuke", "Sebastes sp.", esi22.12s.merge$V6)
+esi22.12s.merge$V6 <- gsub("Sebastes viviparus", "Sebastes sp.", esi22.12s.merge$V6)
+esi22.12s.merge$V6 <- gsub("Ammodytes hexapterus", "Ammodytes sp.", esi22.12s.merge$V6)
+esi22.12s.merge$V6 <- gsub("Ammodytes personatus", "Ammodytes sp.", esi22.12s.merge$V6)
+esi22.12s.merge$V6 <- gsub("Pollachius virens", "Pollachius pollachius", esi22.12s.merge$V6)
+esi22.12s.merge$V6 <- gsub("Pholis ornata", "Pholis gunnellus", esi22.12s.merge$V6)
+
+
+
+spec.mat<-as.data.frame(t(esi22.12s.merge %>% select(contains("Sample.")) %>% as.data.frame()))
+colnames(spec.mat)<-esi22.12s.merge$V6
+spec.mat<-spec.mat[rowSums(spec.mat)>0,]
+
+#Make a barplot of taxa
+tt<-pivot_longer(esi22.12s.merge, cols=starts_with("Sample"))
+
+
+f <- ggplot()+geom_bar(data=tt%>%filter(value>2000), aes(x=V6, y=log(value)),stat="identity")+
+  xlab(label = "Species")+
+  ylab(label="12S Log(Read Count)")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));f
+
+
+###### 16S Data ##
+head(esi22.16s.merge)
+esi22.16s.merge$V6 <- gsub("Sebastes mentella", "Sebastes sp.", esi22.16s.merge$V6)
+esi22.16s.merge$V6 <- gsub("Gadus macrocephalus", "Gadus morhua", esi22.16s.merge$V6)
+esi22.16s.merge$V6 <- gsub("Pholis laeta", "Pholis gunnellus", esi22.16s.merge$V6)
+esi22.16s.merge$V6 <- gsub("Platichthys environmental sample", "Platichthys flesus", esi22.16s.merge$V6)
+
+
+
+tt<-pivot_longer(esi22.16s.merge, cols=starts_with("Sample"))
+
+
+g <- ggplot()+geom_bar(data=tt%>%filter(value>2000), aes(x=V6, y=log(value)),stat="identity")+
+  xlab(label = "Species")+
+  ylab(label="16S Log(Read Count)")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));g
+
+
+
+###### LerayXT COI Data ##
+head(esi22.coi.merge)
 
 
 #####################SAB 2022 data#######################################################################
@@ -386,7 +445,7 @@ p21<- plot(euler(fish.match), fills=list(fill=c("Seining"="#56B4E9",
 
 p20 + p21
 
-ggsave(filename = "ESI2023_Seining_12S_SpecAccum_andVenn.png", plot = last_plot(),device = "png", width = 10, height=8, dpi = 320, path = "figures/2023Seining/" )
+ggsave(filename = "ESI2023_Seining_12S_SpecAccum_andVenn.png", plot = last_plot(),device = "png", width = 12, height=8, dpi = 320, path = "figures/2023Seining/" )
 
 #Look at alpha diversity
 shan <- data.frame(diversity(esi23.mm, index="shannon"))
