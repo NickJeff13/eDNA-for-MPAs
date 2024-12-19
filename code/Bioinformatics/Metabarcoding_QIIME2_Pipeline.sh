@@ -228,20 +228,20 @@ qiime dada2 denoise-paired \
 #Generate summaries of denoising stats and feature table
 
 qiime feature-table summarize \
-  --i-table denoised/table.qza \
-  --o-visualization denoised/table.qzv \
+  --i-table denoised3/table.qza \
+  --o-visualization denoised3/table.qzv \
   --m-sample-metadata-file ../../2023Perley-sample-metadata_ESI.tsv &&
 qiime feature-table tabulate-seqs \
-  --i-data denoised/representative_sequences.qza \
-  --o-visualization denoised/rep-seqs.qzv &&
+  --i-data denoisede3/representative_sequences.qza \
+  --o-visualization denoised3/rep-seqs.qzv &&
 qiime metadata tabulate \
   --m-input-file denoised/denoising_stats.qza \
   --o-visualization denoised/denoising-stats.qzv
   
 #COI
 qiime feature-table summarize \
-  --i-table denoised/table.qza \
-  --o-visualization denoised/table.qzv \
+  --i-table denoised3/table.qza \
+  --o-visualization denoised3/table.qzv \
   --m-sample-metadata-file ../../seining2023-sample-metadata.tsv &&
 qiime feature-table tabulate-seqs \
   --i-data dada2out/representative_sequences.qza \
@@ -256,7 +256,7 @@ qiime metadata tabulate \
  qiime feature-table summarize \
   --i-table ESIDenoised/table.qza \
   --o-visualization ESIDenoised/table.qzv \
-  --m-sample-metadata-file ../2022-sample-metadata_ESIonly.tsv &&
+  --m-sample-metadata-file ../2023Perley-sample-metadata_ESI.tsv &&
 qiime feature-table tabulate-seqs \
   --i-data ESIDenoised/representative_sequences.qza \
   --o-visualization ESIDenoised/rep-seqs.qzv &&
@@ -307,7 +307,7 @@ biom convert -i dada2out-test/ESI16S_filtered_table_biom/feature-table.biom \
   --p-sampling-depth 1500 \
   --p-n-jobs-or-threads auto \
   --m-metadata-file ../../../2023Perley-sample-metadata_ESI.tsv \
-  --output-dir 12S-core-metrics-results
+  --output-dir COI-core-metrics-results
  
 ####################
 ######TAXONOMY######
