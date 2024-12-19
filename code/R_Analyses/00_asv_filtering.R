@@ -45,9 +45,27 @@ esi16s.filt<-esi16s.asvs %>% filter(percentID>98 & group=="bony fishes" & !speci
 ###############2022 Eastern Shore Data: 3 markers################################################################
 #MiFishU 
 esi22.12s <-read.table(file = "data/2022Data/ESI/MiFishU/ESI22_12S_feature_table_export.tsv", header = T, sep = "\t") %>% glimpse()
-esi22.12s.taxa<-read.table("data/2022Data/ESI/MiFishU/12Sblast_results.tsv", sep="\t")
+esi22.12s.taxa <- read.csv("data/2022Data/ESI/MiFishU/12Sblast_results_updated.csv", header=F)
+esi22.12s.taxa <- esi22.12s.taxa[!duplicated(esi22.12s.taxa$V1), ]
 
-esi22.12s.merge <-left_join(esi22.12s, esi22.12s.taxa, by =c("ASV"="V1")) %>% distinct() %>% filter(V7 %in% c("bony fishes","whales & dolphins", "sharks & rays"), V3>97.99)
+
+
+esi22.12s.merge <- left_join(esi22.12s, esi22.12s.taxa, by =c("ASV"="V1"))  %>% filter(V7 %in% c("bony fishes","whales & dolphins", "sharks & rays"), V3>97.99)
+
+esi22.12s.merge$V6 <- gsub("Ammodytes marinus", "Ammodytes sp.", esi22.12s.merge$V6)
+
+#16S Fish
+esi22.16s <- read.table("data/2022Data/ESI/16S/ESI22_16S_feature_table_export.tsv", header = T, sep="\t") %>% glimpse()
+esi22.16s.taxa <- read.table("data/2022Data/ESI/16S/16Sblast_results.tsv", header=F, sep="\t")
+
+esi22.16s.merge <- left_join(esi22.16s, esi22.16s.taxa, by =c("ASV"="V1"))  %>% filter(V7 %in% c("bony fishes","whales & dolphins", "sharks & rays"), V3>97.99)
+
+#COI LerayXT primer
+esi22.coi <- read.table("data/2022Data/ESI/LerayXT/ESI22_COI_feature_table_export.tsv", header = T, sep="\t")
+esi22.coi.taxa <- read.table("data/2022Data/ESI/LerayXT/ESI2022.rdp.output", sep="\t") %>% glimpse()
+
+esi22.coi.merge <- left_join(esi22.coi, esi22.coi.taxa, by=c("ASV"="V1")) %>% filter(V26>0.92, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida","Mollusca","Nematoda","Rhodophyta","Gastrotricha","Chlorophyta","Echinodermata","Brachiopoda","Porifera","Cnidaria","Nemertea","Haptophyta","Hemichordata","Bryozoa","Ctenophora_comb_jellies","Tardigrada","Rotifera", "Chaetognatha")) %>% select(!starts_with(c("ENEG","EXT","PCRB"))) %>%
+  rename(Phylum=V12, Class=V15, Species=V27)
 
 ###############2022 SAB DATA#########################################################
 sab16s<-read.table(data/2022Data/SAB/16S/SAB2216S_feature_table_FILTERED_forAPP.csv, sep=\t,header = T)
@@ -163,12 +181,14 @@ mmm <-filter_low_read_species(mm)
 
 
 #Now the 2023 COI seining data
-seining_coi <- read.table("data/2023Seining/COI-LERAYXT/ESI2023_featuretable_export.tsv", header = F)
-inverts <- read.delim("data/2023Seining/COI-LERAYXT/rdp.output",header = F)
+esi23.coi.asvs <-read.table("data/2023Seining/COI-LERAYXT/ESI2023_featuretable_export.tsv", header = T, sep="\t") %>% glimpse()
+esi23.coi.taxa <-read.table("data/2023Seining/COI-LERAYXT/rdp.output", header = F, sep="\t") %>% select(c("V1","V12","V15", "V24","V26","V27","V29"))
 
-#merge the taxonomy from rdp.output and the feature table, and start by removing all mentions of bacteria
-seine.inverts <-full_join(seining_coi, inverts, by = "V1") %>% filter(!grepl("bacteria", V6.y, ignore.case=TRUE))
+esi23.coi.merge <-left_join(esi23.coi.asvs,esi23.coi.taxa, by=c("OTU.ID"="V1"))
 
+#filter
+esi23.coi.filt <- esi23.coi.merge %>% filter(V26>0.92, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida","Mollusca","Nematoda","Rhodophyta","Gastrotricha","Chlorophyta","Echinodermata","Brachiopoda","Porifera","Cnidaria","Nemertea","Haptophyta","Hemichordata","Bryozoa","Ctenophora_comb_jellies","Tardigrada","Rotifera", "Chaetognatha")) %>% select(!starts_with(c("ENEG","EXT","PCRB"))) %>%
+  rename(Phylum=V12, Class=V15, Species=V27)
 
 ###################################
 #Once we have our filtered ASV tables, move to the NMDS scripts to make these plots
