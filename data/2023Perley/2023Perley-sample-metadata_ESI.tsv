@@ -1,5 +1,4 @@
 sample-id	watersample	concentration	depth	surface	station	season	preservation
-#q2:types	categorical	numeric	numeric	categorical	categorical	categorical	categorical
 Sample-1	43840	6.6	11.9	Bottom	ESI_05	spring	Self-preserve
 Sample-2	43841	5.07	31.7	Surface	ESI_06	spring	Self-preserve
 Sample-3	43842	2.8	31.7	Bottom	ESI_06	spring	Frozen
