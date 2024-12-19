@@ -1,14 +1,19 @@
-# Script for running species accumulation curves, NMDS, and other diversity metrics on a whole bunch of eDNA metabarcoding data
-## Load libraries ----
+# Code for running species accumulation curves, NMDS, and other diversity metrics on a whole bunch of eDNA metabarcoding data including species richness plots, NMDS plots, and species accummulation plots. Written by Nick.Jeffery@dfo-mpo.gc.ca 
+
+# Load libraries ----------------------------------------------------------
+
 library(vegan)
 library(dplyr)
 library(janitor)
 library(ggplot2)
 library(tidyverse)
-library(ggalluvial)
-library(patchwork)
+library(ggalluvial) #make alluvial plots
+library(patchwork) #stick plots together
+library(eulerr) #for Venn diagrams
 
-## Add NMDS theme
+
+# NMDS theme for all plots ------------------------------------------------
+
 nmdstheme <- theme_bw()+
   theme(#axis.text.x=element_blank(),
     #axis.ticks.x=element_blank(),
@@ -19,8 +24,9 @@ nmdstheme <- theme_bw()+
     text=element_text(size=18))
 
 # Start loading the data
-#########################################################################################################################
-### ESI 2021 data
+
+# 2021 ESI Perley Data ----------------------------------------------------
+
 #### metadata
 esi21meta <-read.table("data/2021Data/metadata/2021-sample-metadata_ESIonly.tsv",header = T, sep = "\t")
 esi21meta$sample.id<-gsub("-",".",esi21meta$sample.id)
@@ -38,7 +44,8 @@ a<- ggplot()+geom_bar(data=tt%>%filter(value>2000), aes(x=Species, y=log(value))
   xlab(label = "")+
   ylab(label="12S Log(Read Count)")+
   theme_bw()+
-  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));a
+  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14))+
+  ggtitle('2021');a
 
 #16S
 glimpse(esi16s.filt)
@@ -57,19 +64,21 @@ b <- ggplot()+geom_bar(data=tt%>%filter(value>3000), aes(x=species, y=log(value)
 #plot with patchwork
 a/b
 
-#ggsave(filename = "ESI2021_FishBarplots_Combined.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 300, bg = "white")
+ggsave(filename = "ESI2021_FishBarplots_Combined.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 300, bg = "white")
 
 # Run NMDS on the ungrouped 12S and 16S datasets - better to leave ungrouped as the ASVs contribute to beta diversity better this way 
 esi16s.nmds.jac<-metaMDS(comm = spec.mat, distance = "jaccard", k=3, trymax=100)
 esi16s.nmds.bray<-metaMDS(comm = spec.mat, distance = "bray", k=3, trymax=100)
+esi12s.nmds.jac<-metaMDS(comm = esi12ttt, distance = "jaccard", k=3, trymax=100)
+esi12s.nmds.bray<-metaMDS(comm = esi12ttt, distance = "bray", k=3, trymax=100)
 
-#extract nmds scores for ggplot
-data.scores = as.data.frame(scores(esi16s.nmds.jac)$sites)
+#extract nmds scores for ggplot - here just swap the various NMDS objects to make data.scores
+data.scores = as.data.frame(scores(esi12s.nmds.jac)$sites)
 data.scores$Sample <- rownames(data.scores)
 data.scores.metadat <-left_join(data.scores,esi21meta, by=c("Sample"="sample.id"))
 
 
-species.scores <- as.data.frame(scores(esi16s.nmds.jac, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
+species.scores <- as.data.frame(scores(esi12s.nmds.jac, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
 species.scores$species <- rownames(species.scores) 
 
 #plot it up
@@ -88,17 +97,19 @@ ggplot(data.scores.metadat %>% filter(surface !="BLANK"), aes(x = NMDS1, y = NMD
         panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         legend.key=element_blank()) + 
   labs(x = "NMDS1", y = "NMDS2")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=41,hjust=1.1,label=paste("Stress =",round(esi16s.nmds.jac$stress,3),"k =",esi16s.nmds.jac$ndim)))
+  geom_text(aes(x=Inf, y=Inf, vjust=41,hjust=1.1,label=paste("Stress =",round(esi12s.nmds.jac$stress,3),"k =",esi12s.nmds.jac$ndim)))
 
 ggsave(filename = "ESI21_16S_NMDS1_NMDS1_Jaccard_FishOnly.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 320)
 
 
-#########################################################################################################################
-### ESI 2022 Perley data
-##################
+# 2022 ESI Perley Data ----------------------------------------------------
 
-# load mtadata
+# load metadata
 esi22.meta <-read.csv("data/2022Data/2022-sample-metadata_ESI.csv", header = T, sep="\t") %>% glimpse()
+esi22.meta <- esi22.meta[-1,] %>% 
+  select(-c("temperature","ph","dissolvedoxy","salinity"))#remove the first row which is useless from QIIME2
+
+esi22.meta$sample.id <- gsub("-",".",esi22.meta$sample.id) # replace dashes with . to match the ASV table
 
 ###### 12S Data ##
 head(esi22.12s.merge)
@@ -124,7 +135,8 @@ f <- ggplot()+geom_bar(data=tt%>%filter(value>2000), aes(x=V6, y=log(value)),sta
   xlab(label = "Species")+
   ylab(label="12S Log(Read Count)")+
   theme_bw()+
-  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));f
+  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14))+
+  ggtitle('2022');f
 
 
 ###### 16S Data ##
@@ -133,25 +145,34 @@ esi22.16s.merge$V6 <- gsub("Sebastes mentella", "Sebastes sp.", esi22.16s.merge$
 esi22.16s.merge$V6 <- gsub("Gadus macrocephalus", "Gadus morhua", esi22.16s.merge$V6)
 esi22.16s.merge$V6 <- gsub("Pholis laeta", "Pholis gunnellus", esi22.16s.merge$V6)
 esi22.16s.merge$V6 <- gsub("Platichthys environmental sample", "Platichthys flesus", esi22.16s.merge$V6)
-
+esi22.16s.merge$V6 <- gsub("Pollachius virens", "Pollachius pollachius", esi22.16s.merge$V6)
+esi22.16s.merge$V6 <- gsub("Pleuronectes platessa", "Pleuronectinae", esi22.16s.merge$V6)
 
 
 tt<-pivot_longer(esi22.16s.merge, cols=starts_with("Sample"))
 
-
-g <- ggplot()+geom_bar(data=tt%>%filter(value>2000), aes(x=V6, y=log(value)),stat="identity")+
+g <- ggplot()+geom_bar(data=tt%>%filter(value>2000, !V6 %in% c("Platichthys flesus","Myzopsetta punctatissima")), aes(x=V6, y=log(value)),stat="identity")+
   xlab(label = "Species")+
   ylab(label="16S Log(Read Count)")+
   theme_bw()+
   theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));g
 
+#plot with patchwork
+f/g
+
+ggsave(filename = "ESI2022_FishBarplots_Combined.png",plot = last_plot(), device = "png", path = "figures/2022Results//", width = 10, height=8, dpi = 300, bg = "white")
+
+#Run the NMDS on the 16S data
 
 
 ###### LerayXT COI Data ##
 head(esi22.coi.merge)
 
 
-#####################SAB 2022 data#######################################################################
+
+# 2022 SAB Perley Data ----------------------------------------------------
+
+
 #read in our data table for species accummulation curves and NMDS plots
 taxtable <- read.table("data/2022Data/SAB/COI/COI_FilteredASVtable.txt", header = T)
 
@@ -326,8 +347,8 @@ p6
 ggsave(filename = "2022SAB_COIand16S_Specaccum.png", plot = p6, device = "png", path = "figures/", width = 10, height=8, units="in",dpi = 400, bg="white")
 
 
-##################################################################################################################################################################2023 Seining Data###################################################
-###################################################################################################################
+# 2023 ESI Seining Data ---------------------------------------------------
+
 #12S 
 #Remove columns we don't need from the mmm thing made in the asv_filtering.R script
 mmmm<-mmm[,-c(1,3,4,5)]
@@ -346,13 +367,14 @@ sample.sites<-c("LH","MOS","CON","MOS","GOLD","CON","CON","TAY","GOLD","LH","TAY
 tt<-pivot_longer(esi23smat, cols=starts_with("X"))
 tt$Species<-gsub(pattern = "Clupea pallasii", replacement = "Clupea harengus", tt$Species)
 
-g<- ggplot()+geom_bar(data=tt%>%filter(value>200, !Species=="Oncorhynchus keta"), aes(x=Species, y=log(value)),stat="identity")+
+n<- ggplot()+geom_bar(data=tt%>%filter(value>200, !Species=="Oncorhynchus keta"), aes(x=Species, y=log(value)),stat="identity")+
   xlab(label = "")+
   ylab(label="12S Log(Read Count)")+
   theme_bw()+
-  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));g
+  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14))+
+  ggtitle('2023 Seining');n
  
-ggsave(filename = "figures/2023Seining/ESI23_Seining_12S_barplot.png",plot = last_plot(), device = "png", path = "figures/", width = 10, height=8, units = "in", dpi = 400, bg = "white")    
+ggsave(filename = "ESI23_Seining_12S_barplot.png",plot = last_plot(), device = "png", path = "figures/2023Seining/", width = 10, height=8, units = "in", dpi = 400, bg = "white")    
 
 #Run the NMDS        
 #transpose the non-grouped ASV table first
@@ -361,7 +383,7 @@ colnames(esi23.m) <-mmmm$Species
 esi23.m<-esi23.m[rowSums(esi23.m[])>0,]
 #Remove field blanks
 esi23.mm <-esi23.m[-c(6,11:12,31,39,43,50,53),]
-nmds.esi23.fish <- metaMDS(esi23.mm, distance = "jaccard", k=4, trymax = 200, maxit=900)
+nmds.esi23.fish <- metaMDS(esi23.mm, distance = "bray", k=10, trymax = 200, maxit=500)
 plot(nmds.esi23.fish)
 
 
@@ -380,12 +402,28 @@ species.scores$species <- rownames(species.scores)
 hull.data <- data.scores %>%
   as.data.frame() %>%
   group_by(Season) %>%
-  slice(chull(x=NMDS1,y=NMDS3))
+  slice(chull(x=NMDS1,y=NMDS2))
 
 
-r = ggplot(data.scores, aes(x = NMDS1, y = NMDS3)) + 
-  geom_polygon(data=hull.data,aes(x=NMDS1,y=NMDS3,fill=Season),alpha=0.30) + # add the hulls
+r = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
+  geom_polygon(data=hull.data,aes(x=NMDS1,y=NMDS2,fill=Location, color=Location),alpha=0.30) + # add the hulls
     #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+  geom_point(size = 4, shape=21, aes(fill=Location),colour="black")+ 
+  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+        axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
+        legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+        legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
+        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+        legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        legend.key=element_blank()) + 
+  labs(x = "NMDS1", y = "NMDS2")  + 
+  geom_text(aes(x=Inf, y=Inf, vjust=37,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
+  nmdstheme;r
+
+u = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
+  geom_polygon(data=hull.data,aes(x=NMDS1,y=NMDS2,fill=Season, color=Season),alpha=0.30) + # add the hulls
+  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
   geom_point(size = 4, shape=21, aes(fill=Season),colour="black")+ 
   theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
         axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
@@ -395,12 +433,13 @@ r = ggplot(data.scores, aes(x = NMDS1, y = NMDS3)) +
         legend.title = element_text(size = 14, colour = "black", face = "bold"), 
         panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         legend.key=element_blank()) + 
-  labs(x = "NMDS1", colour = "Season", y = "NMDS3", shape = "Surface")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=65,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
-  nmdstheme;r
+  labs(x = "NMDS1", y = "NMDS2")  + 
+  geom_text(aes(x=Inf, y=Inf, vjust=37,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
+  nmdstheme;u
 
+u/r
 
-ggsave(filename = "ESISeining_2023_12S_NMDS1_2_Bray_bySeason.png",plot = r, device = "png", path = "figures/2024CSAS/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
+ggsave(filename = "ESISeining_2023_12S_NMDS1_2_Bray_bySite.png",plot = r, device = "png", path = "figures/2024CSAS/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
 
 #Accumulation curves
 
@@ -423,15 +462,14 @@ p20<-ggplot() +
   theme_bw()+
   theme(text = element_text(size=20));p20
 
-ggsave(filename = "ESISeining_2023_12S_SpecAccum.png",plot = r, device = "png", path = "figures/2024CSAS/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
+ggsave(filename = "ESISeining_2023_12S_SpecAccum.png",plot = p20, device = "png", path = "figures/2024CSAS/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
 
 ### Make a Venn diagram of fish caught vs fish detected in eDNA
-library(eulerr)
 fish.catch <-read.csv("~/GitHub/easternshoreislands_aoi/data/Seining/Seining_FishMeasurements_2023.csv") %>% filter(FunctionalGroup=="BonyFish") %>% select(SpeciesName)  %>% unique()
 
 fish.catch$SpeciesName<- gsub("Gadidae","Microgadus tomcod", fish.catch$SpeciesName)
 fish.catch$SpeciesName<- gsub("Cottoidei","Myoxocephalus spp.", fish.catch$SpeciesName)
-fish.catch$SpeciesName<- gsub("Pholis sp.","Pholis gunnellus", fish.catch$SpeciesName)
+fish.catch$Spe9055ciesName<- gsub("Pholis sp.","Pholis gunnellus", fish.catch$SpeciesName)
 
 mifish.fish$. <-gsub("Myoxocephalus scorpius","Myoxocephalus spp.", mifish.fish$.)
 mifish.fish<-unique(tt$Species) %>% as.data.frame()
@@ -509,6 +547,41 @@ ggplot(spec_summary, aes(x = factor(Site, level=level_order), y = RelativeCount,
         axis.text.x=element_text(colour=axis_pal,face="bold"))
 
 ggsave(filename = "Site_ClassBarPlots.png", plot = last_plot(),device = "png", path = "output/", width = 10, height = 8, units = "in", dpi = 300)
+
+
+# 2023 ESI Perley Data ----------------------------------------------------
+#12S 
+head(esi23.12s.perl.merge)
+#Remove columns we don't need
+esi23.12s.per.merge3 <-esi23.12s.per.merge2 %>% select(-c("ASV","V2","V3","V4","V5","V7","V8"))
+#Group by to make some stats easier, but we should run the NMDS on the raw ASVs not grouped as species
+esi23.per.smat <- esi23.12s.per.merge3 %>% group_by(V6) %>% summarise(across(everything(), sum)) %>% data.frame()
+esi23tt <- t(esi23smat[,2:length(colnames(esi23smat))])
+colnames(esi23tt)<-esi23smat$Species
+esi23ttt<-esi23tt[rowSums(esi23tt[])>0,]
+
+per23.metadata <- read.table("data/2023Perley/ESI/", sep="\t",header = T) %>% glimpse()
+#don't include field blanks
+groupz<-c(rep("Spring",14),rep("Summer",14), rep("Fall",15),   rep("Summer",2))
+sample.sites<-c("LH","MOS","CON","MOS","GOLD","CON","CON","TAY","GOLD","LH","TAY","GOLD","LH","TAY",rep("TAY",3),rep("CON",3),rep("LH",3),rep("GOLD",3),"MOS","MOS",rep("TAY",3), rep("MOS",3),rep("GOLD",3),rep("LH",3),rep("CON",3),rep("WOLF",2))
+
+#Make a barplot of taxa
+tt<-pivot_longer(esi23.per.smat, cols=starts_with("Sample"))
+tt$V6<-gsub(pattern = "Clupea pallasii", replacement = "Clupea harengus", tt$V6)
+tt$V6<-gsub(pattern = "Alosa fallax", replacement = "Alosa sp.", tt$V6)
+tt$V6<-gsub(pattern = "Alosa pseudoharengus", replacement = "A. pseudoharengus", tt$V6)
+
+
+
+h<- ggplot()+geom_bar(data=tt%>%filter(value>200), aes(x=V6, y=log(value)),stat="identity")+
+  xlab(label = "")+
+  ylab(label="12S Log(Read Count)")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle=55, hjust=1), text=element_text(size=14))+
+  ggtitle('2023 Offshore');h
+
+ggsave(filename = "ESI23_Perley_12S_barplot.png",plot = h, device = "png", path = "figures/2023_Perley/", width = 12, height=8, units = "in", dpi = 400, bg = "white")    
+
 
 
 #Save RData
