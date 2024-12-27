@@ -102,6 +102,7 @@ ggplot(data.scores.metadat %>% filter(surface !="BLANK"), aes(x = NMDS1, y = NMD
 ggsave(filename = "ESI21_16S_NMDS1_NMDS1_Jaccard_FishOnly.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 320)
 
 
+
 # 2022 ESI Perley Data ----------------------------------------------------
 
 # load metadata
@@ -167,6 +168,66 @@ ggsave(filename = "ESI2022_FishBarplots_Combined.png",plot = last_plot(), device
 
 ###### LerayXT COI Data ##
 head(esi22.coi.merge)
+
+#Make a barplot of taxa
+ii <-pivot_longer(esi22.coi.merge, cols=starts_with("Sample"))
+ii$Species <- gsub("Nothria_conchylega_CMC02","Nothria_conchylega", ii$Species)
+bb <- ggplot()+geom_bar(data=ii%>%filter(value>200), aes(x=Species, y=log(value)),stat="identity")+
+  xlab(label = "Species")+
+  ylab(label="COI Log(Read Count)")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));bb
+
+ggsave(filename = "ESI2022_COI_Barplot.png",plot = last_plot(), device = "png", path = "figures/2022Results/", width = 10, height=8, dpi = 300, bg = "white")
+
+#COI NMDS
+spec.mat<-as.data.frame(t(esi22.coi.merge[,2:92]))
+colnames(spec.mat)<-esi22.coi.merge$Species
+spec.mat<-spec.mat[rowSums(spec.mat)>0,]
+
+#Remove blanks - samples 6,12,13,28, 53, 88-91 for this dataset
+esi22.coi.mm2 <-spec.mat[-c(4,5,21,84),]
+nmds.esi22.coi <- metaMDS(esi22.coi.mm2, distance = "jaccard", k=12, trymax = 200, maxit=500)
+
+h#extract nmds scores for ggplot
+data.scores = as.data.frame(scores(nmds.esi23.fish)$sites)
+
+data.scores$Sample <- rownames(data.scores)
+
+#merge with metadata by sample id column
+data.scores.merge <- inner_join(data.scores,per23.metadata, by=c("Sample"="sample.id"))
+
+
+species.scores <- as.data.frame(scores(nmds.esi23.fish, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
+species.scores$species <- rownames(species.scores) 
+
+hull.data.per23 <- data.scores.merge %>%
+  as.data.frame() %>%
+  group_by(season) %>%
+  slice(chull(x=NMDS1,y=NMDS2)) #for this dataset, there's no differentiation between bottom and surface
+colorScales <- c("#c43b3b", "#80c43b", "#3bc4c4", "#7f3bc4")
+
+v = ggplot() + 
+  geom_polygon(data=hull.data.per23,aes(x=NMDS1,y=NMDS2,fill=season),color="black",alpha=0.30) +
+  scale_fill_manual(values=c("firebrick","cornflowerblue","forestgreen"))+
+  ggnewscale::new_scale_fill()+
+  geom_point(data=data.scores.merge, aes(x = NMDS1, y = NMDS2, fill=station),size = 4, shape=21, colour="black")+ 
+  scale_fill_manual(values=colorScales)+
+  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+        axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
+        #legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+        legend.position = "none", axis.title.y = element_text(face = "bold", size = 14), 
+        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+        #legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2)) + 
+  labs(x = "NMDS1", y = "NMDS2")  + 
+  geom_text(aes(x=Inf, y=Inf, vjust=48,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
+  nmdstheme;v
+
+
+ggsave(filename = "ESI23_Perley_12S_NMDS1_2_bySeason.png",plot = v, device = "png", path = "figures/2023_Perley/", width = 12, height=8, units = "in", dpi = 400, bg = "white")  
+
 
 
 
@@ -619,13 +680,13 @@ v = ggplot() +
   #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
   theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
         axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
-        legend.text = element_text(size = 12, face ="bold", colour ="black"), 
-        legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
+        #legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+        legend.position = "none", axis.title.y = element_text(face = "bold", size = 14), 
         axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
-        legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+        #legend.title = element_text(size = 14, colour = "black", face = "bold"), 
         panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2)) + 
   labs(x = "NMDS1", y = "NMDS2")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=45,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
+  geom_text(aes(x=Inf, y=Inf, vjust=48,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
   nmdstheme;v
 
 
@@ -655,11 +716,155 @@ p21<-ggplot() +
 ggsave(filename = "ESI_Perley_2023_12S_SpecAccum.png",plot = p21, device = "png", path = "figures/2024CSAS/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
 
 #Alluvial plot 
+#merge long data frame with metadata
+jj <- left_join(tt %>% filter(!name %in% c("Sample.22","Sample.44","Sample.45","Sample.52","Sample.53")), per23.metadata,
+                by=c("name"="sample.id"), 
+                multiple = "all")
+colnames(jj) <- c("Species", "Sample","value","watersample","conc","Depth", "Surface","Station","Season","preservative")
+jj$Surface <- gsub("Deep","Bottom",jj$Surface)
 
+#jj$Species <- str_wrap(string = jj$Species,width = 8)
+
+filteredjj <- jj %>% filter(value>8000)
+
+w <- ggplot(data=filteredjj, aes(axis1=Species, axis2=Season, axis3=Surface, y=log(value)))+
+  scale_x_discrete(limits=c("Species","Season", "Depth"))+
+  geom_alluvium(aes(fill=Station))+
+  geom_stratum(alpha=0.5,width = 1/3)+  
+  #geom_text(stat = "stratum", aes(label = after_stat(stratum)), size=3)+
+  ylab(label = "Log(Read count)")+
+  theme_minimal()+
+  theme(text=element_text(size=20));w
+
+
+ggsave("Perley2023_12S_AlluvialPlot_NOLABELS.png", plot = w, device = "png", path = "figures/2023_Perley/", width = 14, height=12, dpi = 300, bg="white")
 
 
 
 ## COI 
+head(esi23.coi.perl.filt)
+
+#Remove columns we don't need
+esi23.coi.per.merge3 <-esi23.coi.perl.filt %>% select(-c("ASV","Phylum","V14","Class","V16","V17","V18","V19","V20","V21","V23","V24","V26","V29"))
+#Group by to make some stats easier, but we should run the NMDS on the raw ASVs not grouped as species
+esi23.coi.smat <- esi23.coi.per.merge3 %>% group_by(Species) %>% summarise(across(everything(), sum)) %>% data.frame()
+
+
+#Make a barplot of taxa
+tt<-pivot_longer(esi23.coi.smat, cols=starts_with("Sample"))
+tt$Species <- gsub("Eunoe_sp._BOLD:AAG5099","Eunoe_sp.",tt$Species)
+tt$Species <- gsub("Ectyonopsis_pluridentata","Myxillidae sp.",tt$Species)
+tt$Species <- gsub("Eubranchus_olivaceus","Eubranchus_sp.",tt$Species)
+
+
+hh<- ggplot()+geom_bar(data=tt%>%filter(value>200,!Species=="Homo_sapiens"), aes(x=Species, y=log(value)),stat="identity")+
+  xlab(label = "")+
+  ylab(label="COI Log(Read Count)")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle=55, hjust=1), text=element_text(size=14));hh
+
+h/hh
+
+ggsave(filename = "ESI23_Perley_12S_COIcombined_barplot.png",plot = last_plot(), device = "png", path = "figures/2023_Perley/", width = 12, height=8, units = "in", dpi = 400, bg = "white")    
+
+# Do NMDS of data and group by site or season
+
+#Set up matrix for NMDS with the non-grouped data
+esi23tt <- t(esi23.coi.per.merge3[,1:length(colnames(esi23.coi.per.merge3))-1])
+colnames(esi23tt)<-esi23.coi.per.merge3$Species
+esi23ttt<-esi23tt[rowSums(esi23tt[])>0,]
+
+#Remove blanks - samples 22, 44, 45, and 52-56 for this dataset
+esi23.mm2 <-esi23ttt[-c(15,39:40,48:52),]
+nmds.esi23.inverts <- metaMDS(esi23.mm2, distance = "jaccard", k=10, trymax = 200, maxit=500)
+
+#extract nmds scores for ggplot
+data.scores = as.data.frame(scores(nmds.esi23.inverts)$sites)
+
+data.scores$Sample <- rownames(data.scores)
+
+#merge with metadata by sample id column
+data.scores.merge <- inner_join(data.scores,per23.metadata, by=c("Sample"="sample.id"))
+
+
+species.scores <- as.data.frame(scores(nmds.esi23.inverts, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
+species.scores$species <- rownames(species.scores) 
+
+hull.data.per23 <- data.scores.merge %>%
+  as.data.frame() %>%
+  group_by(season) %>%
+  slice(chull(x=NMDS1,y=NMDS2)) #for this dataset, there's no differentiation between bottom and surface
+
+vv = ggplot() + 
+  geom_polygon(data=hull.data.per23,aes(x=NMDS1,y=NMDS2,fill=season),color="black",alpha=0.30) +
+  scale_fill_manual(values=c("firebrick","cornflowerblue","forestgreen"))+
+  ggnewscale::new_scale_fill()+
+  geom_point(data=data.scores.merge, aes(x = NMDS1, y = NMDS2, fill=station),size = 4, shape=21, colour="black")+ 
+  scale_fill_manual(values=colorScales)+
+  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+        axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
+        legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+        legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
+        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+        legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2)) + 
+  labs(x = "NMDS1", y = "NMDS2")  + 
+  geom_text(aes(x=Inf, y=Inf, vjust=48,hjust=1.2,label=paste("Stress =",round(nmds.esi23.inverts$stress,3),"k =",nmds.esi23.inverts$ndim)))+
+  nmdstheme;vv
+
+v <- v+plot_annotation(title = "12S Fish")
+vv <- vv + plot_annotation(title = "COI Eukaryotes")
+v+vv+plot_annotation(title=NULL)
+
+ggsave(filename = "ESI23_Perley_COI_12Scombined_NMDS1_2_bySeason.png",plot = last_plot(), device = "png", path = "figures/2023_Perley/", width = 12, height=8, units = "in", dpi = 400, bg = "white")  
+
+# Accumulation curves
+
+esi23.coi.spec.per <-specaccum(esi23ttt,method="exact", permutations = 10000)
+
+tidy_specaccum <- function(x) {
+  data.frame(
+    site = x$sites,
+    richness = x$richness,
+    sd = x$sd)
+}
+esi23.coi.spec.tidy <- tidy_specaccum(esi23.coi.spec.per)
+
+p22<-ggplot() +
+  geom_line(data=esi23.coi.spec.tidy, aes(x=site, y=richness), linewidth=2, color="firebrick") +
+  geom_linerange(data=esi23.coi.spec.tidy,aes(x = site, ymin = richness - 2*sd, ymax = richness + 2*sd)) +
+  ylim(0, NA)+
+  ylab(label = "Species Richness")+
+  xlab(label="Site")+
+  theme_bw()+
+  theme(text = element_text(size=20));p22
+
+ggsave(filename = "ESI_Perley_2023_COI_SpecAccum.png",plot = p22, device = "png", path = "figures/2024CSAS/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
+
+#Alluvial plot 
+#merge long data frame with metadata
+jj <- left_join(tt %>% filter(!name %in% c("Sample.22","Sample.44","Sample.45","Sample.52","Sample.53","Sample.54","Sample.55","Sample.56")), per23.metadata,
+                by=c("name"="sample.id"), 
+                multiple = "all")
+colnames(jj) <- c("Species", "Sample","value","watersample","conc","Depth", "Surface","Station","Season","preservative")
+jj$Surface <- gsub("Deep","Bottom",jj$Surface)
+
+#jj$Species <- str_wrap(string = jj$Species,width = 8)
+
+filteredjj <- jj %>% filter(value>4000)
+
+ww <- ggplot(data=filteredjj, aes(axis1=Species, axis2=Season, axis3=Surface, y=log(value)))+
+  scale_x_discrete(limits=c("Species","Season", "Depth"))+
+  geom_alluvium(aes(fill=Station))+
+  geom_stratum(alpha=0.5,width = 1/3)+  
+  #geom_text(stat = "stratum", aes(label = after_stat(stratum)), size=3)+
+  ylab(label = "Log(Read count)")+
+  theme_minimal()+
+  theme(text=element_text(size=20));ww
+
+
+ggsave("Perley2023_COI_AlluvialPlot_NOLABELS.png", plot = ww, device = "png", path = "figures/2023_Perley/", width = 14, height=12, dpi = 300, bg="white")
 
 #Save RData
 save.image(file = "data/eDNA_NMDS_and_Diversity.RData")

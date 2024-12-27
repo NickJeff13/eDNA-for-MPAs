@@ -75,7 +75,7 @@ esi22.16s.merge <- left_join(esi22.16s, esi22.16s.taxa, by =c("ASV"="V1"))  %>% 
 esi22.coi <- read.table("data/2022Data/ESI/LerayXT/ESI22_COI_feature_table_export.tsv", header = T, sep="\t")
 esi22.coi.taxa <- read.table("data/2022Data/ESI/LerayXT/ESI2022.rdp.output", sep="\t") %>% glimpse()
 
-esi22.coi.merge <- left_join(esi22.coi, esi22.coi.taxa, by=c("ASV"="V1")) %>% filter(V26>0.92, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida","Mollusca","Nematoda","Rhodophyta","Gastrotricha","Chlorophyta","Echinodermata","Brachiopoda","Porifera","Cnidaria","Nemertea","Haptophyta","Hemichordata","Bryozoa","Ctenophora_comb_jellies","Tardigrada","Rotifera", "Chaetognatha")) %>% select(!starts_with(c("ENEG","EXT","PCRB"))) %>%
+esi22.coi.merge <- left_join(esi22.coi, esi22.coi.taxa, by=c("ASV"="V1")) %>% filter(V29>0.97, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida","Mollusca","Nematoda","Rhodophyta","Gastrotricha","Chlorophyta","Echinodermata","Brachiopoda","Porifera","Cnidaria","Nemertea","Haptophyta","Hemichordata","Bryozoa","Ctenophora_comb_jellies","Tardigrada","Rotifera", "Chaetognatha")) %>% select(!starts_with(c("ENEG","EXT","PCRB"))) %>%
   rename(Phylum=V12, Class=V15, Species=V27)
 
 
@@ -251,6 +251,7 @@ esi23.coi.perl.filt <- filter_low_reads(esi23.coi.perl.merge %>%
 #3. Haliclona oculata, a sponge = North Atlantic, keep as is
 #4. Ectyonopsis_pluridentata, sponge = South African species only, remove?
 #5. Crella_elegans sponge = Mediterranean species only, remove?
+#6. Obelia geniculata, a hydroid= found here, leave as is
 
 
 #Annelids
@@ -264,6 +265,7 @@ esi23.coi.perl.filt <- filter_low_reads(esi23.coi.perl.merge %>%
 #8. Laonice_cirrata = NW Atlantic, keep
 #9. Pseudopotamilla_reniformis = North Atlantic, keep as is 
 #10. Pectinaria_hyperborea = North Atlantic, but accepted genus is Cistenides. Change genus name
+#11. Trochochaeta multisetosa = found here, leave as is
 
 
 #Molluscs
