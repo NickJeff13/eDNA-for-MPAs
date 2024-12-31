@@ -444,8 +444,8 @@ colnames(esi23.m) <-mmmm$Species
 esi23.m<-esi23.m[rowSums(esi23.m[])>0,]
 #Remove field blanks
 esi23.mm <-esi23.m[-c(6,11:12,31,39,43,50,53),]
-nmds.esi23.fish <- metaMDS(esi23.mm, distance = "bray", k=10, trymax = 200, maxit=500)
-plot(nmds.esi23.fish)
+nmds.esi23.fish <- metaMDS(esi23.mm, distance = "jaccard", k=8, trymax = 200, maxit=500)
+#plot(nmds.esi23.fish)
 
 
 #extract nmds scores for ggplot
@@ -462,7 +462,7 @@ species.scores$species <- rownames(species.scores)
 
 hull.data <- data.scores %>%
   as.data.frame() %>%
-  group_by(Season) %>%
+  group_by(Location) %>%
   slice(chull(x=NMDS1,y=NMDS2))
 
 
@@ -500,7 +500,7 @@ u = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) +
 
 u/r
 
-ggsave(filename = "ESISeining_2023_12S_NMDS1_2_Bray_bySite.png",plot = r, device = "png", path = "figures/2024CSAS/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
+ggsave(filename = "ESISeining_2023_12S_NMDS1_2_Jaccard_Site_and_Location.png",plot = last_plot(), device = "png", path = "figures/2024CSAS/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
 
 #Accumulation curves
 
@@ -555,7 +555,7 @@ shan$season<-groupz
 
 levels=c("Spring","Summer","Fall")
 ggplot()+
-  geom_boxplot(data=shan,aes(x=site, y=Shannon,fill=site,alpha=0.7))+
+  geom_boxplot(data=shan,aes(x=site, y=Shannon,fill=site),alpha=0.7)+
   #geom_point(data=shan, aes(x=site,y=Shannon))+
   facet_wrap(.~factor(season, level=levels))+
   theme_bw()+
@@ -572,14 +572,14 @@ df_rich_rep <- rich_df %>%
   data.frame()
 
 ### 2023 Seining COI data - read in from 00_asv_filtering.R
-head(esi23.coi.filt)
+head(esi23.coi.filt2)
 
 ##Create a stacked barplot per site of animal class 
-esi23.coi.long <- esi23.coi.filt %>% 
+esi23.coi.long <- esi23.coi.filt2 %>% 
   gather(Site_Rep, Count,-c(OTU.ID, Phylum, Class, Species, V24,V26,V29)) %>% 
   separate(Site_Rep, into=c("Site", "Replicate"), sep="\\.")
 
-spec_summary<- tax_long %>%
+spec_summary<- esi23.coi.long %>%
   group_by(Site, Class) %>% 
   summarise(TotalCount =sum(Count)) %>%
   ungroup()
@@ -591,9 +591,6 @@ spec_summary <- spec_summary %>%
   ungroup() %>%
   mutate(Site=str_replace(Site, "WRK02","WRK"))
 
-level_order <- c("CHB","RSE","FAI","FRK","WRK","CON","PLS","CAB","TAW","TAE","MOS","ESB","MIR","NOR","LIN","CHT","ASB")
-#colour Site names by their colours in the map
-axis_pal <- c(rep("#d1495b",3), rep("#edae49",8), rep("#00798c",6))
 colourCount = length(unique(spec_summary$Class))
 getPalette = colorRampPalette(brewer.pal(9, "Set1"))
 
