@@ -32,7 +32,7 @@ esi21meta <-read.table("data/2021Data/metadata/2021-sample-metadata_ESIonly.tsv"
 esi21meta$sample.id<-gsub("-",".",esi21meta$sample.id)
 
 #### 12S
-glimpse(esi12s.filt)
+glimpse(esi12s.filt.fish)
 #esi12smat <- esi12s.filt %>% group_by(Species) %>% summarise(across(everything(), sum)) %>% data.frame()
 esi12tt <- t(esi12s.filt.fish[,2:length(colnames(esi12s.filt.fish))])
 colnames(esi12tt)<-esi12s.filt.fish$Species
@@ -81,12 +81,54 @@ data.scores.metadat <-left_join(data.scores,esi21meta, by=c("Sample"="sample.id"
 species.scores <- as.data.frame(scores(esi12s.nmds.jac, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
 species.scores$species <- rownames(species.scores) 
 
+hull.data.per21 <- data.scores.metadat %>%
+  as.data.frame() %>%
+  group_by(surface) %>%
+  slice(chull(x=NMDS1,y=NMDS2)) #for this dataset, there's no differentiation between bottom and surface
+
+
 #plot it up
-ggplot(data.scores.metadat %>% filter(surface !="BLANK"), aes(x = NMDS1, y = NMDS2)) + 
+c<- ggplot(data.scores.metadat %>% filter(surface !="BLANK"), aes(x = NMDS1, y = NMDS2)) + 
+  geom_polygon(data=hull.data.per21 %>% filter(surface !="BLANK"),aes(x=NMDS1,y=NMDS2,fill=surface),color="black",alpha=0.30) +
+  scale_fill_manual(values=c("#c43b3b", "cornflowerblue"))+
   #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
-  geom_jitter(size = 4, aes(fill = depth, shape = surface), 
+  geom_jitter(size = 4, aes(fill = surface, shape = surface), 
               width = 10, height = 10) +
-  scale_fill_viridis_c(option="viridis") + # Continuous color scale for depth
+  #scale_fill_viridis_c(option="viridis") + # Continuous color scale for depth
+  scale_shape_manual(values = c(21, 24)) +         # Discrete shapes (e.g., circle and triangle)
+  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+        axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
+        legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+        legend.position = "none", axis.title.y = element_text(face = "bold", size = 14), 
+        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+        legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        legend.key=element_blank()) + 
+  labs(x = "NMDS1", y = "NMDS2")  + 
+  geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi12s.nmds.bray$stress,3),"k =",esi12s.nmds.bray$ndim)));c
+
+#extract nmds scores for ggplot - here just swap the various NMDS objects to make data.scores
+data.scores = as.data.frame(scores(esi16s.nmds.jac)$sites)
+data.scores$Sample <- rownames(data.scores)
+data.scores.metadat <-left_join(data.scores,esi21meta, by=c("Sample"="sample.id"))
+
+
+species.scores <- as.data.frame(scores(esi16s.nmds.jac, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
+species.scores$species <- rownames(species.scores) 
+
+hull.data.per21 <- data.scores.metadat %>%
+  as.data.frame() %>%
+  group_by(surface) %>%
+  slice(chull(x=NMDS1,y=NMDS2)) #for this dataset, there's no differentiation between bottom and surface
+
+
+d<- ggplot(data.scores.metadat %>% filter(surface !="BLANK"), aes(x = NMDS1, y = NMDS2)) + 
+  geom_polygon(data=hull.data.per21 %>% filter(surface !="BLANK"),aes(x=NMDS1,y=NMDS2,fill=surface),color="black",alpha=0.30) +
+  scale_fill_manual(values=c("#c43b3b", "cornflowerblue"))+
+  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+  geom_jitter(size = 4, aes(fill = surface, shape = surface), 
+              width = 10, height = 10) +
+  #scale_fill_viridis_c(option="viridis") + # Continuous color scale for depth
   scale_shape_manual(values = c(21, 24)) +         # Discrete shapes (e.g., circle and triangle)
   theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
         axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
@@ -96,10 +138,12 @@ ggplot(data.scores.metadat %>% filter(surface !="BLANK"), aes(x = NMDS1, y = NMD
         legend.title = element_text(size = 14, colour = "black", face = "bold"), 
         panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         legend.key=element_blank()) + 
-  labs(x = "NMDS1", y = "NMDS2")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=41,hjust=1.1,label=paste("Stress =",round(esi12s.nmds.jac$stress,3),"k =",esi12s.nmds.jac$ndim)))
+  labs(x = "NMDS1", y = "NMDS2")+
+  geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi16s.nmds.bray$stress,3),"k =",esi16s.nmds.bray$ndim)));d
 
-ggsave(filename = "ESI21_16S_NMDS1_NMDS1_Jaccard_FishOnly.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 320)
+c+d
+
+ggsave(filename = "ESI21_12S_and_16S_NMDS1_2_combined.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 320)
 
 
 
@@ -467,7 +511,7 @@ hull.data <- data.scores %>%
 
 
 r = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
-  geom_polygon(data=hull.data,aes(x=NMDS1,y=NMDS2,fill=Location, color=Location),alpha=0.30) + # add the hulls
+  geom_polygon(data=hull.data,aes(x=NMDS1,y=NMDS2,fill=Location),color="black",alpha=0.30) + # add the hulls
     #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
   geom_point(size = 4, shape=21, aes(fill=Location),colour="black")+ 
   theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
@@ -483,7 +527,8 @@ r = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) +
   nmdstheme;r
 
 u = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
-  geom_polygon(data=hull.data,aes(x=NMDS1,y=NMDS2,fill=Season, color=Season),alpha=0.30) + # add the hulls
+  geom_polygon(data=hull.data,aes(x=NMDS1,y=NMDS2,fill=Season),color="black",alpha=0.30) + # add the hulls
+  scale_fill_manual(values=c("firebrick","cornflowerblue","forestgreen"))+
   #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
   geom_point(size = 4, shape=21, aes(fill=Season),colour="black")+ 
   theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
@@ -559,11 +604,16 @@ ggplot()+
   #geom_point(data=shan, aes(x=site,y=Shannon))+
   facet_wrap(.~factor(season, level=levels))+
   theme_bw()+
-  theme(strip.background = element_rect(fill="white"))
-#get species richness as n species too
-rich_df<-as.data.frame(commat2)
+  theme(strip.background = element_rect(fill="white"),
+        text=element_text(size=16))
 
-df_rich_rep <- rich_df %>%
+
+ggsave("Seining2023_ESI_ShannonDiversity_Seasonal.png",plot=last_plot(), device = "png", width=10, height=8, path = "figures/2023Seining/", dpi = 300, bg = "white")
+
+#get species richness as n species too
+
+
+df_rich_rep <- esi23.mm %>%
   rownames_to_column(var="site") %>%
   mutate(Code=substr(site, start=1, stop=3)) %>%
   group_by(Code) %>%
@@ -573,6 +623,9 @@ df_rich_rep <- rich_df %>%
 
 ### 2023 Seining COI data - read in from 00_asv_filtering.R
 head(esi23.coi.filt2)
+
+#remove field blanks (ESI_13, ESI_05, ESI_19, ESI_07, 499655, 499618, 499622, 499630, 499634, 499638, 499646, 499650, 499654)
+esi23.coi.filt3 <- esi23.coi.filt2 %>% select(-c("X2023ESI_13","X2023ESI_19","X2023ESI_07","X2023ESI_05","X499655","X499618","X499622","X499630","X499634","X499638","X499646","X499650","X499654","X499655"))
 
 ##Create a stacked barplot per site of animal class 
 esi23.coi.long <- esi23.coi.filt2 %>% 
@@ -606,6 +659,51 @@ ggplot(spec_summary, aes(x = factor(Site, level=level_order), y = RelativeCount,
 
 ggsave(filename = "Site_ClassBarPlots.png", plot = last_plot(),device = "png", path = "output/", width = 10, height = 8, units = "in", dpi = 300)
 
+# NMDS of COI data
+esi23.coi.mat <- esi23.coi.filt3 %>% 
+  select(starts_with("X")) %>%
+  t()
+
+colnames(esi23.coi.mat) <-esi23.coi.filt3$Species
+
+esi23.coi.mat<-esi23.coi.mat[rowSums(esi23.coi.mat[])>0,]
+#Remove field blanks
+nmds.esi23.coi <- metaMDS(esi23.coi.mat, distance = "jaccard", k=14, trymax = 200)
+
+
+#extract nmds scores for ggplot
+data.scores = as.data.frame(scores(nmds.esi23.coi)$sites)
+
+data.scores$Sample <- rownames(data.scores)
+data.scores$Season <- groupz
+data.scores$Location<-sample.sites
+
+
+
+species.scores <- as.data.frame(scores(nmds.esi23.fish, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
+species.scores$species <- rownames(species.scores) 
+
+hull.data <- data.scores %>%
+  as.data.frame() %>%
+  group_by(Season) %>%
+  slice(chull(x=NMDS1,y=NMDS2))
+
+
+r = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
+  geom_polygon(data=hull.data,aes(x=NMDS1,y=NMDS2,fill=Location, color=Location),alpha=0.30) + # add the hulls
+  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+  geom_point(size = 4, shape=21, aes(fill=Location),colour="black")+ 
+  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+        axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
+        legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+        legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
+        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+        legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        legend.key=element_blank()) + 
+  labs(x = "NMDS1", y = "NMDS2")  + 
+  geom_text(aes(x=Inf, y=Inf, vjust=37,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
+  nmdstheme;r
 
 # 2023 ESI Perley Data ----------------------------------------------------
 
