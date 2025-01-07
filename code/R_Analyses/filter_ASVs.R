@@ -23,8 +23,7 @@ filter_low_reads <- function(df) {
 esi12s <- read.table(file = "data/2021Data/12s results/mergedspecies.tsv", header = T, sep="\t")
 esi12s.filt <- esi12s %>%
   select(!ASV) %>%
-  filter(pident>97 & Group %in% c("birds","bony fishes", "crustaceans", "gastropods", "hemichordates","isopods", "jellyfishes", "lancelets","ribbon worms","sea cucumbers","sea urchins","segmented worms","sharks & rays","starfish","whales & dolphins")) %>% 
-  group_by(Species)
+  filter(pident>97 & Group %in% c("birds","bony fishes", "crustaceans", "gastropods", "hemichordates","isopods", "jellyfishes", "lancelets","ribbon worms","sea cucumbers","sea urchins","segmented worms","sharks & rays","starfish","whales & dolphins"))
 
 esi12s.filt.fish <- esi12s %>% select(!ASV) %>%
   filter(pident>98 & Group %in% "bony fishes") %>% 
@@ -32,8 +31,8 @@ esi12s.filt.fish <- esi12s %>% select(!ASV) %>%
 
 dim(esi12s.filt) #649 104
 #remove Group, pident, and evalue columns next
-esi12s.filt <- esi12s.filt[,-c(2:4)]
-esi12s.filt.fish <- esi12s.filt.fish[,-c(2:4)]
+
+esi12s.filt.fish <- filter_low_reads(esi12s.filt.fish[,-c(2:4)])
 
 #run this object in NMDS_plot.R script next
 
@@ -75,7 +74,7 @@ esi22.16s.merge <- left_join(esi22.16s, esi22.16s.taxa, by =c("ASV"="V1"))  %>% 
 esi22.coi <- read.table("data/2022Data/ESI/LerayXT/ESI22_COI_feature_table_export.tsv", header = T, sep="\t")
 esi22.coi.taxa <- read.table("data/2022Data/ESI/LerayXT/ESI2022.rdp.output", sep="\t") %>% glimpse()
 
-esi22.coi.merge <- left_join(esi22.coi, esi22.coi.taxa, by=c("ASV"="V1")) %>% filter(V29>0.97, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida","Mollusca","Nematoda","Rhodophyta","Gastrotricha","Chlorophyta","Echinodermata","Brachiopoda","Porifera","Cnidaria","Nemertea","Haptophyta","Hemichordata","Bryozoa","Ctenophora_comb_jellies","Tardigrada","Rotifera", "Chaetognatha")) %>% select(!starts_with(c("ENEG","EXT","PCRB"))) %>%
+esi22.coi.merge <- left_join(esi22.coi, esi22.coi.taxa, by=c("ASV"="V1")) %>% filter(V29>0.97, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida","Mollusca","Nematoda","Rhodophyta","Gastrotricha","Chlorophyta","Echinodermata","Brachiopoda","Porifera","Cnidaria","Nemertea","Haptophyta","Streptophyta","Hemichordata","Bryozoa","Ctenophora_comb_jellies","Tardigrada","Rotifera", "Chaetognatha","Prasinodermophyta")) %>% select(!starts_with(c("ENEG","EXT","PCRB"))) %>%
   rename(Phylum=V12, Class=V15, Species=V27)
 
 

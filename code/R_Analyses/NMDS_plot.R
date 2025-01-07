@@ -167,11 +167,6 @@ esi22.12s.merge$V6 <- gsub("Pollachius virens", "Pollachius pollachius", esi22.1
 esi22.12s.merge$V6 <- gsub("Pholis ornata", "Pholis gunnellus", esi22.12s.merge$V6)
 
 
-
-spec.mat<-as.data.frame(t(esi22.12s.merge %>% select(contains("Sample.")) %>% as.data.frame()))
-colnames(spec.mat)<-esi22.12s.merge$V6
-spec.mat<-spec.mat[rowSums(spec.mat)>0,]
-
 #Make a barplot of taxa
 tt<-pivot_longer(esi22.12s.merge, cols=starts_with("Sample"))
 
@@ -207,56 +202,158 @@ f/g
 
 ggsave(filename = "ESI2022_FishBarplots_Combined.png",plot = last_plot(), device = "png", path = "figures/2022Results//", width = 10, height=8, dpi = 300, bg = "white")
 
-#Run the NMDS on the 16S data
+#Run the NMDS on the 12S and 16S data
+#12S
 
+mat22.12s<-as.data.frame(t(esi22.12s.merge %>% select(contains("Sample."))))
+colnames(mat22.12s)<-esi22.12s.merge$V6
+mat22.12s<-mat22.12s[rowSums(mat22.12s)>0,]
+
+#Remove blanks (Samples 6, 12, 13, 28, 53, 88-91) and one outlier sample (Sample 35)
+esi22.12s2 <-mat22.12s[-c(4,5,17,23,59,60,62),]
+
+#16S
+glimpse(esi22.16s.merge)
+mat22.16s<-as.data.frame(t(esi22.16s.merge %>% select(starts_with("Sample"))))
+colnames(mat22.16s)<-esi22.16s.merge$V6
+mat22.16s<-mat22.16s[rowSums(mat22.16s)>0,]
+
+esi22.16s2<-mat22.16s[-c(4,13,29),]
+# Run NMDS on the ungrouped 12S and 16S datasets - better to leave ungrouped as the ASVs contribute to beta diversity better this way 
+esi16s.nmds.jac<-metaMDS(comm = esi22.16s2, distance = "jaccard", k=8, trymax=100)
+esi16s.nmds.bray<-metaMDS(comm = esi22.16s2, distance = "bray", k=8, trymax=100)
+esi12s.nmds.jac<-metaMDS(comm = esi22.12s2, distance = "jaccard", k=8, trymax=100)
+esi12s.nmds.bray<-metaMDS(comm = esi22.12s2, distance = "bray", k=8, trymax=100)
+
+#extract nmds scores for ggplot - here just swap the various NMDS objects to make data.scores
+data.scores = as.data.frame(scores(esi12s.nmds.jac)$sites)
+data.scores$Sample <- rownames(data.scores)
+data.scores.metadat <-left_join(data.scores,esi22.meta, by=c("Sample"="sample.id"))
+
+
+species.scores <- as.data.frame(scores(esi12s.nmds.jac, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
+species.scores$species <- rownames(species.scores) 
+
+hull.data.per22 <- data.scores.metadat %>%
+  as.data.frame() %>%
+  group_by(surface) %>%
+  slice(chull(x=NMDS1,y=NMDS2)) #for this dataset, there's no differentiation between bottom and surface
+
+
+#plot it up
+e<- ggplot(data.scores.metadat, aes(x = NMDS1, y = NMDS2)) + 
+  geom_polygon(data=hull.data.per22,aes(x=NMDS1,y=NMDS2,fill=surface),color="black",alpha=0.30) +
+  scale_fill_manual(values=c("#c43b3b", "cornflowerblue"))+
+  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+  geom_jitter(data=data.scores.metadat, size = 4, 
+         aes(fill = surface, shape = surface))+
+                                              #scale_fill_viridis_c(option="viridis") + # Continuous color scale for depth
+  scale_shape_manual(values = c(21, 24)) +         # Discrete shapes (e.g., circle and triangle)
+  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+        axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
+        legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+        legend.position = "none", axis.title.y = element_text(face = "bold", size = 14), 
+        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+        legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        legend.key=element_blank()) + 
+  labs(x = "NMDS1", y = "NMDS2")  + 
+  geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi12s.nmds.jac$stress,3),"k =",esi12s.nmds.jac$ndim)));e
+
+#extract nmds scores for ggplot - here just swap the various NMDS objects to make data.scores
+data.scores = as.data.frame(scores(esi16s.nmds.jac)$sites)
+data.scores$Sample <- rownames(data.scores)
+data.scores.metadat <-left_join(data.scores,esi22.meta, by=c("Sample"="sample.id"))
+
+
+species.scores <- as.data.frame(scores(esi16s.nmds.jac, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
+species.scores$species <- rownames(species.scores) 
+
+hull.data.per22 <- data.scores.metadat %>%
+  as.data.frame() %>%
+  group_by(surface) %>%
+  slice(chull(x=NMDS1,y=NMDS2)) #for this dataset, there's no differentiation between bottom and surface
+
+
+#plot it up - 16S
+f<- ggplot(data.scores.metadat, aes(x = NMDS1, y = NMDS2)) + 
+  geom_polygon(data=hull.data.per22,aes(x=NMDS1,y=NMDS2,fill=surface),color="black",alpha=0.30) +
+  scale_fill_manual(values=c("#c43b3b", "cornflowerblue"))+
+  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+  geom_jitter(data=data.scores.metadat, size = 4, 
+              aes(fill = surface, shape = surface))+
+  #scale_fill_viridis_c(option="viridis") + # Continuous color scale for depth
+  scale_shape_manual(values = c(21, 24)) +         # Discrete shapes (e.g., circle and triangle)
+  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+        axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
+        legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+        legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
+        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+        legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        legend.key=element_blank()) + 
+  labs(x = "NMDS1", y = "")  + 
+  geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi16s.nmds.jac$stress,3),"k =",esi16s.nmds.jac$ndim)));f
+
+
+e+f+plot_annotation(title="2022",tag_levels = "A",
+                    theme = theme(plot.title = element_text(size = 20)))
+
+ggsave(filename = "ESI2022_12s_16s_NMDS_Jaccard_Combined.png", plot = last_plot(), device = "png", path = "figures/2022Results/", width = 10, height=8, dpi = 300, bg = "white")
 
 ###### LerayXT COI Data ##
 head(esi22.coi.merge)
 
 #Make a barplot of taxa
-ii <-pivot_longer(esi22.coi.merge, cols=starts_with("Sample"))
+ii <-pivot_longer(esi22.coi.merge, cols=starts_with("Sample")) %>% filter(!Species=="Homo_sapiens")
 ii$Species <- gsub("Nothria_conchylega_CMC02","Nothria_conchylega", ii$Species)
-bb <- ggplot()+geom_bar(data=ii%>%filter(value>200), aes(x=Species, y=log(value)),stat="identity")+
+ii$Species <- gsub("Bipalponephtys_neotena","Micronephthys_neotena", ii$Species)
+ii$Species <- gsub("Euclymene_sp.","Euclymene_zonalis", ii$Species)
+
+bb <- ggplot()+geom_bar(data=ii%>%filter(value>400), aes(x=Species, y=log(value)),stat="identity")+
   xlab(label = "Species")+
   ylab(label="COI Log(Read Count)")+
   theme_bw()+
   theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));bb
 
+bb+plot_annotation(title = "2022",
+                   theme = theme(plot.title = element_text(size = 20)))
+
 ggsave(filename = "ESI2022_COI_Barplot.png",plot = last_plot(), device = "png", path = "figures/2022Results/", width = 10, height=8, dpi = 300, bg = "white")
 
 #COI NMDS
-spec.mat<-as.data.frame(t(esi22.coi.merge[,2:92]))
-colnames(spec.mat)<-esi22.coi.merge$Species
-spec.mat<-spec.mat[rowSums(spec.mat)>0,]
+spec.mat.coi<-as.data.frame(t(esi22.coi.merge %>% select(starts_with("Sample"))))
+colnames(spec.mat.coi)<-esi22.coi.merge$Species
+spec.mat.coi<-spec.mat.coi[rowSums(spec.mat.coi)>0,]
 
 #Remove blanks - samples 6,12,13,28, 53, 88-91 for this dataset
-esi22.coi.mm2 <-spec.mat[-c(4,5,21,84),]
-nmds.esi22.coi <- metaMDS(esi22.coi.mm2, distance = "jaccard", k=12, trymax = 200, maxit=500)
+esi22.coi.mm2 <-spec.mat.coi[-c(4,5,21,84),]
+nmds.esi22.coi <- metaMDS(esi22.coi.mm2, distance = "jaccard", k=18 , trymax = 200, maxit=500)
 
-h#extract nmds scores for ggplot
-data.scores = as.data.frame(scores(nmds.esi23.fish)$sites)
-
+#extract nmds scores for ggplot
+data.scores = as.data.frame(scores(nmds.esi22.coi)$sites)
 data.scores$Sample <- rownames(data.scores)
 
 #merge with metadata by sample id column
-data.scores.merge <- inner_join(data.scores,per23.metadata, by=c("Sample"="sample.id"))
+data.scores.merge <- inner_join(data.scores,esi22.meta, by=c("Sample"="sample.id"))
 
 
-species.scores <- as.data.frame(scores(nmds.esi23.fish, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
+species.scores <- as.data.frame(scores(nmds.esi22.coi, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
 species.scores$species <- rownames(species.scores) 
 
-hull.data.per23 <- data.scores.merge %>%
+hull.data.per22.coi <- data.scores.merge %>%
   as.data.frame() %>%
-  group_by(season) %>%
+  group_by(surface) %>%
   slice(chull(x=NMDS1,y=NMDS2)) #for this dataset, there's no differentiation between bottom and surface
-colorScales <- c("#c43b3b", "#80c43b", "#3bc4c4", "#7f3bc4")
 
-v = ggplot() + 
-  geom_polygon(data=hull.data.per23,aes(x=NMDS1,y=NMDS2,fill=season),color="black",alpha=0.30) +
-  scale_fill_manual(values=c("firebrick","cornflowerblue","forestgreen"))+
+
+r = ggplot() + 
+  geom_polygon(data=hull.data.per22.coi,aes(x=NMDS1, y=NMDS2, fill=surface),color="black",alpha=0.30) +
+  scale_fill_manual(values=c("firebrick","cornflowerblue"),name="Water sample")+
   ggnewscale::new_scale_fill()+
-  geom_point(data=data.scores.merge, aes(x = NMDS1, y = NMDS2, fill=station),size = 4, shape=21, colour="black")+ 
-  scale_fill_manual(values=colorScales)+
+  geom_point(data=data.scores.merge, aes(x = NMDS1, y = NMDS2, fill=as.numeric(depth),shape=surface),size = 4, colour="black")+ 
+  scale_shape_manual(values=c(21,24),name="Water sample")+
+  scale_fill_viridis_c(option="viridis",name="Depth (m)")+
   #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
   theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
         axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
@@ -266,12 +363,13 @@ v = ggplot() +
         #legend.title = element_text(size = 14, colour = "black", face = "bold"), 
         panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2)) + 
   labs(x = "NMDS1", y = "NMDS2")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=48,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
-  nmdstheme;v
+  geom_text(aes(x=Inf, y=Inf, vjust=48,hjust=1.2,label=paste("Stress =",round(nmds.esi22.coi$stress,3),"k =",nmds.esi22.coi$ndim)))+
+  nmdstheme;r
 
+r + plot_annotation(title = "Perley 2022 COI",
+                                    theme = theme(plot.title = element_text(size = 20)))
 
-ggsave(filename = "ESI23_Perley_12S_NMDS1_2_bySeason.png",plot = v, device = "png", path = "figures/2023_Perley/", width = 12, height=8, units = "in", dpi = 400, bg = "white")  
-
+ggsave(filename = "ESI22_Perley_COI_NMDS1_2_byDepth.png",plot = v, device = "png", path = "figures/2023_Perley/", width = 12, height=8, units = "in", dpi = 400, bg = "white")  
 
 
 
@@ -597,6 +695,8 @@ shan <-shan %>% rename(Shannon=diversity.esi23.mm..index....shannon..)
 #we can aggregate these so we get a site level index
 shan$site <-sample.sites
 shan$season<-groupz
+colnames(shan) <- c("Shannon","site","season")
+
 
 levels=c("Spring","Summer","Fall")
 ggplot()+
