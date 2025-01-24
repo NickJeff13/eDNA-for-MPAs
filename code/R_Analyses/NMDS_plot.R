@@ -10,7 +10,7 @@ library(tidyverse)
 library(ggalluvial) #make alluvial plots
 library(patchwork) #stick plots together
 library(eulerr) #for Venn diagrams
-
+library(pals)
 
 # NMDS theme for all plots ------------------------------------------------
 
@@ -23,7 +23,11 @@ nmdstheme <- theme_bw()+
     panel.grid.minor = element_blank(),
     text=element_text(size=18))
 
-# Start loading the data
+
+# Load RData object -------------------------------------------------------
+# Can load this object if saved at the bottom of this script
+load("data/eDNA_NMDS_and_Diversity.RData")
+
 
 # 2021 ESI Perley Data ----------------------------------------------------
 
@@ -40,12 +44,13 @@ esi12ttt<-esi12tt[rowSums(esi12tt[])>0,]
 
 ##### Make a barplot of taxa
 tt<-pivot_longer(esi12s.filt.fish, cols=starts_with("Sample"))
-a<- ggplot()+geom_bar(data=tt%>%filter(value>2000), aes(x=Species, y=log(value)),stat="identity")+
-  xlab(label = "")+
-  ylab(label="12S Log(Read Count)")+
-  theme_bw()+
-  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14))+
-  ggtitle('2021');a
+  
+  p1 <- ggplot()+geom_bar(data=tt%>%filter(value>2000), aes(x=Species, y=log(value)),stat="identity")+
+    xlab(label = "")+
+    ylab(label="12S Log(Read Count)")+
+    theme_bw()+
+    theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14))+
+    ggtitle('2021');p1
 
 #16S
 glimpse(esi16s.filt)
@@ -55,14 +60,15 @@ spec.mat<-spec.mat[rowSums(spec.mat)>0,]
 
 #Make a barplot of taxa
 tt<-pivot_longer(esi16s.filt, cols=starts_with("Sample"))
-b <- ggplot()+geom_bar(data=tt%>%filter(value>3000), aes(x=species, y=log(value)),stat="identity")+
-  xlab(label = "Species")+
-  ylab(label="16S Log(Read Count)")+
-  theme_bw()+
-  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));b
+
+  p2 <- ggplot()+geom_bar(data=tt%>%filter(value>3000), aes(x=species, y=log(value)),stat="identity")+
+    xlab(label = "Species")+
+    ylab(label="16S Log(Read Count)")+
+    theme_bw()+
+    theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));p2
 
 #plot with patchwork
-a/b
+p1/p2
 
 ggsave(filename = "ESI2021_FishBarplots_Combined.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 300, bg = "white")
 
@@ -88,24 +94,24 @@ hull.data.per21 <- data.scores.metadat %>%
 
 
 #plot it up
-c<- ggplot(data.scores.metadat %>% filter(surface !="BLANK"), aes(x = NMDS1, y = NMDS2)) + 
-  geom_polygon(data=hull.data.per21 %>% filter(surface !="BLANK"),aes(x=NMDS1,y=NMDS2,fill=surface),color="black",alpha=0.30) +
-  scale_fill_manual(values=c("#c43b3b", "cornflowerblue"))+
-  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
-  geom_jitter(size = 4, aes(fill = surface, shape = surface), 
-              width = 10, height = 10) +
-  #scale_fill_viridis_c(option="viridis") + # Continuous color scale for depth
-  scale_shape_manual(values = c(21, 24)) +         # Discrete shapes (e.g., circle and triangle)
-  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
-        axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
-        legend.text = element_text(size = 12, face ="bold", colour ="black"), 
-        legend.position = "none", axis.title.y = element_text(face = "bold", size = 14), 
-        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
-        legend.title = element_text(size = 14, colour = "black", face = "bold"), 
-        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
-        legend.key=element_blank()) + 
-  labs(x = "NMDS1", y = "NMDS2")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi12s.nmds.bray$stress,3),"k =",esi12s.nmds.bray$ndim)));c
+  p3 <- ggplot(data.scores.metadat %>% filter(surface !="BLANK"), aes(x = NMDS1, y = NMDS2)) + 
+   geom_polygon(data=hull.data.per21 %>% filter(surface !="BLANK"),aes(x=NMDS1,y=NMDS2,fill=surface),color="black",alpha=0.30) +
+    scale_fill_manual(values=c("#c43b3b", "cornflowerblue"))+
+    #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+    geom_jitter(size = 4, aes(fill = surface, shape = surface), 
+                width = 10, height = 10) +
+    #scale_fill_viridis_c(option="viridis") + # Continuous color scale for depth
+    scale_shape_manual(values = c(21, 24)) +         # Discrete shapes (e.g., circle and triangle)
+    theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+          axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
+          legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+          legend.position = "none", axis.title.y = element_text(face = "bold", size = 14), 
+          axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+          legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+          panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+          legend.key=element_blank()) + 
+    labs(x = "NMDS1", y = "NMDS2")  + 
+   geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi12s.nmds.bray$stress,3),"k =",esi12s.nmds.bray$ndim)));p3
 
 #extract nmds scores for ggplot - here just swap the various NMDS objects to make data.scores
 data.scores = as.data.frame(scores(esi16s.nmds.jac)$sites)
@@ -122,26 +128,26 @@ hull.data.per21 <- data.scores.metadat %>%
   slice(chull(x=NMDS1,y=NMDS2)) #for this dataset, there's no differentiation between bottom and surface
 
 
-d<- ggplot(data.scores.metadat %>% filter(surface !="BLANK"), aes(x = NMDS1, y = NMDS2)) + 
-  geom_polygon(data=hull.data.per21 %>% filter(surface !="BLANK"),aes(x=NMDS1,y=NMDS2,fill=surface),color="black",alpha=0.30) +
-  scale_fill_manual(values=c("#c43b3b", "cornflowerblue"))+
-  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
-  geom_jitter(size = 4, aes(fill = surface, shape = surface), 
+  p4 <- ggplot(data.scores.metadat %>% filter(surface !="BLANK"), aes(x = NMDS1, y = NMDS2)) + 
+    geom_polygon(data=hull.data.per21 %>% filter(surface !="BLANK"),aes(x=NMDS1,y=NMDS2,fill=surface),color="black",alpha=0.30) +
+    scale_fill_manual(values=c("#c43b3b", "cornflowerblue"))+
+    #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+    geom_jitter(size = 4, aes(fill = surface, shape = surface), 
               width = 10, height = 10) +
-  #scale_fill_viridis_c(option="viridis") + # Continuous color scale for depth
-  scale_shape_manual(values = c(21, 24)) +         # Discrete shapes (e.g., circle and triangle)
-  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
-        axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
-        legend.text = element_text(size = 12, face ="bold", colour ="black"), 
-        legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
-        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
-        legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+    #scale_fill_viridis_c(option="viridis") + # Continuous color scale for depth
+    scale_shape_manual(values = c(21, 24)) +         # Discrete shapes (e.g., circle and triangle)
+    theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+          axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
+          legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+          legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
+          axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+          legend.title = element_text(size = 14, colour = "black", face = "bold"), 
         panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         legend.key=element_blank()) + 
-  labs(x = "NMDS1", y = "NMDS2")+
-  geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi16s.nmds.bray$stress,3),"k =",esi16s.nmds.bray$ndim)));d
+    labs(x = "NMDS1", y = "NMDS2")+
+    geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi16s.nmds.bray$stress,3),"k =",esi16s.nmds.bray$ndim)));p4
 
-c+d
+p3 + p4
 
 ggsave(filename = "ESI21_12S_and_16S_NMDS1_2_combined.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 320)
 
@@ -182,12 +188,12 @@ esi22.12s.merge$V6 <- gsub("Pholis ornata", "Pholis gunnellus", esi22.12s.merge$
 tt<-pivot_longer(esi22.12s.merge, cols=starts_with("Sample"))
 
 
-f <- ggplot()+geom_bar(data=tt%>%filter(value>2000), aes(x=V6, y=log(value)),stat="identity")+
-  xlab(label = "Species")+
-  ylab(label="12S Log(Read Count)")+
-  theme_bw()+
-  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14))+
-  ggtitle('2022');f
+  p5 <- ggplot()+geom_bar(data=tt%>%filter(value>2000), aes(x=V6, y=log(value)),stat="identity")+
+    xlab(label = "Species")+
+    ylab(label="12S Log(Read Count)")+
+    theme_bw()+
+    theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14))+
+    ggtitle('2022');p5
 
 
 ###### 16S Data ##
@@ -202,14 +208,14 @@ esi22.16s.merge$V6 <- gsub("Pleuronectes platessa", "Pleuronectinae", esi22.16s.
 
 tt<-pivot_longer(esi22.16s.merge, cols=starts_with("Sample"))
 
-g <- ggplot()+geom_bar(data=tt%>%filter(value>2000, !V6 %in% c("Platichthys flesus","Myzopsetta punctatissima")), aes(x=V6, y=log(value)),stat="identity")+
-  xlab(label = "Species")+
-  ylab(label="16S Log(Read Count)")+
-  theme_bw()+
-  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));g
+  p6 <- ggplot()+geom_bar(data=tt%>%filter(value>2000, !V6 %in% c("Platichthys flesus","Myzopsetta punctatissima"  )), aes(x=V6, y=log(value)),stat="identity")+
+   xlab(label = "Species")+
+    ylab(label="16S Log(Read Count)")+
+    theme_bw()+
+    theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));p6
 
 #plot with patchwork
-f/g
+p5/p6
 
 ggsave(filename = "ESI2022_FishBarplots_Combined.png",plot = last_plot(), device = "png", path = "figures/2022Results//", width = 10, height=8, dpi = 300, bg = "white")
 
@@ -252,24 +258,24 @@ hull.data.per22 <- data.scores.metadat %>%
 
 
 #plot it up
-e<- ggplot(data.scores.metadat, aes(x = NMDS1, y = NMDS2)) + 
-  geom_polygon(data=hull.data.per22,aes(x=NMDS1,y=NMDS2,fill=surface),color="black",alpha=0.30) +
-  scale_fill_manual(values=c("#c43b3b", "cornflowerblue"))+
-  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
-  geom_jitter(data=data.scores.metadat, size = 4, 
-         aes(fill = surface, shape = surface))+
+  p7 <- ggplot(data.scores.metadat, aes(x = NMDS1, y = NMDS2)) + 
+    geom_polygon(data=hull.data.per22,aes(x=NMDS1,y=NMDS2,fill=surface),color="black",alpha=0.30) +
+    scale_fill_manual(values=c("#c43b3b", "cornflowerblue"))+
+    #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+    geom_jitter(data=data.scores.metadat, size = 4, 
+           aes(fill = surface, shape = surface))+
                                               #scale_fill_viridis_c(option="viridis") + # Continuous color scale for depth
-  scale_shape_manual(values = c(21, 24)) +         # Discrete shapes (e.g., circle and triangle)
-  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
-        axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
-        legend.text = element_text(size = 12, face ="bold", colour ="black"), 
-        legend.position = "none", axis.title.y = element_text(face = "bold", size = 14), 
-        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
-        legend.title = element_text(size = 14, colour = "black", face = "bold"), 
-        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+    scale_shape_manual(values = c(21, 24)) +         # Discrete shapes (e.g., circle and triangle)
+    theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+          axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
+          legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+          legend.position = "none", axis.title.y = element_text(face = "bold", size = 14), 
+          axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+          legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+          panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         legend.key=element_blank()) + 
-  labs(x = "NMDS1", y = "NMDS2")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi12s.nmds.jac$stress,3),"k =",esi12s.nmds.jac$ndim)));e
+    labs(x = "NMDS1", y = "NMDS2")  + 
+    geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi12s.nmds.jac$stress,3),"k =",esi12s.nmds.jac$ndim)));p7
 
 #extract nmds scores for ggplot - here just swap the various NMDS objects to make data.scores
 data.scores = as.data.frame(scores(esi16s.nmds.jac)$sites)
@@ -287,27 +293,27 @@ hull.data.per22 <- data.scores.metadat %>%
 
 
 #plot it up - 16S
-f<- ggplot(data.scores.metadat, aes(x = NMDS1, y = NMDS2)) + 
-  geom_polygon(data=hull.data.per22,aes(x=NMDS1,y=NMDS2,fill=surface),color="black",alpha=0.30) +
-  scale_fill_manual(values=c("#c43b3b", "cornflowerblue"))+
-  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
-  geom_jitter(data=data.scores.metadat, size = 4, 
+  p8 <- ggplot(data.scores.metadat, aes(x = NMDS1, y = NMDS2)) + 
+    geom_polygon(data=hull.data.per22,aes(x=NMDS1,y=NMDS2,fill=surface),color="black",alpha=0.30) +
+    scale_fill_manual(values=c("#c43b3b", "cornflowerblue"))+
+    #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+    geom_jitter(data=data.scores.metadat, size = 4, 
               aes(fill = surface, shape = surface))+
-  #scale_fill_viridis_c(option="viridis") + # Continuous color scale for depth
-  scale_shape_manual(values = c(21, 24)) +         # Discrete shapes (e.g., circle and triangle)
-  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
-        axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
-        legend.text = element_text(size = 12, face ="bold", colour ="black"), 
-        legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
-        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
-        legend.title = element_text(size = 14, colour = "black", face = "bold"), 
-        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
-        legend.key=element_blank()) + 
-  labs(x = "NMDS1", y = "")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi16s.nmds.jac$stress,3),"k =",esi16s.nmds.jac$ndim)));f
+    #scale_fill_viridis_c(option="viridis") + # Continuous color scale for depth
+    scale_shape_manual(values = c(21, 24)) +         # Discrete shapes (e.g., circle and triangle)
+    theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+          axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
+          legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+          legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
+          axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+          legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+          panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+          legend.key=element_blank()) + 
+    labs(x = "NMDS1", y = "")  + 
+    geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi16s.nmds.jac$stress,3),"k =",esi16s.nmds.jac$ndim)));p8
 
 
-e+f+plot_annotation(title="2022",tag_levels = "A",
+p7+p8+plot_annotation(title="2022",tag_levels = "A",
                     theme = theme(plot.title = element_text(size = 20)))
 
 ggsave(filename = "ESI2022_12s_16s_NMDS_Jaccard_Combined.png", plot = last_plot(), device = "png", path = "figures/2022Results/", width = 10, height=8, dpi = 300, bg = "white")
@@ -321,13 +327,13 @@ ii$Species <- gsub("Nothria_conchylega_CMC02","Nothria_conchylega", ii$Species)
 ii$Species <- gsub("Bipalponephtys_neotena","Micronephthys_neotena", ii$Species)
 ii$Species <- gsub("Euclymene_sp.","Euclymene_zonalis", ii$Species)
 
-bb <- ggplot()+geom_bar(data=ii%>%filter(value>400), aes(x=Species, y=log(value)),stat="identity")+
-  xlab(label = "Species")+
-  ylab(label="COI Log(Read Count)")+
-  theme_bw()+
-  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));bb
+  p9 <- ggplot()+geom_bar(data=ii%>%filter(value>400), aes(x=Species, y=log(value)),stat="identity")+
+    xlab(label = "Species")+
+    ylab(label="COI Log(Read Count)")+
+    theme_bw()+
+    theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));p9
 
-bb+plot_annotation(title = "2022",
+  p9+plot_annotation(title = "2022",
                    theme = theme(plot.title = element_text(size = 20)))
 
 ggsave(filename = "ESI2022_COI_Barplot.png",plot = last_plot(), device = "png", path = "figures/2022Results/", width = 10, height=8, dpi = 300, bg = "white")
@@ -358,29 +364,29 @@ hull.data.per22.coi <- data.scores.merge %>%
   slice(chull(x=NMDS1,y=NMDS2)) #for this dataset, there's no differentiation between bottom and surface
 
 
-r = ggplot() + 
-  geom_polygon(data=hull.data.per22.coi,aes(x=NMDS1, y=NMDS2, fill=surface),color="black",alpha=0.30) +
-  scale_fill_manual(values=c("firebrick","cornflowerblue"),name="Water sample")+
-  ggnewscale::new_scale_fill()+
-  geom_point(data=data.scores.merge, aes(x = NMDS1, y = NMDS2, fill=as.numeric(depth),shape=surface),size = 4, colour="black")+ 
-  scale_shape_manual(values=c(21,24),name="Water sample")+
-  scale_fill_viridis_c(option="viridis",name="Depth (m)")+
-  #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
-  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
-        axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
-        #legend.text = element_text(size = 12, face ="bold", colour ="black"), 
-        legend.position = "none", axis.title.y = element_text(face = "bold", size = 14), 
-        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
-        #legend.title = element_text(size = 14, colour = "black", face = "bold"), 
-        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2)) + 
-  labs(x = "NMDS1", y = "NMDS2")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=55,hjust=1.2,label=paste("Stress =",round(nmds.esi22.coi$stress,3),"k =",nmds.esi22.coi$ndim)))+
-  nmdstheme;r
+  p10 <- ggplot() + 
+    geom_polygon(data=hull.data.per22.coi,aes(x=NMDS1, y=NMDS2, fill=surface),color="black",alpha=0.30) +
+    scale_fill_manual(values=c("firebrick","cornflowerblue"),name="Water sample")+
+    ggnewscale::new_scale_fill()+
+    geom_point(data=data.scores.merge, aes(x = NMDS1, y = NMDS2, fill=as.numeric(depth),shape=surface),size = 4, colour="black")+ 
+    scale_shape_manual(values=c(21,24),name="Water sample")+
+    scale_fill_viridis_c(option="viridis",name="Depth (m)")+
+    #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+    theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+          axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
+          #legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+          legend.position = "none", axis.title.y = element_text(face = "bold", size = 14), 
+          axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+          #legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+          panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2)) + 
+    labs(x = "NMDS1", y = "NMDS2")  + 
+    geom_text(aes(x=Inf, y=Inf, vjust=55,hjust=1.2,label=paste("Stress =",round(nmds.esi22.coi$stress,3),"k =",nmds.esi22.coi$ndim)))+
+    nmdstheme;p10
 
-r + plot_annotation(title = "Perley 2022 COI",
+  p10 + plot_annotation(title = "Perley 2022 COI",
                                     theme = theme(plot.title = element_text(size = 20)))
 
-ggsave(filename = "ESI22_Perley_COI_NMDS1_2_byDepth.png",plot = r, device = "png", path = "figures/2022Results/", width = 12, height=8, units = "in", dpi = 400, bg = "white")  
+ggsave(filename = "ESI22_Perley_COI_NMDS1_2_byDepth.png",plot = last_plot(), device = "png", path = "figures/2022Results/", width = 12, height=8, units = "in", dpi = 400, bg = "white")  
 
 
 
@@ -392,11 +398,12 @@ taxtable <- read.table("data/2022Data/SAB/COI/COI_FilteredASVtable.txt", header 
 
 #Make a barplot of taxa
 tt<-pivot_longer(taxtable, cols=starts_with("X"))
-ggplot()+geom_bar(data=tt, aes(x=V27, y=log(value)),stat="identity")+
-  xlab(label = "Species")+
-  ylab(label="Log(Read Count)")+
-  theme_bw()+
-  theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.2), text=element_text(size=14))
+
+  p11 <- ggplot()+geom_bar(data=tt, aes(x=V27, y=log(value)),stat="identity")+
+    xlab(label = "Species")+
+    ylab(label="Log(Read Count)")+
+    theme_bw()+
+    theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.2), text=element_text(size=14));p11
 
 ggsave(filename = "SAB2022_COI_barplot.png",plot = last_plot(), device = "png", path = "figures/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
 
@@ -438,24 +445,23 @@ species.scores <- as.data.frame(scores(sab.coi.nmds, "species"))  #Using the sco
 species.scores$species <- rownames(species.scores) 
 
 
-xx = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
-  geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
-  geom_point(size = 4, aes(shape = Surface, colour = Depth))+ 
-    theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
-        axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
-        legend.text = element_text(size = 12, face ="bold", colour ="black"), 
-        legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
-        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
-        legend.title = element_text(size = 14, colour = "black", face = "bold"), 
-        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
-        legend.key=element_blank()) + 
-  labs(x = "NMDS1", colour = "Depth", y = "NMDS2", shape = "Surface")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=65,hjust=1.2,label=paste("Stress =",round(sab.coi.nmds$stress,3),"k =",sab.coi.nmds$ndim)))+  scale_colour_continuous(trans="reverse")
+  p12 <- ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
+    geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+    geom_point(size = 4, aes(shape = Surface, colour = Depth))+ 
+      theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+          axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
+          legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+          legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
+          axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+          legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+          panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+          legend.key=element_blank()) + 
+    labs(x = "NMDS1", colour = "Depth", y = "NMDS2", shape = "Surface")  + 
+    geom_text(aes(x=Inf, y=Inf, vjust=65,hjust=1.2,label=paste("Stress =",round(sab.coi.nmds$stress,3),"k =",sab.coi.nmds$ndim)))+  
+    scale_colour_continuous(trans="reverse");p12
 
-xx
 
-
-ggsave(filename = "SAB2022_COI_NMDS.png",plot = xx, device = "png", path = "figures/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
+ggsave(filename = "SAB2022_COI_NMDS.png",plot = p12, device = "png", path = "figures/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
 
 #Accumulation curves
 sp_list.coi <- taxtable$V27
@@ -471,16 +477,17 @@ tidy_specaccum <- function(x) {
 }
 yyy <- tidy_specaccum(yy)
 
-p3<-ggplot() +
-  geom_line(data=yyy, aes(x=site, y=richness), linewidth=2, color="firebrick") +
-  geom_linerange(data=yyy,aes(x = site, ymin = richness - 2*sd, ymax = richness + 2*sd)) +
-  ylim(0, NA)+
-  ylab(label = "Species Richness")+
-  xlab(label="Site")+
-  theme_bw()+
-  theme(text = element_text(size=20))
-p3
-ggsave(filename = "2022SAB_COI_Specaccum.png", plot = p3, device = "png", path = "figures/", width = 10, height=8, units="in",dpi = 400, bg="white")
+  p13 <- ggplot() +
+    geom_line(data=yyy, aes(x=site, y=richness), linewidth=2, color="firebrick") +
+    geom_linerange(data=yyy,aes(x = site, ymin = richness - 2*sd, ymax = richness + 2*sd)) +
+    ylim(0, NA)+
+    ylab(label = "Species Richness")+
+    xlab(label="Site")+
+    theme_bw()+
+    theme(text = element_text(size=20));p13
+
+  ggsave(filename = "2022SAB_COI_Specaccum.png", plot = p13, device = "png", 
+         path = "figures/", width = 10, height=8, units="in",dpi = 400, bg="white")
 
 ###Now do the same thing for 12S! 
 ######################################
@@ -491,11 +498,14 @@ head(fishdat)
 fishdat <- fishdat[-c(1,16),]
 
 mm<-pivot_longer(fishdat, cols=starts_with("X"))
-ggplot()+geom_bar(data=mm, aes(x=Species, y=log(value)),stat="identity")+
-  xlab(label = "Species")+
-  ylab(label="log(Read Count)")+
-  theme_bw()+
-  theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1), text=element_text(size=18))
+
+
+  p14 <- ggplot()+
+    geom_bar(data=mm, aes(x=Species, y=log(value)),stat="identity")+
+    xlab(label = "Species")+
+    ylab(label="log(Read Count)")+
+    theme_bw()+
+    theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1), text=element_text(size=18));p14
 
 ggsave(filename = "2022SAB_16S_barplot.png", plot = last_plot(), device = "png", path = "figures/", width = 10, height=8, units="in",dpi = 400, bg="white")
 
@@ -838,14 +848,16 @@ sample.sites<-c("LH","MOS","CON","MOS","GOLD","CON","CON","TAY","GOLD","LH","TAY
 tt<-pivot_longer(mmmm, cols=starts_with("X"))
 tt$Species<-gsub(pattern = "Clupea pallasii", replacement = "Clupea harengus", tt$Species)
 
-n<- ggplot()+geom_bar(data=tt%>%filter(value>200, !Species=="Oncorhynchus keta"), aes(x=Species, y=log(value)),stat="identity")+
-  xlab(label = "")+
-  ylab(label="12S Log(Read Count)")+
-  theme_bw()+
-  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14))+
-  ggtitle('2023 Seining');n
+  p100 <- ggplot()+geom_bar(data=tt%>%filter(value>200, !Species=="Oncorhynchus keta"), aes(x=Species, y=log(value)),stat="identity")+
+    xlab(label = "")+
+    ylab(label="12S Log(Read Count)")+
+    theme_bw()+
+    theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14))+
+    ggtitle('2023 Seining');p100
 
-ggsave(filename = "ESI23_Seining_12S_barplot.png",plot = last_plot(), device = "png", path = "figures/2023Seining/", width = 10, height=8, units = "in", dpi = 400, bg = "white")    
+  ggsave(filename = "ESI23_Seining_12S_barplot.png",plot = last_plot(), 
+         device = "png", path = "figures/2023Seining/", width = 10, height=8, 
+         units = "in", dpi = 400, bg = "white")    
 
 #Run the NMDS        
 #transpose the non-grouped ASV table first
@@ -872,7 +884,7 @@ species.scores$species <- rownames(species.scores)
 
 hull.data <- data.scores %>%
   as.data.frame() %>%
-  group_by(Location) %>%
+  group_by(Season) %>%
   slice(chull(x=NMDS1,y=NMDS2))
 
 
@@ -889,7 +901,7 @@ r = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) +
         panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         legend.key=element_blank()) + 
   labs(x = "NMDS1", y = "NMDS2")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=37,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
+  geom_text(aes(x=Inf, y=Inf, vjust=26,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
   nmdstheme;r
 
 u = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
@@ -906,7 +918,7 @@ u = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) +
         panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         legend.key=element_blank()) + 
   labs(x = "NMDS1", y = "NMDS2")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=37,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
+  #geom_text(aes(x=Inf, y=Inf, vjust=26,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
   nmdstheme;u
 
 u/r
@@ -1025,7 +1037,7 @@ head(esi23.coi.filt2)
 head(esi23.metadata) #looking at the metadata again to remind myself of the object name
 
 #remove field blanks (ESI_13, ESI_05, ESI_19, ESI_07, 499655, 499618, 499622, 499630, 499634, 499638, 499646, 499650, 499654)
-esi23.coi.filt3 <- esi23.coi.filt2 %>% select(-c("X2023ESI_13","X2023ESI_19","X2023ESI_07","X2023ESI_05","X499655","X499618","X499622","X499630","X499634","X499638","X499646","X499650","X499654","X499655"))
+esi23.coi.filt3 <- esi23.coi.filt2 %>% select(-c("X2023ESI_13","X2023ESI_19","X2023ESI_07","X2023ESI_05","X499655","X499618","X499622","X499626","X499630","X499634","X499638","X499642","X499646","X499650","X499654","X499655"))
 
 ##Create a stacked barplot per site of animal class 
 #Make a barplot of taxa
@@ -1034,14 +1046,22 @@ cc$Species <- gsub("_CMC01","",cc$Species)
 cc$Species <- gsub("_CMC02","",cc$Species)
 
 
-  p30 <- ggplot()+geom_bar(data=cc%>%filter(value>2000), aes(x=Species, y=log(value)),stat="identity")+
+  p30 <- ggplot()+geom_bar(data=cc%>%filter(value>10000), aes(x=Species, y=log(value)),stat="identity")+
     xlab(label = "")+
     ylab(label="COI Log(Read Count)")+
     theme_bw()+
     theme(axis.text.x = element_text(angle=60, hjust=1), text=element_text(size=14))+
     ggtitle('2023 Seining - COI');p30
+  
+  p31 <- ggplot()+geom_bar(data=cc%>%filter(!Species %in% c("Micromonas_pusilla","Acartia_hudsonica")), aes(x=Species, y=log(value)),stat="identity")+
+    xlab(label = "")+
+    ylab(label="COI Log(Read Count)")+
+    theme_bw()+
+    theme(axis.text.x = element_text(angle=60, hjust=1), text=element_text(size=14));p31
+  
+  p30/p31
 
-ggsave(filename = "ESI23_Seining_COI_barplot.png",plot = last_plot(), device = "png", path = "figures/2023Seining/", width = 10, height=8, units = "in", dpi = 400, bg = "white") 
+ggsave(filename = "ESI23_Seining_COI_barplot_byAbundance.png",plot = last_plot(), device = "png", path = "figures/2023Seining/", width = 10, height=8, units = "in", dpi = 400, bg = "white") 
 
    # Merge long pivot table with metadata to make a stacked barplot
 cc$name <- gsub("X","",cc$name)
@@ -1063,7 +1083,7 @@ coi_summary <- ccc %>%
 
   colourCount = length(unique(coi_summary$Class)) #19 classes
 
-  p31 <- ggplot(coi_summary, aes(x = factor(site,levels = level_order), y = proportion, fill = Class)) +
+  p99 <- ggplot(coi_summary, aes(x = factor(site,levels = level_order), y = proportion, fill = Class)) +
     geom_bar(stat = "identity") +
     scale_fill_manual(values=unname(glasbey())) +
     labs(x = "Site",
@@ -1071,9 +1091,9 @@ coi_summary <- ccc %>%
     scale_y_continuous(labels = scales::percent_format()) +
     theme_minimal()+
     theme(text=element_text(size=16),
-          axis.text.x=element_text(face="bold"));p31
+          axis.text.x=element_text(face="bold"));p99
 
-ggsave(filename = "ESI23_Seining_Site_ClassBarPlots.png", plot = p31, device = "png", path = "figures/2023Seining/", width = 10, height = 8, units = "in", dpi = 300, bg = "white")
+ggsave(filename = "ESI23_Seining_Site_ClassBarPlots.png", plot = p99, device = "png", path = "figures/2023Seining/", width = 10, height = 8, units = "in", dpi = 300, bg = "white")
 
 # NMDS of COI data
 esi23.coi.mat <- esi23.coi.filt3 %>% 
@@ -1086,27 +1106,55 @@ esi23.coi.mat<-esi23.coi.mat[rowSums(esi23.coi.mat[])>0,]
 #Remove field blanks
 nmds.esi23.coi <- metaMDS(esi23.coi.mat, distance = "jaccard", k=14, trymax = 200)
 
-
 #extract nmds scores for ggplot
-data.scores = as.data.frame(scores(nmds.esi23.coi)$sites)
+data.scores = as.data.frame(scores(nmds.esi23.coi)$sites) 
+
 
 data.scores$Sample <- rownames(data.scores)
-data.scores$Season <- groupz
-data.scores$Location<-sample.sites
-
+data.scores$Sample <- gsub("X","",data.scores$Sample)
+data.scores2 <- left_join(data.scores,esi23.metadata, by=c("Sample"="Sample.id")
+data.scores2 <- data.scores2 %>% rename(Location=site)
 
 
 species.scores <- as.data.frame(scores(esi23.coi.mat, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
 species.scores$species <- rownames(species.scores) 
 
-hull.data <- data.scores %>%
+hull.data <- data.scores2 %>%
   as.data.frame() %>%
-  group_by(Season) %>%
+  group_by(season) %>%
   slice(chull(x=NMDS1,y=NMDS2))
 
 
-  p33 = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
-    geom_polygon(data=hull.data,aes(x=NMDS1,y=NMDS2,fill=Location, color=Location),alpha=0.30) + # add the      hulls
+  p200 = ggplot(data.scores2, aes(x = NMDS1, y = NMDS2)) + 
+    geom_polygon(data=hull.data,aes(x=NMDS1,y=NMDS2,fill=season),color="black",alpha=0.30) + # add the      hulls
+    scale_fill_manual(values=c("firebrick","cornflowerblue","forestgreen"),name="Season")+
+    #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+    geom_point(size = 4, shape=21, aes(fill=season),colour="black")+ 
+    theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+          axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
+          legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+          legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
+          axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+          legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+          panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+          legend.key=element_blank()) + 
+    labs(x = "NMDS1", y = "NMDS2")  + 
+    geom_text(aes(x=Inf, y=Inf, vjust=29,hjust=1.2,
+                  label=paste("Stress =",
+                              round(nmds.esi23.coi$stress,3),
+                              "k =",nmds.esi23.coi$ndim)))+
+    nmdstheme;p200
+
+  
+  hull.data <- data.scores2 %>%
+    as.data.frame() %>%
+    group_by(Location) %>%
+    slice(chull(x=NMDS1,y=NMDS2))
+  
+  
+  p201 = ggplot(data.scores2, aes(x = NMDS1, y = NMDS2)) + 
+    geom_polygon(data=hull.data,aes(x=NMDS1,y=NMDS2,fill=Location),color="black",alpha=0.30) + # add the      hulls
+    #scale_fill_manual(values=c("firebrick","cornflowerblue","forestgreen"))+
     #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
     geom_point(size = 4, shape=21, aes(fill=Location),colour="black")+ 
     theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
@@ -1118,12 +1166,15 @@ hull.data <- data.scores %>%
           panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
           legend.key=element_blank()) + 
     labs(x = "NMDS1", y = "NMDS2")  + 
-    geom_text(aes(x=Inf, y=Inf, vjust=37,hjust=1.2,
+    geom_text(aes(x=Inf, y=Inf, vjust=29,hjust=1.2,
                   label=paste("Stress =",
-                              round(nmds.esi23.fish$stress,3),
-                              "k =",esi23.coi.mat$ndim)))+
-    nmdstheme;p33
+                              round(nmds.esi23.coi$stress,3),
+                              "k =",nmds.esi23.coi$ndim)))+
+    nmdstheme;p201
 
+p200/p201
 
-#Save RData
-save.image(file = "data/eDNA_NMDS_and_Diversity.RData")
+ggsave("figures/2023Seining/ESI2023_Seining_COI_NMDS1_2_Jaccard_2Panels.png", plot = last_plot(), device = "png",width = 12, height = 10,dpi = 300,bg = "white")
+# Save RData --------------------------------------------------------------
+
+  save.image(file = "data/eDNA_NMDS_and_Diversity.RData")
