@@ -1175,6 +1175,87 @@ hull.data <- data.scores2 %>%
 p200/p201
 
 ggsave("figures/2023Seining/ESI2023_Seining_COI_NMDS1_2_Jaccard_2Panels.png", plot = last_plot(), device = "png",width = 12, height = 10,dpi = 300,bg = "white")
+
+#Alluvial plot 
+#merge long data frame with metadata
+coi23.long <- esi23.coi.filt3 %>% 
+  pivot_longer(cols=starts_with("X")) %>% 
+  filter(!name %in% c("X2023ESI_13","X2023ESI_19","X2023ESI_07","X2023ESI_05","X499655","X499618","X499622","X499626","X499630","X499634","X499638","X499642","X499646","X499650","X499654","X499655"))
+
+coi23.long$name <- gsub("X","",coi23.long$name)
+
+coi23.long.merged <- left_join(coi23.long, esi23.metadata,
+                     by=c("name"="Sample.id"), 
+                     multiple = "all") %>%
+                     mutate(Species=gsub("_"," ",Species))
+
+#coi23.long.merged$Species <- str_wrap(string = coi23.long.merged$Species,width = 20)
+
+
+  p202 <- ggplot(data=coi23.long.merged %>% filter(value>8000), aes(axis1=Species, axis2=site, axis3=season, y=log(value)))+
+    scale_x_discrete(limits=c("Species","Site", "Season"))+
+    geom_alluvium(aes(fill=site))+
+    geom_stratum(alpha=0.5,width = 1/3)+  
+    geom_text(stat = "stratum", aes(label = after_stat(stratum)), size=3)+
+    ylab(label = "Log(Read count)")+
+    theme_minimal()+
+    theme(text=element_text(size=20));p202
+  
+  #remove Micromonas pusilla because it takes up so much space
+  p202a <- ggplot(data=coi23.long.merged %>% filter(value>2000, !Species=="Micromonas pusilla"), aes(axis1=Species, axis2=site, axis3=season, y=log(value)))+
+    scale_x_discrete(limits=c("Species","Site", "Season"))+
+    geom_alluvium(aes(fill=site))+
+    geom_stratum(alpha=0.5,width = 1/3)+  
+    geom_text(stat = "stratum", aes(label = after_stat(stratum)), size=3)+
+    ylab(label = "Log(Read count)")+
+    theme_minimal()+
+    theme(text=element_text(size=20));p202a
+  
+  #Just rhodophyta
+  p202b <- ggplot(data=coi23.long.merged %>% filter(Phylum=="Rhodophyta"), aes(axis1=Species, axis2=site, axis3=season, y=log(value)))+
+    scale_x_discrete(limits=c("Species","Site", "Season"))+
+    geom_alluvium(aes(fill=site))+
+    geom_stratum(alpha=0.5,width = 1/3)+  
+    geom_text(stat = "stratum", aes(label = after_stat(stratum)), size=3)+
+    ylab(label = "Log(Read count)")+
+    theme_minimal()+
+    theme(text=element_text(size=20),
+          plot.margin = margin(t = 1, r = 2, b = 1, l = 2),
+          axis.text.y = element_text(margin = margin(r = 0)),
+          legend.margin=margin(l=0));p202b
+  
+
+ggsave("2023_Seining_COI_Rhodophyta_Alluvialplot.png",plot=p202b, path="figures/2023Seining/", device = "png", bg="white",width = 12, height=8, dpi = 300)
+
+# Look at alpha diversity and species richness
+
+shan.coi <- data.frame(diversity(esi23.coi.mat, index="shannon"))
+shan.coi2 <-shan.coi %>% rename(Shannon=diversity.esi23.coi.mat..index....shannon..)
+# we can aggregate these so we get a site level index
+shan.coi2$site <- data.scores2$Location
+shan.coi2$season<-data.scores2$season 
+shan.coi2$season <- gsub("s","S",shan.coi2$season)
+shan.coi2$season <- gsub("fall","Fall",shan.coi2$season)
+
+colnames(shan.coi2) <- c("Shannon","site","season")
+
+
+levels=c("Spring","Summer","Fall")
+  
+  p203 <- ggplot()+
+    geom_boxplot(data=shan.coi2,aes(x=site, y=Shannon, fill=site),alpha=0.5)+
+    #geom_point(data=shan, aes(x=site,y=Shannon))+
+    facet_wrap(.~factor(season, level=levels))+
+    labs(x="Site",y="Shannon Diversity")+
+    theme_bw()+
+    theme(strip.background = element_rect(fill="white"),
+          text=element_text(size=16));p203
+
+
+ggsave("Seining2023_ESI_COI_ShannonDiversity_Seasonal.png",plot = p203, device = "png",
+      bg="white",path = "figures/2023Seining/", width = 12, height=8)
+       
+
 # Save RData --------------------------------------------------------------
 
   save.image(file = "data/eDNA_NMDS_and_Diversity.RData")
