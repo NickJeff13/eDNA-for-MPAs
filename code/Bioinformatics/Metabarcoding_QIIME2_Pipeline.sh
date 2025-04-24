@@ -147,7 +147,7 @@ qiime cutadapt trim-paired \
 --p-match-read-wildcards \
 --p-match-adapter-wildcards \
 --p-minimum-length 30 \
---o-trimmed-sequences 12s-Musq-demux-trimmed-2023-both.qza \
+--o-trimmed-sequences 12S-ESI-demux-trimmed-2024.qza \
 --output-dir trimmed \
 --verbose
 #visualize the trimming results
@@ -187,7 +187,7 @@ qiime dada2 denoise-paired \
 --p-n-threads 0 \
 --p-n-reads-learn 3000000 \
 --p-pooling-method independent \
---output-dir dada2out \
+--output-dir denoised \
 --verbose
 
 #12S - trying some different r-len truncs
@@ -210,16 +210,19 @@ qiime dada2 denoise-single \
 --p-n-threads 0 \
 --p-pooling-method independent \
 --p-n-reads-learn 2000000 \
---output-dir ESIDenoisedSingle \
+--output-dir denoised \
 --verbose
 
 #COI - trunc len 201 201 seems to work better than >220, and 191 191 did even better with some datasets
 qiime dada2 denoise-paired \
 --i-demultiplexed-seqs COI-demux-trimmed.qza \
---p-trunc-len-f  201 \
---p-trunc-len-r  201 \
+--p-trunc-len-f  194 \
+--p-trunc-len-r  189 \
 --p-n-threads 0 \
 --p-min-overlap 10 \
+--p-max-ee-f 5 \
+--p-max-ee-r 5 \
+--p-trim-left-r 4 \
 --p-pooling-method independent \
 --p-n-reads-learn 3000000 \
 --output-dir denoised \
