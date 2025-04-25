@@ -205,7 +205,7 @@ qiime dada2 denoise-paired \
 
 #12S - trying some different r-len truncs
 qiime dada2 denoise-single \
---i-demultiplexed-seqs 12s-demux-trimmed-2023.qza \
+--i-demultiplexed-seqs 12S-ESI-demux-trimmed-2024.qza \
 --p-trunc-len 125 \
 --p-n-threads 0 \
 --p-pooling-method independent \
@@ -257,15 +257,15 @@ qiime metadata tabulate \
 
  #12S
  qiime feature-table summarize \
-  --i-table ESIDenoised/table.qza \
-  --o-visualization ESIDenoised/table.qzv \
-  --m-sample-metadata-file ../2023Perley-sample-metadata_ESI.tsv &&
+  --i-table denoised/table.qza \
+  --o-visualization denoised/table.qzv \
+  --m-sample-metadata-file ../2024_ESISeining-sample-metadata.tsv &&
 qiime feature-table tabulate-seqs \
-  --i-data ESIDenoised/representative_sequences.qza \
-  --o-visualization ESIDenoised/rep-seqs.qzv &&
+  --i-data denoised/representative_sequences.qza \
+  --o-visualization denoised/rep-seqs.qzv &&
 qiime metadata tabulate \
-  --m-input-file ESIDenoised/denoising_stats.qza \
-  --o-visualization ESIDenoised/denoising-stats.qzv
+  --m-input-file denoised/denoising_stats.qza \
+  --o-visualization denoised/denoising-stats.qzv
   
    qiime feature-table summarize \
   --i-table ESIDenoisedSingle/table.qza \
@@ -309,8 +309,8 @@ biom convert -i dada2out-test/ESI16S_filtered_table_biom/feature-table.biom \
   --i-table table.qza \
   --p-sampling-depth 1500 \
   --p-n-jobs-or-threads auto \
-  --m-metadata-file ../../../2023Perley-sample-metadata_ESI.tsv \
-  --output-dir COI-core-metrics-results
+  --m-metadata-file ../../2024_ESISeining-sample-metadata.tsv \
+  --output-dir 12S-core-metrics-results
  
 ####################
 ######TAXONOMY######
