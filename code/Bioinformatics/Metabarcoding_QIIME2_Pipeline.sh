@@ -214,6 +214,11 @@ qiime dada2 denoise-single \
 --verbose
 
 #COI - trunc len 201 201 seems to work better than >220, and 191 191 did even better with some datasets
+' this line worked best for ABL MiSeq data - maybe because trimming front of R2 reads? 
+#qiime dada2 denoise-paired --i-demultiplexed-seqs COI-demux-trimmed.qza --p-trunc-len-f  190 --p-trunc-len-r  170
+ --p-n-threads 40 --p-min-overlap 10 
+--p-max-ee-f 6 --p-max-ee-r 6 --p-trim-left-r 6 --p-pooling-method independent --p-n-reads-learn 3000000 --output-dir denoised4 --verbose
+'
 qiime dada2 denoise-paired \
 --i-demultiplexed-seqs COI-demux-trimmed.qza \
 --p-trunc-len-f  194 \
@@ -243,15 +248,15 @@ qiime metadata tabulate \
   
 #COI
 qiime feature-table summarize \
-  --i-table denoised3/table.qza \
-  --o-visualization denoised3/table.qzv \
+  --i-table denoised/table.qza \
+  --o-visualization denoised/table.qzv \
   --m-sample-metadata-file ../../seining2023-sample-metadata.tsv &&
 qiime feature-table tabulate-seqs \
-  --i-data dada2out/representative_sequences.qza \
-  --o-visualization dada2out/rep-seqs.qzv &&
+  --i-data denoised/representative_sequences.qza \
+  --o-visualization denoised/rep-seqs.qzv &&
 qiime metadata tabulate \
-  --m-input-file dada2out/denoising_stats.qza \
-  --o-visualization dada2out/denoising-stats.qzv
+  --m-input-file denoised/denoising_stats.qza \
+  --o-visualization denoised/denoising-stats.qzv
   
  qiime tools view /path_to_output_folder/filename_rep_seqs.qzv  ## export the ASV fasta file from the view for input into FuzzyID2 and BLAST
 
@@ -259,7 +264,7 @@ qiime metadata tabulate \
  qiime feature-table summarize \
   --i-table denoised/table.qza \
   --o-visualization denoised/table.qzv \
-  --m-sample-metadata-file ../2024_ESISeining-sample-metadata.tsv &&
+  --m-sample-metadata-file 2024_ESISeining-COIsample-metadata.tsv &&
 qiime feature-table tabulate-seqs \
   --i-data denoised/representative_sequences.qza \
   --o-visualization denoised/rep-seqs.qzv &&
@@ -282,12 +287,12 @@ qiime metadata tabulate \
 
  ### export results to biom formatted file
 qiime tools export \
---input-path dada2out-test/table.qza \
---output-path dada2out-test/ESI16S_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
+--input-path denoised/table.qza \
+--output-path denoised/ESI2024_COI_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
 
 ### convert biom to tsv
-biom convert -i dada2out-test/ESI16S_filtered_table_biom/feature-table.biom \
--o dada2out-test/ESI16S_filtered_table_biom/ESI16S_feature_table_export.tsv \
+biom convert -i denoised/ESI2024_COI_filtered_table_biom/feature-table.biom \
+-o denoised/ESI2024_COI_filtered_table_biom/ESI2024_COI_feature_table_export.tsv \
 --to-tsv
 
 ### OPTIONAL filtering after exporting to tsv
@@ -309,8 +314,8 @@ biom convert -i dada2out-test/ESI16S_filtered_table_biom/feature-table.biom \
   --i-table table.qza \
   --p-sampling-depth 1500 \
   --p-n-jobs-or-threads auto \
-  --m-metadata-file ../../2024_ESISeining-sample-metadata.tsv \
-  --output-dir 12S-core-metrics-results
+  --m-metadata-file ../2024_ESISeining-COIsample-metadata.tsv \
+  --output-dir core-metrics-results
  
 ####################
 ######TAXONOMY######
