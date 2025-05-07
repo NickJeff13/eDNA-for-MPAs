@@ -228,6 +228,34 @@ esi23.coi.perl.filt <- filter_low_reads(esi23.coi.perl.merge %>%
   rename(Phylum=V12, Class=V15, Species=V27) %>% as.data.frame())
 
 
+# 2024 Coastal Seining Data -----------------------------------------------
+
+## 12S
+  esi24.12s.coast <-read.table("data/2024Seining/MiFishU/ESI12S_feature_table_export.tsv", header = T, sep="\t")   %>% glimpse()
+
+  esi24.12s.coast.taxa <-read.table("data/2024Seining/MiFishU/12Sblast_results.tsv", header = F, sep="\t") %>%   glimpse()
+
+  esi24.12s.coast.merge <- left_join(esi24.12s.coast, esi24.12s.coast.taxa, by=c("OTU.ID"="V1"))
+
+  esi24.12s.coast.filt <- esi24.12s.coast.merge %>% filter(V3>98 & V7 %in% c("bony fishes","whales & dolphins","sharks & rays"))
+
+write.csv(x = esi24.12s.coast.filt,"data/2024Seining/MiFishU/ESI2024_MiFish_TaxonomyMerged.csv", quote=F)
+
+## COI
+esi24.coi.coast <- read.table("data/2024Seining/COI/ESI2024_COI_feature_table_export.tsv", header = T, sep = "\t") %>% glimpse()
+
+esi24.coi.coast.rdp <- read.table("data/2024Seining/COI/rdp.output", header = F, sep="\t") %>% glimpse()
+
+esi24.coi.coast.merge <- left_join(esi24.coi.coast, esi24.coi.coast.rdp, by=c("ASV"="V1"))
+
+#normally I filter our insects but keeping them for now for the inland Keji site we sampled 
+
+esi24.coi.coast.filt <- filter_low_reads(esi24.coi.coast.merge %>% 
+                                          select(-c(V2:V11,V13,V22, V25, V28)) %>%
+                                          filter(V26>0.92, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida","Mollusca","Nematoda","Rhodophyta","Gastrotricha","Chlorophyta","Echinodermata","Brachiopoda","Porifera","Cnidaria","Nemertea","Haptophyta","Hemichordata","Bryozoa","Ctenophora_comb_jellies","Tardigrada","Rotifera", "Chaetognatha","Kinorhyncha","Acanthocephala_thorny-headed_worms")) %>%
+                                          rename(Phylum=V12, Class=V15, Species=V27) %>% as.data.frame())
+
+  write.csv(x = esi24.coi.coast.filt, "data/2024Seining/COI/ESI2024_COI_TaxonomyMerged.csv", quote = F)
 # Notes -------------------------------------------------------------------
 
 #Once we have our filtered ASV tables, move to the NMDS or diversity scripts to make some plots
