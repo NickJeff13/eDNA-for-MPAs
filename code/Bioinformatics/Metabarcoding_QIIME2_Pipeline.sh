@@ -126,7 +126,7 @@ qiime cutadapt trim-paired \
 --p-match-read-wildcards \
 --p-match-adapter-wildcards \
 --p-minimum-length 30 \
---o-trimmed-sequences 12s-demux-trimmed-2023-test2.qza \
+--o-trimmed-sequences 12s-demux-trimmed-2021.qza \
 --output-dir trimmed \
 --verbose
 &&
@@ -192,11 +192,11 @@ qiime dada2 denoise-paired \
 
 #12S - trying some different r-len truncs
 qiime dada2 denoise-paired \
---i-demultiplexed-seqs 12S-demux-trimmed-2023.qza \
+--i-demultiplexed-seqs 12S-combined-demux.qza \
 --p-trunc-len-f  189 \
 --p-trunc-len-r  189 \
 --p-n-threads 0 \
---p-min-overlap 8 \
+--p-min-overlap 10 \
 --p-pooling-method independent \
 --p-n-reads-learn 3000000 \
 --output-dir denoised \
