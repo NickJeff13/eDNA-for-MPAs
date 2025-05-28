@@ -73,7 +73,7 @@ qiime cutadapt trim-paired \
 qiime demux summarize --i-data COI-demux-trimmed.qza \
 --o-visualization COI-trimmed-visual
 
-#tTrim primers
+#Trim primers
 qiime cutadapt trim-paired \
 --i-demultiplexed-sequences 16S-combined-demux.qza \
 --p-cores 40 \
@@ -158,15 +158,16 @@ qiime demux summarize --i-data 12s-demux-trimmed-2023-test2.qza \
 #Note: using --p-n-threads = 0 will use all threads available 
 ### for 16S use --p-trunc-len-f 125 and --p-trunc-len-r 125; 12S use 116 and 108 ###
 # can add --p-min-overlap 12 or some other number if need be
+# Use either the trimmed, if you need to trim primers yourself with cutadapt, or just the demultiplexed files if primers were trimmed earlier
 #16S
 qiime dada2 denoise-paired \
---i-demultiplexed-seqs 16S-demuxed-trimmed.qza \
+--i-demultiplexed-seqs 16S-combined-demux.qza \
 --p-trunc-len-f  125 \
 --p-trunc-len-r  125 \
 --p-n-threads 0 \
 --p-n-reads-learn 3000000 \
 --p-pooling-method independent \
---output-dir dada2out-test \
+--output-dir denoised \
 --verbose
 
 qiime dada2 denoise-paired \
@@ -264,7 +265,7 @@ qiime metadata tabulate \
  qiime feature-table summarize \
   --i-table denoised/table.qza \
   --o-visualization denoised/table.qzv \
-  --m-sample-metadata-file 2024_ESISeining-COIsample-metadata.tsv &&
+  --m-sample-metadata-file ../2021-sample-metadata-NEW.tsv &&
 qiime feature-table tabulate-seqs \
   --i-data denoised/representative_sequences.qza \
   --o-visualization denoised/rep-seqs.qzv &&
@@ -288,11 +289,11 @@ qiime metadata tabulate \
  ### export results to biom formatted file
 qiime tools export \
 --input-path denoised/table.qza \
---output-path denoised/ESI2024_COI_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
+--output-path denoised/ESI2021_12S_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
 
 ### convert biom to tsv
-biom convert -i denoised/ESI2024_COI_filtered_table_biom/feature-table.biom \
--o denoised/ESI2024_COI_filtered_table_biom/ESI2024_COI_feature_table_export.tsv \
+biom convert -i denoised/ESI2021_12S_filtered_table_biom/feature-table.biom \
+-o denoised/ESI2021_12S_filtered_table_biom/ESI2021_12S_feature_table_export.tsv \
 --to-tsv
 
 ### OPTIONAL filtering after exporting to tsv
@@ -314,7 +315,7 @@ biom convert -i denoised/ESI2024_COI_filtered_table_biom/feature-table.biom \
   --i-table table.qza \
   --p-sampling-depth 1500 \
   --p-n-jobs-or-threads auto \
-  --m-metadata-file ../2024_ESISeining-COIsample-metadata.tsv \
+  --m-metadata-file ../../../2021-sample-metadata-NEW.tsv \
   --output-dir core-metrics-results
  
 ####################
