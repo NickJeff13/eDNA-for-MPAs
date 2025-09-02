@@ -15,39 +15,41 @@ filter_low_reads <- function(df) {
   return(df_filtered)
 }
 
+### Note: if exporting an ASV table from QIIME2 and using dada2, it will comment out the first two lines. You can read these in with header=F or edit the ASV tables before loading into R.
 
 # 2021 Data ---------------------------------------------------------------
 
 ##ESI
+### Update May 2025 - reprocessed 2021 data so created a 'NEW' folder for these results
 
-esi12s <- read.table(file = "data/2021Data/12s results/mergedspecies.tsv", header = T, sep="\t")
-esi12s.filt <- esi12s %>%
-  select(!ASV) %>%
-  filter(pident>97 & Group %in% c("birds","bony fishes", "crustaceans", "gastropods", "hemichordates","isopods", "jellyfishes", "lancelets","ribbon worms","sea cucumbers","sea urchins","segmented worms","sharks & rays","starfish","whales & dolphins"))
+esi12s<-read.table(file = "data/2021Data/NEW/12S/ESI2021_12S_feature_table_export.tsv", header = T, sep = "\t")
+#taxonomy
+esi12s.taxa <-read.table(file = "data/2021Data/NEW/12S/12Sblast_1results.tsv",header = F,sep="\t")
+colnames(esi12s.taxa)<-c("ASV","NCBI","percentID", "evalue","length","species","group","commonname")
 
-esi12s.filt.fish <- esi12s %>% select(!ASV) %>%
-  filter(pident>98 & Group %in% "bony fishes") %>% 
-  group_by(Species)
+esi21.12s.merge <- left_join(esi12s, esi12s.taxa, by =c("OTU.ID"="ASV"))  %>% filter(group %in% c("bony fishes","whales & dolphins", "sharks & rays", "birds"), percentID > 97.99)
 
-dim(esi12s.filt) #649 104
+
+
+dim(esi21.12s.merge) #2464 114
 #remove Group, pident, and evalue columns next
 
-esi12s.filt.fish <- filter_low_reads(esi12s.filt.fish[,-c(2:4)])
+esi12s.filt.fish <- filter_low_reads(esi21.12s.merge)
 
 #run this object in NMDS_plot.R script next
 
 #16S Teleo
 #ASV table
-esi16s<-read.table(file = "data/2021Data/16s results/ESI16S_feature_table_export.tsv", header = T, sep = "\t")
+esi16s<-read.table(file = "data/2021Data/NEW/16S/ESI2021_16S_feature_table_export.tsv", header = T, sep = "\t")
 #taxonomy
-esi16s.taxa <-read.table(file = "data/2021Data/16s results/2116Sblast_results.tsv",header = F,sep="\t")
-colnames(esi16s.taxa)<-c("ASV","NCBI","percentID", "evalue","length","species","group","score","commonname")
+esi16s.taxa <-read.table(file = "data/2021Data/NEW/16S/16Sblast_1results.tsv",header = F,sep="\t")
+colnames(esi16s.taxa)<-c("ASV","NCBI","percentID", "evalue","length","species","group","commonname")
 
 #can use inner_join or left_join for merging all ASV and taxonomy tables, as we will filter them by species/phylum next anyway. left_join will result in some rows having NA as not all ASVs get an assigned taxonomy, but inner_join will only keep rows in the ASV table that get a taxonomy as well 
 
-esi16s.asvs <-left_join(esi16s, esi16s.taxa, by="ASV")
+esi16s.asvs <-left_join(esi16s, esi16s.taxa, by=c("OTU.ID"="ASV"))
 dim(esi16s.asvs)
-esi16s.filt<-esi16s.asvs %>% filter(percentID>98 & group=="bony fishes" & !species %in% c("Artediellus pacificus", "Liopsetta pinnifasciata", "Myzopsetta punctatissima")) #use this for NMDS and species accum plots
+esi16s.filt<-esi16s.asvs %>% filter(percentID>98 & group=="bony fishes" & !species %in% c("Artediellus pacificus", "Liopsetta pinnifasciata", "Myzopsetta punctatissima","Myoxocephalus polyacanthocephalus", "Gobio gobio", "Pholis laeta", "Psettichthys melanostictus","Platichthys environmental sample", "Hemitripterus villosus","Pseudopleuronectes yokohamae", "Sebastes steindachneri")) #use this for NMDS and species accum plots
 
 
 
