@@ -30,6 +30,7 @@ load("data/eDNA_NMDS_and_Diversity.RData")
 
 
 # 2021 ESI Perley Data ----------------------------------------------------
+## There are samples from the 2021 AZMP survey (Browns Bank, BB; and Gully;Louisbourg Line - Samples 101-106). Sample 100 is a field blank
 
 #### metadata
 esi21meta <-read.table("data/2021Data/metadata/2021-sample-metadata_ESIonly.tsv",header = T, sep = "\t")
@@ -37,15 +38,21 @@ esi21meta$sample.id<-gsub("-",".",esi21meta$sample.id)
 
 #### 12S
 glimpse(esi12s.filt.fish)
+#filter out sprat 
+
+esi12s.filt.fish <- esi12s.filt.fish %>% 
+  dplyr::filter(!species=="Sprattus sprattus") %>%
+  select(-c(Sample.13, Sample.32, Sample.75, Sample.100, Sample.101, Sample.102, Sample.103, Sample.104, Sample.105, Sample.106))
+esi12s.filt.fish$species <- gsub("Clupea pallasii", "Clupea harengus", esi12s.filt.fish$species)
 #esi12smat <- esi12s.filt %>% group_by(Species) %>% summarise(across(everything(), sum)) %>% data.frame()
-esi12tt <- t(esi12s.filt.fish[,2:length(colnames(esi12s.filt.fish))])
-colnames(esi12tt)<-esi12s.filt.fish$Species
+esi12tt <- t(esi12s.filt.fish[,2:length(grep("Sample", colnames(esi12s.filt.fish)))+1]) #added +1 to this since first column is the ASV name
+colnames(esi12tt)<-esi12s.filt.fish$species
 esi12ttt<-esi12tt[rowSums(esi12tt[])>0,]
 
 ##### Make a barplot of taxa
 tt<-pivot_longer(esi12s.filt.fish, cols=starts_with("Sample"))
   
-  p1 <- ggplot()+geom_bar(data=tt%>%filter(value>2000), aes(x=Species, y=log(value)),stat="identity")+
+  p1 <- ggplot()+geom_bar(data=tt%>%filter(value>20), aes(x=species, y=log(value)),stat="identity")+
     xlab(label = "")+
     ylab(label="12S Log(Read Count)")+
     theme_bw()+
@@ -54,14 +61,20 @@ tt<-pivot_longer(esi12s.filt.fish, cols=starts_with("Sample"))
 
 #16S
 glimpse(esi16s.filt)
-spec.mat<-as.data.frame(t(esi16s.filt[,2:101]))
+## Filter out Gully/BB samples and field blanks
+esi16s.filt <- esi16s.filt %>% 
+  select(-c(Sample.13, Sample.32, Sample.75, Sample.100, Sample.101, Sample.102, Sample.103))
+
+## transpose data frame
+spec.mat<-as.data.frame(t(esi16s.filt[,2:97]))
 colnames(spec.mat)<-esi16s.filt$species
 spec.mat<-spec.mat[rowSums(spec.mat)>0,]
+
 
 #Make a barplot of taxa
 tt<-pivot_longer(esi16s.filt, cols=starts_with("Sample"))
 
-  p2 <- ggplot()+geom_bar(data=tt%>%filter(value>3000), aes(x=species, y=log(value)),stat="identity")+
+  p2 <- ggplot()+geom_bar(data=tt%>%filter(value>30), aes(x=species, y=log(value)),stat="identity")+
     xlab(label = "Species")+
     ylab(label="16S Log(Read Count)")+
     theme_bw()+
@@ -70,7 +83,7 @@ tt<-pivot_longer(esi16s.filt, cols=starts_with("Sample"))
 #plot with patchwork
 p1/p2
 
-ggsave(filename = "ESI2021_FishBarplots_Combined.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 300, bg = "white")
+ggsave(filename = "ESI2021_FishBarplots_Combined_UpdatedJune2025.png",plot = last_plot(), device = "png", path = "figures/2021Results/", width = 10, height=8, dpi = 300, bg = "white")
 
 # Run NMDS on the ungrouped 12S and 16S datasets - better to leave ungrouped as the ASVs contribute to beta diversity better this way 
 esi16s.nmds.jac<-metaMDS(comm = spec.mat, distance = "jaccard", k=3, trymax=100)
