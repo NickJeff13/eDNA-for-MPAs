@@ -265,7 +265,7 @@ qiime metadata tabulate \
  qiime feature-table summarize \
   --i-table denoised/table.qza \
   --o-visualization denoised/table.qzv \
-  --m-sample-metadata-file ../2021-sample-metadata-NEW.tsv &&
+  --m-sample-metadata-file ../../2021-sample-metadata-NEW.tsv &&
 qiime feature-table tabulate-seqs \
   --i-data denoised/representative_sequences.qza \
   --o-visualization denoised/rep-seqs.qzv &&
@@ -289,11 +289,11 @@ qiime metadata tabulate \
  ### export results to biom formatted file
 qiime tools export \
 --input-path denoised/table.qza \
---output-path denoised/ESI2021_12S_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
+--output-path denoised/ESI2021_16S_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
 
 ### convert biom to tsv
-biom convert -i denoised/ESI2021_12S_filtered_table_biom/feature-table.biom \
--o denoised/ESI2021_12S_filtered_table_biom/ESI2021_12S_feature_table_export.tsv \
+biom convert -i denoised/ESI2021_16S_filtered_table_biom/feature-table.biom \
+-o denoised/ESI2021_16S_filtered_table_biom/ESI2021_16S_feature_table_export.tsv \
 --to-tsv
 
 ### OPTIONAL filtering after exporting to tsv
@@ -301,7 +301,7 @@ biom convert -i denoised/ESI2021_12S_filtered_table_biom/feature-table.biom \
 ## This is summing across columns in the exported feature table, calculating 0.1% of that sum, and removing all instances where read numbers were less than that number.
  
  #Generate a phylogenetic tree from our data
- cd dada2out/
+ cd denoised/
  qiime phylogeny align-to-tree-mafft-fasttree \
   --i-sequences representative_sequences.qza \
   --o-alignment aligned-rep-seqs.qza \
