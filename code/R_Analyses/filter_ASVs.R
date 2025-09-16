@@ -27,7 +27,7 @@ esi12s<-read.table(file = "data/2021Data/NEW/12S/ESI2021_12S_feature_table_expor
 esi12s.taxa <-read.table(file = "data/2021Data/NEW/12S/12Sblast_1results.tsv",header = F,sep="\t")
 colnames(esi12s.taxa)<-c("ASV","NCBI","percentID", "evalue","length","species","group","commonname")
 
-esi21.12s.merge <- left_join(esi12s, esi12s.taxa, by =c("OTU.ID"="ASV"))  %>% filter(group %in% c("bony fishes","whales & dolphins", "sharks & rays", "birds"), percentID > 97.99)
+esi21.12s.merge <- left_join(esi12s, esi12s.taxa, by =c("OTU.ID"="ASV"))  %>% filter(group %in% c("bony fishes","whales & dolphins", "sharks & rays", "birds"), percentID > 97.5)
 
 
 
@@ -49,7 +49,7 @@ colnames(esi16s.taxa)<-c("ASV","NCBI","percentID", "evalue","length","species","
 
 esi16s.asvs <-left_join(esi16s, esi16s.taxa, by=c("OTU.ID"="ASV"))
 dim(esi16s.asvs)
-esi16s.filt<-esi16s.asvs %>% filter(percentID>98 & group=="bony fishes" & !species %in% c("Artediellus pacificus", "Liopsetta pinnifasciata", "Myzopsetta punctatissima","Myoxocephalus polyacanthocephalus", "Gobio gobio", "Pholis laeta", "Psettichthys melanostictus","Platichthys environmental sample", "Hemitripterus villosus","Pseudopleuronectes yokohamae", "Sebastes steindachneri")) #use this for NMDS and species accum plots
+esi16s.filt<-esi16s.asvs %>% filter(percentID>97.5 & group=="bony fishes" & !species %in% c("Artediellus pacificus", "Liopsetta pinnifasciata", "Myzopsetta punctatissima","Myoxocephalus polyacanthocephalus", "Gobio gobio", "Pholis laeta", "Psettichthys melanostictus","Platichthys environmental sample", "Hemitripterus villosus","Pseudopleuronectes yokohamae", "Sebastes steindachneri")) #use this for NMDS and species accum plots
 
 
 
