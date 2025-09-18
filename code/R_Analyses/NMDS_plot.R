@@ -845,9 +845,9 @@ ggsave("Perley2023_COI_AlluvialPlot_NOLABELS.png", plot = ww, device = "png", pa
 
 #12S 
 #Remove columns we don't need from the mmm thing made in the asv_filtering.R script
-mmmm<-mmm[,-c(1,3,4,5)]
+esi23.seine.12s.merge.filt3 <- esi23.seine.12s.merge.filt2[,-c(1,3,4,5)]
 #Group by to make some stats easier, but we should run the NMDS on the raw ASVs not grouped as species
-esi23smat <- mmmm %>% group_by(Species) %>% summarise(across(everything(), sum)) %>% data.frame()
+esi23smat <- esi23.seine.12s.merge.filt3 %>% group_by(Species) %>% summarise(across(everything(), sum)) %>% data.frame()
 esi23tt <- t(esi23smat[,2:length(colnames(esi23smat))])
 colnames(esi23tt)<-esi23smat$Species
 esi23ttt<-esi23tt[rowSums(esi23tt[])>0,]
@@ -858,7 +858,7 @@ groupz<-c(rep("Spring",14),rep("Summer",14), rep("Fall",15),   rep("Summer",2))
 sample.sites<-c("LH","MOS","CON","MOS","GOLD","CON","CON","TAY","GOLD","LH","TAY","GOLD","LH","TAY",rep("TAY",3),rep("CON",3),rep("LH",3),rep("GOLD",3),"MOS","MOS",rep("TAY",3), rep("MOS",3),rep("GOLD",3),rep("LH",3),rep("CON",3),rep("WOLF",2))
 
 #Make a barplot of taxa
-tt<-pivot_longer(mmmm, cols=starts_with("X"))
+tt<-pivot_longer(esi23.seine.12s.merge.filt3, cols=starts_with("X"))
 tt$Species<-gsub(pattern = "Clupea pallasii", replacement = "Clupea harengus", tt$Species)
 
   p100 <- ggplot()+geom_bar(data=tt%>%filter(value>200, !Species=="Oncorhynchus keta"), aes(x=Species, y=log(value)),stat="identity")+
@@ -874,8 +874,8 @@ tt$Species<-gsub(pattern = "Clupea pallasii", replacement = "Clupea harengus", t
 
 #Run the NMDS        
 #transpose the non-grouped ASV table first
-esi23.m <-t(mmmm[,2:length(colnames(mmmm))])
-colnames(esi23.m) <-mmmm$Species
+esi23.m <-t(esi23.seine.12s.merge.filt3[,2:length(colnames(esi23.seine.12s.merge.filt3))])
+colnames(esi23.m) <-esi23.seine.12s.merge.filt3$Species
 esi23.m<-esi23.m[rowSums(esi23.m[])>0,]
 #Remove field blanks
 esi23.mm <-esi23.m[-c(6,11:12,31,39,43,50,53),]
@@ -889,7 +889,6 @@ data.scores = as.data.frame(scores(nmds.esi23.fish)$sites)
 data.scores$Sample <- rownames(data.scores)
 data.scores$Season <- groupz
 data.scores$Location<-sample.sites
-
 
 
 species.scores <- as.data.frame(scores(nmds.esi23.fish, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame

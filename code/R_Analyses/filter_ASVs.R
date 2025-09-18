@@ -186,11 +186,11 @@ write.csv(seining_spp, file="data/2023Seining/12S/Seining_ASV_TaxonTable_Filtere
 
 #did some processing by hand, just removing non-fish. Do some more filtering for low reads and low percent matches 
 
-m <-read.csv("data/2023Seining/12S/Seining_ASV_TaxonTable_Filtered_FishOnly.csv", header = T) %>% glimpse()
+esi23.seine.12s.merge <-read.csv("data/2023Seining/12S/Seining_ASV_TaxonTable_Filtered_FishOnly.csv", header = T) %>% glimpse()
                                        
-mm <- m %>% filter(PercentID > 98)
+esi23.seine.12s.merge.filt <- esi23.seine.12s.merge %>% filter(PercentID > 97.99)
 
-mmm <-filter_low_read_species(mm)
+esi23.seine.12s.merge.filt2 <-filter_low_reads(esi23.seine.12s.merge.filt)
 
 
 #Now the 2023 COI seining data
