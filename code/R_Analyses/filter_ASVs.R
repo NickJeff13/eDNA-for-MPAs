@@ -35,7 +35,12 @@ dim(esi21.12s.merge) #2464 114
 #remove Group, pident, and evalue columns next
 
 esi12s.filt.fish <- filter_low_reads(esi21.12s.merge)
+esi12s.filt.fish <- esi12s.filt.fish %>% 
+  dplyr::select(-c(NCBI,evalue,length,group,commonname, OTU.ID)) %>% 
+  relocate(species) %>%
+  relocate(percentID, .after=species)
 
+write.csv(x = esi12s.filt.fish, file = "data/ESI2021_offshore_12S_filtered.csv", quote = F, row.names = F)
 #run this object in NMDS_plot.R script next
 
 #16S Teleo
@@ -47,10 +52,18 @@ colnames(esi16s.taxa)<-c("ASV","NCBI","percentID", "evalue","length","species","
 
 #can use inner_join or left_join for merging all ASV and taxonomy tables, as we will filter them by species/phylum next anyway. left_join will result in some rows having NA as not all ASVs get an assigned taxonomy, but inner_join will only keep rows in the ASV table that get a taxonomy as well 
 
-esi16s.asvs <-left_join(esi16s, esi16s.taxa, by=c("OTU.ID"="ASV"))
-dim(esi16s.asvs)
-esi16s.filt<-esi16s.asvs %>% filter(percentID>97.99 & group=="bony fishes" & !species %in% c("Artediellus pacificus", "Liopsetta pinnifasciata", "Myzopsetta punctatissima","Myoxocephalus polyacanthocephalus", "Gobio gobio", "Pholis laeta", "Psettichthys melanostictus","Platichthys environmental sample", "Hemitripterus villosus","Pseudopleuronectes yokohamae", "Sebastes steindachneri")) #use this for NMDS and species accum plots
+esi21.16s.merge <-left_join(esi16s, esi16s.taxa, by=c("OTU.ID"="ASV"))
+dim(esi21.16s.merge)
+esi16s.filt <-esi21.16s.merge %>% filter(percentID>97.99 & group=="bony fishes" & !species %in% c("Artediellus pacificus", "Liopsetta pinnifasciata", "Myzopsetta punctatissima","Myoxocephalus polyacanthocephalus", "Gobio gobio", "Pholis laeta", "Psettichthys melanostictus","Platichthys environmental sample", "Hemitripterus villosus","Pseudopleuronectes yokohamae", "Sebastes steindachneri")) #use this for NMDS and species accum plots
 
+esi16s.filt.fish <- filter_low_reads(esi16s.filt)
+esi16s.filt.fish <- esi16s.filt.fish %>% 
+  dplyr::select(-c(NCBI,evalue,length,group,commonname, OTU.ID)) %>% 
+  relocate(species) %>%
+  relocate(percentID, .after=species)
+
+#write csv for Kayley for GOTeDNA
+write.csv(x = esi16s.filt.fish, file = "data/ESI2021_offshore_16S_filtered.csv", quote = F, row.names = F)
 
 
 # 2022 Eastern Shore Data - 3 markers -------------------------------------
