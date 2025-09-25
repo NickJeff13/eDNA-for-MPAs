@@ -166,6 +166,29 @@ dim(coi.filt) #124 84
 write.table(x = coi.filt, file = "data/2022Data/SAB/COI/FilteredASVtable.txt",quote = F, sep = "\t")
 
 
+# 2023 ESI Perley Data ----------------------------------------------------
+#12S Fish
+esi23.12s.perl <-read.table("data/2023Perley/ESI/MiFishU/ESI23_12S_feature_table_export.tsv", header = T, sep="\t") %>% glimpse()
+
+esi23.12s.perl.taxa <-read.table("data/2023Perley/ESI/MiFishU/12Sblast_results.tsv", header = F, sep="\t") %>% glimpse()
+
+esi23.12s.perl.merge <- left_join(esi23.12s.perl, esi23.12s.perl.taxa, by=c("ASV"="V1"))
+
+esi23.12s.per.merge2 <- esi23.12s.perl.merge %>% filter(V3>98 & V7 %in% c("bony fishes","whales & dolphins","sharks & rays"))
+
+
+#COI Invertebrates
+esi23.coi.perl <- read.table("data/2023Perley/ESI/COI/ESIPer23_COI_feature_table_export.tsv", header = T, sep = "\t") %>% glimpse()
+
+esi23.coi.perl.rdp <- read.table("data/2023Perley/ESI/COI/ESIPerl.2023.rdp.output", header = F, sep="\t") %>% glimpse()
+
+esi23.coi.perl.merge <- left_join(esi23.coi.perl, esi23.coi.perl.rdp, by=c("ASV"="V1"))
+
+esi23.coi.perl.filt <- filter_low_reads(esi23.coi.perl.merge %>% 
+                                          select(-c(V2:V11,V13,V22, V25, V28)) %>%
+                                          filter(V26>0.92, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida","Mollusca","Nematoda","Rhodophyta","Gastrotricha","Chlorophyta","Echinodermata","Brachiopoda","Porifera","Cnidaria","Nemertea","Haptophyta","Hemichordata","Bryozoa","Ctenophora_comb_jellies","Tardigrada","Rotifera", "Chaetognatha","Kinorhyncha","Acanthocephala_thorny-headed_worms"),!V15=="Insecta") %>%
+                                          rename(Phylum=V12, Class=V15, Species=V27) %>% as.data.frame())
+
 
 # 2023 Musquash Data ------------------------------------------------------
 
@@ -233,28 +256,6 @@ esi23.coi.filt2 <- filter_low_reads(esi23.coi.filt) %>% filter(!Species %in% c("
 #Write csv for Kayley for GOTeDNA
 write.csv(x = esi23.coi.filt2, file = "data/2023Seining/COI-LERAYXT/GOTeDNA_ESI2023_Coastal_COI.csv", quote = F, row.names = F)
 
-# 2023 ESI Perley Data ----------------------------------------------------
-#12S Fish
-esi23.12s.perl <-read.table("data/2023Perley/ESI/MiFishU/ESI23_12S_feature_table_export.tsv", header = T, sep="\t") %>% glimpse()
-
-esi23.12s.perl.taxa <-read.table("data/2023Perley/ESI/MiFishU/12Sblast_results.tsv", header = F, sep="\t") %>% glimpse()
-
-esi23.12s.perl.merge <- left_join(esi23.12s.perl, esi23.12s.perl.taxa, by=c("ASV"="V1"))
-
-esi23.12s.per.merge2 <- esi23.12s.perl.merge %>% filter(V3>98 & V7 %in% c("bony fishes","whales & dolphins","sharks & rays"))
-
-
-#COI Invertebrates
-esi23.coi.perl <- read.table("data/2023Perley/ESI/COI/ESIPer23_COI_feature_table_export.tsv", header = T, sep = "\t") %>% glimpse()
-
-esi23.coi.perl.rdp <- read.table("data/2023Perley/ESI/COI/ESIPerl.2023.rdp.output", header = F, sep="\t") %>% glimpse()
-
-esi23.coi.perl.merge <- left_join(esi23.coi.perl, esi23.coi.perl.rdp, by=c("ASV"="V1"))
-
-esi23.coi.perl.filt <- filter_low_reads(esi23.coi.perl.merge %>% 
-  select(-c(V2:V11,V13,V22, V25, V28)) %>%
-  filter(V26>0.92, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida","Mollusca","Nematoda","Rhodophyta","Gastrotricha","Chlorophyta","Echinodermata","Brachiopoda","Porifera","Cnidaria","Nemertea","Haptophyta","Hemichordata","Bryozoa","Ctenophora_comb_jellies","Tardigrada","Rotifera", "Chaetognatha","Kinorhyncha","Acanthocephala_thorny-headed_worms"),!V15=="Insecta") %>%
-  rename(Phylum=V12, Class=V15, Species=V27) %>% as.data.frame())
 
 
 # 2024 Coastal Seining Data -----------------------------------------------
