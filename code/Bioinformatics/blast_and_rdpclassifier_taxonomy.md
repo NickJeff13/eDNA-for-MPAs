@@ -12,7 +12,7 @@ blastn -db nt_euk -query dna-sequences.fasta -max_target_seqs 1 \
 
 blastn -db nt_euk -query dna-sequences.fasta \
 -max_target_seqs 5 \
--out 16Sblast_5results.tsv \
+-out 12Sblast_5results.tsv \
 -evalue 0.01 \
 -outfmt "6 qseqid sseqid pident evalue length ssciname sblastname scomname" \
 -num_threads 20
