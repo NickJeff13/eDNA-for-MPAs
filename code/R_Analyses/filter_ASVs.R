@@ -209,7 +209,8 @@ esi23.seine.12s.merge <-read.csv("data/2023Seining/12S/Seining_ASV_TaxonTable_Fi
                                        
 esi23.seine.12s.merge.filt <- esi23.seine.12s.merge %>% filter(PercentID > 97.99)
 
-esi23.seine.12s.merge.filt2 <-filter_low_reads(esi23.seine.12s.merge.filt) %>% select(-c(ID, Common, Evalue))
+esi23.seine.12s.merge.filt2 <-filter_low_reads(esi23.seine.12s.merge.filt) %>% 
+  select(-c(ID, Common, Evalue))
 
 #Write csv for Kayley for GOTeDNA
 write.csv(x = esi23.seine.12s.merge.filt2, file = "data/2023Seining/12S/GOTeDNA_ESI2023_Coastal_12S.csv", quote = F, row.names = F)
@@ -265,7 +266,16 @@ esi23.coi.perl.filt <- filter_low_reads(esi23.coi.perl.merge %>%
 
   esi24.12s.coast.merge <- left_join(esi24.12s.coast, esi24.12s.coast.taxa, by=c("OTU.ID"="V1"))
 
-  esi24.12s.coast.filt <- esi24.12s.coast.merge %>% filter(V3>98 & V7 %in% c("bony fishes","whales & dolphins","sharks & rays"))
+  esi24.12s.coast.filt <- filter_low_reads(esi24.12s.coast.merge %>% 
+    drop_na() %>%
+    filter(V3>97.99 & V7 %in% c("bony fishes","whales & dolphins","sharks & rays")) %>%
+    select(-c(OTU.ID,V2, V4, V5, V8, V7))) %>%
+    relocate(V6) %>%
+    relocate(V3, .after=V6)
+  
+  esi24.12s.coast.filt$V6 <- gsub("Clupea pallasii","Clupea harengus", esi24.12s.coast.filt$V6)
+  esi24.12s.coast.filt$V6 <- gsub("Pholis crassispina","Pholis gunnellus", esi24.12s.coast.filt$V6)
+  
 
 write.csv(x = esi24.12s.coast.filt,"data/2024Seining/MiFishU/ESI2024_MiFish_TaxonomyMerged.csv", quote=F)
 
@@ -279,11 +289,23 @@ esi24.coi.coast.merge <- left_join(esi24.coi.coast, esi24.coi.coast.rdp, by=c("A
 #normally I filter our insects but keeping them for now for the inland Keji site we sampled 
 
 esi24.coi.coast.filt <- filter_low_reads(esi24.coi.coast.merge %>% 
-                                          select(-c(V2:V11,V13,V22, V25, V28)) %>%
-                                          filter(V26>0.92, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida","Mollusca","Nematoda","Rhodophyta","Gastrotricha","Chlorophyta","Echinodermata","Brachiopoda","Porifera","Cnidaria","Nemertea","Haptophyta","Hemichordata","Bryozoa","Ctenophora_comb_jellies","Tardigrada","Rotifera", "Chaetognatha","Kinorhyncha","Acanthocephala_thorny-headed_worms")) %>%
-                                          rename(Phylum=V12, Class=V15, Species=V27) %>% as.data.frame())
+                                          select(-c(V2:V11,V13,V22, V25, V28, Undetermined,ASV)) %>%
+                                          filter(V26>0.92, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida","Mollusca","Nematoda","Rhodophyta",
+                                                                      "Gastrotricha","Chlorophyta","Echinodermata","Brachiopoda","Porifera","Cnidaria",
+                                                                      "Nemertea","Haptophyta","Hemichordata","Bryozoa","Ctenophora_comb_jellies","Tardigrada",
+                                                                      "Rotifera", "Chaetognatha","Kinorhyncha","Acanthocephala_thorny-headed_worms")) %>%
+                                          rename(Phylum=V12, Class=V15, Species=V27) %>% 
+                                           as.data.frame())
 
   write.csv(x = esi24.coi.coast.filt, "data/2024Seining/COI/ESI2024_COI_TaxonomyMerged.csv", quote = F)
+  
+  esi24.coi.coast.filt2 <- esi24.coi.coast.filt %>%
+                           select(-c(Phylum, V14, Class, V16, V17, V18, V19,
+                                     V20, V21, V23, V24, V26)) %>%
+    relocate(Species) %>%
+    relocate(V29, .after = Species)
+  
+  write.csv(esi24.coi.coast.filt2, file= "data/2024Seining/COI/GOTeDNA_ESI2024_COI_formatted.csv", quote=F, row.names = F)
 # Notes -------------------------------------------------------------------
 
 #Once we have our filtered ASV tables, move to the NMDS or diversity scripts to make some plots
