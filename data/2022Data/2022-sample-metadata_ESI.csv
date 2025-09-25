@@ -1,93 +1,93 @@
-sample-id	watersample	concentration	depth	surface	location	station	temperature	ph	dissolvedoxy	salinity
-#q2:types	categorical	numeric	numeric	categorical	categorical	categorical	numeric	numeric	numeric	numeric
-Sample-1	493751	0	19.4	Bottom	ESI	ESI_01				
-Sample-2	493752	1	19.4	Bottom	ESI	ESI_01				
-Sample-3	493753	2	19.4	Bottom	ESI	ESI_01				
-Sample-4	493754	3	19.4	Surface	ESI	ESI_01				
-Sample-5	493755	4	19.4	Surface	ESI	ESI_01				
-Sample-6	493757	6	0	BLANK	ESI	Blank				
-Sample-7	493758	7	16.1	Bottom	ESI	ESI_00				
-Sample-8	493759	8	16.1	Bottom	ESI	ESI_00				
-Sample-9	493760	9	16.1	Bottom	ESI	ESI_00				
-Sample-10	493761	10	16.1	Surface	ESI	ESI_00				
-Sample-11	493762	11	16.1	Surface	ESI	ESI_00				
-Sample-12	493764	13	16.1	BLANK	ESI	ESI_00				
-Sample-13	493765	14	0	BLANK	ESI	Blank				
-Sample-14	493766	15	52.7	Bottom	ESI	ESI_02				
-Sample-15	493767	16	52.7	Bottom	ESI	ESI_02				
-Sample-16	493768	17	52.7	Bottom	ESI	ESI_02				
-Sample-17	493769	18	52.7	Surface	ESI	ESI_02				
-Sample-18	493770	19	52.7	Surface	ESI	ESI_02				
-Sample-19	493772	21	69.2	Bottom	ESI	ESI_03				
-Sample-20	493773	22	69.2	Bottom	ESI	ESI_03				
-Sample-21	493774	23	69.2	Bottom	ESI	ESI_03				
-Sample-22	493775	24	69.2	Surface	ESI	ESI_03				
-Sample-23	493776	25	69.2	Surface	ESI	ESI_03				
-Sample-24	493778	27	99.1	Bottom	ESI	ESI_04				
-Sample-25	493779	28	99.1	Bottom	ESI	ESI_04				
-Sample-26	493781	30	99.1	Surface	ESI	ESI_04				
-Sample-27	493782	31	99.1	Surface	ESI	ESI_04				
-Sample-28	493784	33	0	BLANK	ESI	Blank				
-Sample-29	493785	34	110	Bottom	ESI	ESI_08				
-Sample-30	493786	35	110	Bottom	ESI	ESI_08				
-Sample-31	493788	37	110	Surface	ESI	ESI_08				
-Sample-32	493789	38	110	Surface	ESI	ESI_08				
-Sample-33	493791	40	72.6	Bottom	ESI	ESI_07				
-Sample-34	493792	41	72.6	Bottom	ESI	ESI_07				
-Sample-35	493793	42	72.6	Bottom	ESI	ESI_07				
-Sample-36	493794	43	72.6	Surface	ESI	ESI_07				
-Sample-37	493795	44	72.6	Surface	ESI	ESI_07				
-Sample-38	493797	46	40.3	Bottom	ESI	ESI_06				
-Sample-39	493798	47	40.3	Bottom	ESI	ESI_06				
-Sample-40	493799	48	40.3	Bottom	ESI	ESI_06				
-Sample-41	493800	49	40.3	Surface	ESI	ESI_06				
-Sample-42	493801	50	40.3	Surface	ESI	ESI_06				
-Sample-43	493802	51	40.3	Surface	ESI	ESI_06				
-Sample-44	493803	52	20.3	Bottom	ESI	ESI_05				
-Sample-45	493804	53	20.3	Bottom	ESI	ESI_05				
-Sample-46	493805	54	20.3	Bottom	ESI	ESI_05				
-Sample-47	493806	55	20.3	Surface	ESI	ESI_05				
-Sample-48	493807	56	20.3	Surface	ESI	ESI_05				
-Sample-49	493809	58	29.6	Bottom	ESI	ESI_13				
-Sample-50	493811	60	29.6	Bottom	ESI	ESI_13				
-Sample-51	493812	61	29.6	Surface	ESI	ESI_13				
-Sample-52	493813	62	29.6	Surface	ESI	ESI_13				
-Sample-53	493815	64	0	Blank	ESI	Blank				
-Sample-54	493816	65	34.5	Bottom	ESI	ESI_14				
-Sample-55	493817	66	34.5	Bottom	ESI	ESI_14				
-Sample-56	493818	67	34.5	Bottom	ESI	ESI_14				
-Sample-57	493819	68	34.5	Surface	ESI	ESI_14				
-Sample-58	493820	69	34.5	Surface	ESI	ESI_14				
-Sample-59	493822	71	68.9	Bottom	ESI	ESI_15				
-Sample-60	493823	72	68.9	Bottom	ESI	ESI_15				
-Sample-61	493824	73	68.9	Bottom	ESI	ESI_15				
-Sample-62	493825	74	68.9	Surface	ESI	ESI_15				
-Sample-63	493826	75	68.9	Surface	ESI	ESI_15				
-Sample-64	493827	76	68.9	Surface	ESI	ESI_15				
-Sample-65	493828	77	110	Bottom	ESI	ESI_16				
-Sample-66	493829	78	110	Bottom	ESI	ESI_16				
-Sample-67	493830_1	79	110	Bottom	ESI	ESI_16				
-Sample-68	493830_2	79	110	Bottom	ESI	ESI_16				
-Sample-69	493831	80	110	Surface	ESI	ESI_16				
-Sample-70	493832	81	110	Surface	ESI	ESI_16				
-Sample-71	493834	83	116	Bottom	ESI	ESI_12				
-Sample-72	493835	84	116	Bottom	ESI	ESI_12				
-Sample-73	493837	86	116	Surface	ESI	ESI_12				
-Sample-74	493838	87	116	Surface	ESI	ESI_12				
-Sample-75	493841	90	78.9	Bottom	ESI	ESI_11				
-Sample-76	493842	91	78.9	Bottom	ESI	ESI_11				
-Sample-77	493844	93	78.9	Surface	ESI	ESI_11				
-Sample-78	493845	94	78.9	Surface	ESI	ESI_11				
-Sample-79	493847	96	29.7	Bottom	ESI	ESI_10				
-Sample-80	493848	97	29.7	Bottom	ESI	ESI_10				
-Sample-81	493849	98	29.7	Bottom	ESI	ESI_10				
-Sample-82	493851	100	29.7	Surface	ESI	ESI_10				
-Sample-83	493853	102	16.9	Bottom	ESI	ESI_09				
-Sample-84	493854	103	16.9	Bottom	ESI	ESI_09				
-Sample-85	493855	104	16.9	Bottom	ESI	ESI_09				
-Sample-86	493856	105	16.9	Surface	ESI	ESI_09				
-Sample-87	493857	106	16.9	Surface	ESI	ESI_09				
-Sample-88	Extraction_Blank_001	0	0	LabNegative	LabNegative	Blank				
-Sample-89	Extraction_Blank_002	0	0	LabNegative	LabNegative	Blank				
-Sample-90	PCR_blank_001	0	0	LabNegative	LabNegative	Blank				
-Sample-91	PCR_blank_002	0	0	LabNegative	LabNegative	Blank				
+sample-id,watersample,concentration,depth,surface,location,station,temperature,ph,dissolvedoxy,salinity
+#q2:types,categorical,numeric,numeric,categorical,categorical,categorical,numeric,numeric,numeric,numeric
+Sample-1,493751,0,19.4,Bottom,ESI,ESI_01,,,,
+Sample-2,493752,1,19.4,Bottom,ESI,ESI_01,,,,
+Sample-3,493753,2,19.4,Bottom,ESI,ESI_01,,,,
+Sample-4,493754,3,19.4,Surface,ESI,ESI_01,,,,
+Sample-5,493755,4,19.4,Surface,ESI,ESI_01,,,,
+Sample-6,493757,6,0,BLANK,ESI,Blank,,,,
+Sample-7,493758,7,16.1,Bottom,ESI,ESI_00,,,,
+Sample-8,493759,8,16.1,Bottom,ESI,ESI_00,,,,
+Sample-9,493760,9,16.1,Bottom,ESI,ESI_00,,,,
+Sample-10,493761,10,16.1,Surface,ESI,ESI_00,,,,
+Sample-11,493762,11,16.1,Surface,ESI,ESI_00,,,,
+Sample-12,493764,13,16.1,BLANK,ESI,ESI_00,,,,
+Sample-13,493765,14,0,BLANK,ESI,Blank,,,,
+Sample-14,493766,15,52.7,Bottom,ESI,ESI_02,,,,
+Sample-15,493767,16,52.7,Bottom,ESI,ESI_02,,,,
+Sample-16,493768,17,52.7,Bottom,ESI,ESI_02,,,,
+Sample-17,493769,18,52.7,Surface,ESI,ESI_02,,,,
+Sample-18,493770,19,52.7,Surface,ESI,ESI_02,,,,
+Sample-19,493772,21,69.2,Bottom,ESI,ESI_03,,,,
+Sample-20,493773,22,69.2,Bottom,ESI,ESI_03,,,,
+Sample-21,493774,23,69.2,Bottom,ESI,ESI_03,,,,
+Sample-22,493775,24,69.2,Surface,ESI,ESI_03,,,,
+Sample-23,493776,25,69.2,Surface,ESI,ESI_03,,,,
+Sample-24,493778,27,99.1,Bottom,ESI,ESI_04,,,,
+Sample-25,493779,28,99.1,Bottom,ESI,ESI_04,,,,
+Sample-26,493781,30,99.1,Surface,ESI,ESI_04,,,,
+Sample-27,493782,31,99.1,Surface,ESI,ESI_04,,,,
+Sample-28,493784,33,0,BLANK,ESI,Blank,,,,
+Sample-29,493785,34,110,Bottom,ESI,ESI_08,,,,
+Sample-30,493786,35,110,Bottom,ESI,ESI_08,,,,
+Sample-31,493788,37,110,Surface,ESI,ESI_08,,,,
+Sample-32,493789,38,110,Surface,ESI,ESI_08,,,,
+Sample-33,493791,40,72.6,Bottom,ESI,ESI_07,,,,
+Sample-34,493792,41,72.6,Bottom,ESI,ESI_07,,,,
+Sample-35,493793,42,72.6,Bottom,ESI,ESI_07,,,,
+Sample-36,493794,43,72.6,Surface,ESI,ESI_07,,,,
+Sample-37,493795,44,72.6,Surface,ESI,ESI_07,,,,
+Sample-38,493797,46,40.3,Bottom,ESI,ESI_06,,,,
+Sample-39,493798,47,40.3,Bottom,ESI,ESI_06,,,,
+Sample-40,493799,48,40.3,Bottom,ESI,ESI_06,,,,
+Sample-41,493800,49,40.3,Surface,ESI,ESI_06,,,,
+Sample-42,493801,50,40.3,Surface,ESI,ESI_06,,,,
+Sample-43,493802,51,40.3,Surface,ESI,ESI_06,,,,
+Sample-44,493803,52,20.3,Bottom,ESI,ESI_05,,,,
+Sample-45,493804,53,20.3,Bottom,ESI,ESI_05,,,,
+Sample-46,493805,54,20.3,Bottom,ESI,ESI_05,,,,
+Sample-47,493806,55,20.3,Surface,ESI,ESI_05,,,,
+Sample-48,493807,56,20.3,Surface,ESI,ESI_05,,,,
+Sample-49,493809,58,29.6,Bottom,ESI,ESI_13,,,,
+Sample-50,493811,60,29.6,Bottom,ESI,ESI_13,,,,
+Sample-51,493812,61,29.6,Surface,ESI,ESI_13,,,,
+Sample-52,493813,62,29.6,Surface,ESI,ESI_13,,,,
+Sample-53,493815,64,0,Blank,ESI,Blank,,,,
+Sample-54,493816,65,34.5,Bottom,ESI,ESI_14,,,,
+Sample-55,493817,66,34.5,Bottom,ESI,ESI_14,,,,
+Sample-56,493818,67,34.5,Bottom,ESI,ESI_14,,,,
+Sample-57,493819,68,34.5,Surface,ESI,ESI_14,,,,
+Sample-58,493820,69,34.5,Surface,ESI,ESI_14,,,,
+Sample-59,493822,71,68.9,Bottom,ESI,ESI_15,,,,
+Sample-60,493823,72,68.9,Bottom,ESI,ESI_15,,,,
+Sample-61,493824,73,68.9,Bottom,ESI,ESI_15,,,,
+Sample-62,493825,74,68.9,Surface,ESI,ESI_15,,,,
+Sample-63,493826,75,68.9,Surface,ESI,ESI_15,,,,
+Sample-64,493827,76,68.9,Surface,ESI,ESI_15,,,,
+Sample-65,493828,77,110,Bottom,ESI,ESI_16,,,,
+Sample-66,493829,78,110,Bottom,ESI,ESI_16,,,,
+Sample-67,493830_1,79,110,Bottom,ESI,ESI_16,,,,
+Sample-68,493830_2,79,110,Bottom,ESI,ESI_16,,,,
+Sample-69,493831,80,110,Surface,ESI,ESI_16,,,,
+Sample-70,493832,81,110,Surface,ESI,ESI_16,,,,
+Sample-71,493834,83,116,Bottom,ESI,ESI_12,,,,
+Sample-72,493835,84,116,Bottom,ESI,ESI_12,,,,
+Sample-73,493837,86,116,Surface,ESI,ESI_12,,,,
+Sample-74,493838,87,116,Surface,ESI,ESI_12,,,,
+Sample-75,493841,90,78.9,Bottom,ESI,ESI_11,,,,
+Sample-76,493842,91,78.9,Bottom,ESI,ESI_11,,,,
+Sample-77,493844,93,78.9,Surface,ESI,ESI_11,,,,
+Sample-78,493845,94,78.9,Surface,ESI,ESI_11,,,,
+Sample-79,493847,96,29.7,Bottom,ESI,ESI_10,,,,
+Sample-80,493848,97,29.7,Bottom,ESI,ESI_10,,,,
+Sample-81,493849,98,29.7,Bottom,ESI,ESI_10,,,,
+Sample-82,493851,100,29.7,Surface,ESI,ESI_10,,,,
+Sample-83,493853,102,16.9,Bottom,ESI,ESI_09,,,,
+Sample-84,493854,103,16.9,Bottom,ESI,ESI_09,,,,
+Sample-85,493855,104,16.9,Bottom,ESI,ESI_09,,,,
+Sample-86,493856,105,16.9,Surface,ESI,ESI_09,,,,
+Sample-87,493857,106,16.9,Surface,ESI,ESI_09,,,,
+Sample-88,Extraction_Blank_001,0,0,LabNegative,LabNegative,Blank,,,,
+Sample-89,Extraction_Blank_002,0,0,LabNegative,LabNegative,Blank,,,,
+Sample-90,PCR_blank_001,0,0,LabNegative,LabNegative,Blank,,,,
+Sample-91,PCR_blank_002,0,0,LabNegative,LabNegative,Blank,,,,
