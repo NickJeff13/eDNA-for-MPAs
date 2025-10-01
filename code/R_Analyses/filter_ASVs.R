@@ -100,70 +100,100 @@ esi22.coi.merge <- left_join(esi22.coi, esi22.coi.taxa, by=c("ASV"="V1")) %>%
 
 
 # 2022 SAB Data -----------------------------------------------------------
-#16S fish
-sab16s<-read.table(data/2022Data/SAB/16S/SAB2216S_feature_table_FILTERED_forAPP.csv, sep=\t,header = T)
-dim(sab16s) #2026 85
 
-filt <- sab16s %>% filter(Confidence > 0.90) %>%
-  group_by(Species) %>% 
-  summarise(across(c(Sample.1,   Sample.10,  Sample.11,  Sample.12,  Sample.13,  Sample.14, 
-              Sample.15,  Sample.16,  Sample.17, Sample.18 , Sample.19,  Sample.2,   Sample.20 , Sample.21,  Sample.22,
-              Sample.23,  Sample.24,  Sample.25,  Sample.26,  Sample.27,  Sample.28,  Sample.29,  Sample.3  , Sample.30, 
-              Sample.31,  Sample.32,  Sample.33,  Sample.34,  Sample.35 , Sample.36 , Sample.37,  Sample.38,  Sample.39, 
-              Sample.4,   Sample.40,  Sample.41,  Sample.42,  Sample.43,  Sample.44 , Sample.45,  Sample.46,  Sample.47, 
-              Sample.48,  Sample.49 , Sample.5,   Sample.50,  Sample.51,  Sample.52,  Sample.53,  Sample.54,  Sample.55, 
-              Sample.56,  Sample.57,  Sample.58,  Sample.59,  Sample.6,   Sample.60,  Sample.61,  Sample.62,  Sample.63 ,
-              Sample.64,  Sample.65,  Sample.66,  Sample.67,  Sample.68,  Sample.69,  Sample.7,   Sample.70,  Sample.71, 
-              Sample.72,  Sample.73,  Sample.74,  Sample.75,  Sample.76,  Sample.77,  Sample.78,  Sample.79,  Sample.8,  
-              Sample.80,  Sample.81, Sample.82, Sample.83,  Sample.9),sum)) %>%
-  as.data.frame()
+## 12S MiFishU
 
-dim(filt) #1768 85
-write.table(x = filt, file = "data/2022Data/SAB/16S/FilteredASVtable.txt",quote = F, sep = "\t")
+sab2022.12s.asvs <-read.csv(file = "data/2022Data/SAB/MiFishU/SAB2022_12S_ASVtable.csv", header = T) %>% glimpse()
+#taxonomy
+sab22.12s.taxa <-read.csv(file = "data/2022Data/SAB/MiFishU/12S_blastresults.csv",header = F)
+
+sab22.12s.merge <- left_join(sab2022.12s.asvs, sab22.12s.taxa, by =c("ASV"="V1"))  %>% 
+  filter(V7 %in% c("bony fishes","whales & dolphins", "sharks & rays"), V3 > 97.9)
+
+
+dim(sab22.12s.merge) #884 99
+#remove Group, pident, and evalue columns next
+
+sab22.12s.filt <- filter_low_reads(sab22.12s.merge)
+sab22.12s.filt <- sab22.12s.filt %>% 
+  rename(species=V6, percentID=V3) %>%
+  dplyr::select(-c(ASV,V2, V4, V5, V7,V8)) %>% 
+  relocate(species) %>%
+  relocate(percentID, .after=species)
+
+write.csv(x = sab22.12s.filt, file = "data/2022Data/SAB/MiFishU/GOTeDNA_SAB2022_12S_filtered.csv", quote = F, row.names = F)
+#run this object in NMDS_plot.R script next
+
+## 16S fish
+sab22.16s<-read.table("data/2022Data/SAB/16S/SAB2216S_feature_table_FILTERED_forAPP.csv", sep="\t", header = T)
+dim(sab22.16s) #2026 85
+
+#this groups species but for GOTeDNA and MCT app we probably want non-aggregated (i.e., ASV level)
+# filt <- sab16s %>% filter(Confidence > 0.90) %>%
+#   group_by(Species) %>% 
+#   summarise(across(c(Sample.1,   Sample.10,  Sample.11,  Sample.12,  Sample.13,  Sample.14, 
+#               Sample.15,  Sample.16,  Sample.17, Sample.18 , Sample.19,  Sample.2,   Sample.20 , Sample.21,  Sample.22,
+#               Sample.23,  Sample.24,  Sample.25,  Sample.26,  Sample.27,  Sample.28,  Sample.29,  Sample.3  , Sample.30, 
+#               Sample.31,  Sample.32,  Sample.33,  Sample.34,  Sample.35 , Sample.36 , Sample.37,  Sample.38,  Sample.39, 
+#               Sample.4,   Sample.40,  Sample.41,  Sample.42,  Sample.43,  Sample.44 , Sample.45,  Sample.46,  Sample.47, 
+#               Sample.48,  Sample.49 , Sample.5,   Sample.50,  Sample.51,  Sample.52,  Sample.53,  Sample.54,  Sample.55, 
+#               Sample.56,  Sample.57,  Sample.58,  Sample.59,  Sample.6,   Sample.60,  Sample.61,  Sample.62,  Sample.63 ,
+#               Sample.64,  Sample.65,  Sample.66,  Sample.67,  Sample.68,  Sample.69,  Sample.7,   Sample.70,  Sample.71, 
+#               Sample.72,  Sample.73,  Sample.74,  Sample.75,  Sample.76,  Sample.77,  Sample.78,  Sample.79,  Sample.8,  
+#               Sample.80,  Sample.81, Sample.82, Sample.83,  Sample.9),sum)) %>%
+#   as.data.frame()
+sab22.16s.filt <- sab22.16s %>% select(-OTU.ID) %>%
+  mutate(Species=na_if(Species, "")) %>%
+  filter(!is.na(Species), Confidence>0.97, !Species==" Iluocoetes fimbriatus")
+
+dim(sab22.16s.filt) #637 84
+
+
+write.csv(x = sab22.16s.filt, file = "data/2022Data/SAB/16S/GOTeDNA_SAB202216SFilteredASVtable.csv",quote = F, row.names = F)
 
 
 #COI general diversity 
 #Merging taxonomy and read count tables, and filtering taxonomy
 
 #load in our two data tables - these paths will only work if you open the Courtney-Trask github R project, or set the working directory to your local github folder
-tax <- read.table(file = "data/2022Data/SAB/COI/SABrdp5.output", header = F, sep = "\t") #here the \t is short for tab separation
-tax<- rename(tax, OTU.ID= V1) #this is just so there is a matching column between our taxon and asvs files so we can merge them easier (OTU.ID)
+sab22.coi.taxa <- read.table(file = "data/2022Data/SAB/COI/SABrdp5.output", header = F, sep = "\t") #here the \t is short for tab separation
+sab22.coi.taxa<- rename(sab22.coi.taxa, OTU.ID= V1) #this is just so there is a matching column between our taxon and asvs files so we can merge them easier (OTU.ID)
 
-asvs <- read.table(file="data/2022Data/SAB/COI/COI_feature_table_export.tsv", header = T, sep="\t")
+sab22.coi.asvs <- read.table(file="data/2022Data/SAB/COI/SAB22_COI_feature_table_export.tsv", header = T, sep="\t")
 
-taxatable <- merge(x= asvs, y= tax, by = "OTU.ID")  #this will reorganize the new table by OTU alphabetically
+sab22.coi.merge <- left_join(sab22.coi.asvs, sab22.coi.taxa, by ="OTU.ID")  %>%
+  filter(V29>0.97, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida","Mollusca","Nematoda","Rhodophyta","Gastrotricha","Chlorophyta","Echinodermata","Brachiopoda","Porifera","Cnidaria","Nemertea","Haptophyta","Streptophyta","Hemichordata","Bryozoa","Ctenophora_comb_jellies","Tardigrada","Rotifera", "Chaetognatha","Prasinodermophyta")) %>% select(!starts_with(c("ENEG","EXT","PCRB"))) %>%
+  rename(Phylum=V12, Class=V15, Species=V27)
 
-colnames(taxatable)
+
 #Clean up this table and remove columns we don't need - here we are 'selecting' the columns from "taxatable" to keep, AND filtering by 0.90 probability of species being kept, AND removing rows with very few ASV counts
 
-taxtable.final <- taxatable %>% select(OTU.ID, Sample.1,   Sample.10,  Sample.11,  Sample.12,  Sample.13,  Sample.14, 
-                                       Sample.15,  Sample.16,  Sample.17, Sample.18 , Sample.19,  Sample.2,   Sample.20 , Sample.21,  Sample.22,
-                                       Sample.23,  Sample.24,  Sample.25,  Sample.26,  Sample.27,  Sample.28,  Sample.29,  Sample.3  , Sample.30, 
-                                       Sample.31,  Sample.32,  Sample.33,  Sample.34,  Sample.35 , Sample.36 , Sample.37,  Sample.38,  Sample.39, 
-                                       Sample.4,   Sample.40,  Sample.41,  Sample.42,  Sample.43,  Sample.44 , Sample.45,  Sample.46,  Sample.47, 
-                                       Sample.48,  Sample.49 , Sample.5,   Sample.50,  Sample.51,  Sample.52,  Sample.53,  Sample.54,  Sample.55, 
-                                       Sample.56,  Sample.57,  Sample.58,  Sample.59,  Sample.6,   Sample.60,  Sample.61,  Sample.62,  Sample.63 ,
-                                       Sample.64,  Sample.65,  Sample.66,  Sample.67,  Sample.68,  Sample.69,  Sample.7,   Sample.70,  Sample.71, 
-                                       Sample.72,  Sample.73,  Sample.74,  Sample.75,  Sample.76,  Sample.77,  Sample.78,  Sample.79,  Sample.8,  
-                                       Sample.80,  Sample.81,  Sample.82, Sample.83,  Sample.9, V12, V15, V27, V29) %>% filter(V12 %in% c("Nematoda","Arthropoda","Echinodermata","Porifera","Cnidaria","Mollusca","Annelida", "Platyhelminthes", "Nemertea","Chordata","Kinorhyncha","Brachiopoda","Ctenophora_combe_jellies","Bryozoa","Chaetognatha","Rotifera", "Hemichordata","Priapulida","Hemichordata", "Tardigrada") & V29 > 0.95) %>% as.data.frame()
-
-
-coi.filt <- taxtable.final %>%
-  group_by(V27) %>% 
-  summarise(across(c(Sample.1,   Sample.10,  Sample.11,  Sample.12,  Sample.13,  Sample.14, 
-                     Sample.15,  Sample.16,  Sample.17, Sample.18 , Sample.19,  Sample.2,   Sample.20 , Sample.21,  Sample.22,
-                     Sample.23,  Sample.24,  Sample.25,  Sample.26,  Sample.27,  Sample.28,  Sample.29,  Sample.3  , Sample.30, 
-                     Sample.31,  Sample.32,  Sample.33,  Sample.34,  Sample.35 , Sample.36 , Sample.37,  Sample.38,  Sample.39, 
-                     Sample.4,   Sample.40,  Sample.41,  Sample.42,  Sample.43,  Sample.44 , Sample.45,  Sample.46,  Sample.47, 
-                     Sample.48,  Sample.49 , Sample.5,   Sample.50,  Sample.51,  Sample.52,  Sample.53,  Sample.54,  Sample.55, 
-                     Sample.56,  Sample.57,  Sample.58,  Sample.59,  Sample.6,   Sample.60,  Sample.61,  Sample.62,  Sample.63 ,
-                     Sample.64,  Sample.65,  Sample.66,  Sample.67,  Sample.68,  Sample.69,  Sample.7,   Sample.70,  Sample.71, 
-                     Sample.72,  Sample.73,  Sample.74,  Sample.75,  Sample.76,  Sample.77,  Sample.78,  Sample.79,  Sample.8,  
-                     Sample.80,  Sample.81, Sample.82, Sample.83,  Sample.9),sum)) %>%
+sab22.coi.merge.filt <- sab22.coi.merge %>% filter(Phylum %in% c("Nematoda","Arthropoda","Echinodermata","Porifera","Cnidaria","Mollusca","Annelida", 
+                                                              "Platyhelminthes", "Nemertea","Chordata",
+                                                              "Kinorhyncha","Brachiopoda","Ctenophora_combe_jellies","Bryozoa","Chaetognatha",
+                                                              "Rotifera", "Hemichordata","Priapulida","Hemichordata", "Tardigrada") & V29 > 0.95) %>% 
+  select(-c(OTU.ID, V2:V11, Phylum, V13:V14, Class, V16:V26, V28)) %>%
+  relocate(Species) %>%
+  relocate(V29, .after=Species) %>%
   as.data.frame()
 
-dim(coi.filt) #124 84
-write.table(x = coi.filt, file = "data/2022Data/SAB/COI/FilteredASVtable.txt",quote = F, sep = "\t")
+
+# coi.filt <- taxtable.final %>%
+#   group_by(V27) %>% 
+#   summarise(across(c(Sample.1,   Sample.10,  Sample.11,  Sample.12,  Sample.13,  Sample.14, 
+#                      Sample.15,  Sample.16,  Sample.17, Sample.18 , Sample.19,  Sample.2,   Sample.20 , Sample.21,  Sample.22,
+#                      Sample.23,  Sample.24,  Sample.25,  Sample.26,  Sample.27,  Sample.28,  Sample.29,  Sample.3  , Sample.30, 
+#                      Sample.31,  Sample.32,  Sample.33,  Sample.34,  Sample.35 , Sample.36 , Sample.37,  Sample.38,  Sample.39, 
+#                      Sample.4,   Sample.40,  Sample.41,  Sample.42,  Sample.43,  Sample.44 , Sample.45,  Sample.46,  Sample.47, 
+#                      Sample.48,  Sample.49 , Sample.5,   Sample.50,  Sample.51,  Sample.52,  Sample.53,  Sample.54,  Sample.55, 
+#                      Sample.56,  Sample.57,  Sample.58,  Sample.59,  Sample.6,   Sample.60,  Sample.61,  Sample.62,  Sample.63 ,
+#                      Sample.64,  Sample.65,  Sample.66,  Sample.67,  Sample.68,  Sample.69,  Sample.7,   Sample.70,  Sample.71, 
+#                      Sample.72,  Sample.73,  Sample.74,  Sample.75,  Sample.76,  Sample.77,  Sample.78,  Sample.79,  Sample.8,  
+#                      Sample.80,  Sample.81, Sample.82, Sample.83,  Sample.9),sum)) %>%
+#   as.data.frame()
+
+dim(sab22.coi.merge.filt) #313  85
+write.csv(x = sab22.coi.merge.filt, file = "data/2022Data/SAB/COI/GOTeDNA_SAB2022_COI.filtered.csv",quote = F, row.names = F)
 
 
 # 2023 ESI Perley Data ----------------------------------------------------
