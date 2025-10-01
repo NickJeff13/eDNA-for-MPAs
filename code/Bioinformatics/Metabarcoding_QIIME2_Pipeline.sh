@@ -130,7 +130,7 @@ qiime cutadapt trim-paired \
 --output-dir trimmed \
 --verbose
 &&
-echo Trimming primer sequences complete!
+echo "Trimming primer sequences complete!"
 
 #visualize the trimming results
 qiime demux summarize --i-data 12s-demux-trimmed-2023-test2.qza \
@@ -194,8 +194,8 @@ qiime dada2 denoise-paired \
 #12S - trying some different r-len truncs
 qiime dada2 denoise-paired \
 --i-demultiplexed-seqs 12S-combined-demux.qza \
---p-trunc-len-f  189 \
---p-trunc-len-r  189 \
+--p-trunc-len-f  179 \
+--p-trunc-len-r  179 \
 --p-n-threads 0 \
 --p-min-overlap 10 \
 --p-pooling-method independent \
@@ -289,11 +289,11 @@ qiime metadata tabulate \
  ### export results to biom formatted file
 qiime tools export \
 --input-path denoised/table.qza \
---output-path denoised/SAB2024_12S_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
+--output-path denoised/SAB2022_12S_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
 
 ### convert biom to tsv
-biom convert -i denoised/SAB2024_12S_filtered_table_biom/feature-table.biom \
--o denoised/SAB2024_12S_filtered_table_biom/SAB2024_12S_feature_table_export.tsv \
+biom convert -i denoised/SAB2022_12S_filtered_table_biom/feature-table.biom \
+-o denoised/SAB2022_12S_filtered_table_biom/SAB2022_12S_feature_table_export.tsv \
 --to-tsv
 
 ### OPTIONAL filtering after exporting to tsv
