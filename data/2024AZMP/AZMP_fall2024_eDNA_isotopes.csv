@@ -1,0 +1,69 @@
+Sample_#,Section_AZMP,Priority_AZMP,Site_AZMP,Date_ADT_MDY,est_depth_m,CTD_sample_datetimeUTC_MDY,CTD_Lat_DD,CTD_Long_DD,CTD_depth_sounding_m,Depth_MIDBTM,Bottom_depth_m,Niskin_depth_m,Filter_Time_ADT,SmithRoot_ID,Volume_L,Vial_ID,CTD_ID,Shared_YN,Bottle_n,Notes
+1,BrownsBankLine,Core,BBL_05,10/5/2024,180,06-10-2024T02:10:08,42 08.122940 N,65 30.607448 W,185.29,BTM,get from CTD,get from CTD,22:43,286,4.2,AZMP2024_EDNA_001,511772,N,2,Green highlights = processed in 2024
+2,BrownsBankLine,Core,BBL_05,10/5/2024,180,06-10-2024T02:10:08,42 08.122940 N,65 30.607448 W,185.29,BTM,get from CTD,get from CTD,22:50,287,4.22,AZMP2024_EDNA_002,511773,N,3,Gas samples taken from this bottle first (wore gloves)
+3,BrownsBankLine,Core,BBL_06,10/6/2024,1100,06-10-2024T05:49:29,41 59.968238 N,65 31.211450 W,1082.46,BTM,get from CTD,get from CTD,2:15,288,4.23,AZMP2024_EDNA_003,511796,N,2,Rosette hit bottom
+4,BrownsBankLine,Core,BBL_06,10/6/2024,1100,06-10-2024T05:49:29,41 59.968238 N,65 31.211450 W,1082.46,BTM,get from CTD,get from CTD,2:24,289,4.21,AZMP2024_EDNA_004,511797,N,3,Rosette hit bottom
+5,BrownsBankLine,Core,BBL_07,10/6/2024,1890,06-10-2024T09:54:54,41 51.994106 N,65 20.997287 W,1883.11,BTM,get from CTD,get from CTD,8:34,290,4.32,AZMP2024_EDNA_005,511816,Y,1,Sub-sample from one bottle. Gas sampled first. Rosette was in the water for a long time after collecting sample (winch cable was wrapped).
+6,BrownsBankLine,Core,BBL_07,10/6/2024,1890,06-10-2024T09:54:54,41 51.994106 N,65 20.997287 W,1883.11,BTM,get from CTD,get from CTD,8:41,291,4.12,AZMP2024_EDNA_006,511816,Y,1,"Sub-sample from one bottle. Gas sampled first. Rosette was in the water for a long time after collecting sample (winch cable was wrapped). Noticed the filter membrane was half lifted off when opening, could have been like that during filtering."
+7,BrownsBankLine,Core,BBL_04,10/6/2024,100,06-10-2024T21:23.42,42 26.987631 N,65 28.996627 W,101.15,BTM,get from CTD,get from CTD,17:55,292,4.18,AZMP2024_EDNA_007,511842,N,2,Orange highlights = processed in 2025
+8,BrownsBankLine,Core,BBL_04,10/6/2024,100,06-10-2024T21:23.42,42 26.987631 N,65 28.996627 W,101.15,BTM,get from CTD,get from CTD,18:02,293,4.13,AZMP2024_EDNA_008,511843,N,3,
+9,,,BLANK_1,10/6/2024,,,,,,,,,19:15,294,2.16,AZMP2024_EDNA_009,,,,
+10,PortsmouthLine,Secondary,PL_07,10/10/2024,300,10-10-2024T13:52:48,42 33.148882 N,67 18.129384 W,299.68,BTM,get from CTD,get from CTD,10:53,295,4.31,AZMP2024_EDNA_010,512174,N,2,
+11,PortsmouthLine,Secondary,PL_07,10/10/2024,300,10-10-2024T13:52:48,42 33.148882 N,67 18.129384 W,299.68,BTM,get from CTD,get from CTD,11:00,296,4.25,AZMP2024_EDNA_011,512175,N,3,
+12,PortsmouthLine,Secondary,PL_09,10/10/2024,272,10-10-2024T20:19:01,42 22.633330 N,66 24.062699 W,269.63,BTM,get from CTD,get from CTD,17:56,297,4.26,AZMP2024_EDNA_012,512214,N,2,
+13,PortsmouthLine,Secondary,PL_09,10/10/2024,272,10-10-2024T20:19:01,42 22.633330 N,66 24.062699 W,269.63,BTM,get from CTD,get from CTD,18:05,298,3.98,AZMP2024_EDNA_013,512215,N,3,
+14,NortheastChannel,Secondary,NEC_07,10/11/2024,220,10-11-2024T05:50:12,42 09.984943 N,65 58.701525 W,224.76,BTM,get from CTD,get from CTD,2:59,299,4.15,AZMP2024_EDNA_014,512286,N,2,
+15,NortheastChannel,Secondary,NEC_07,10/11/2024,220,10-11-2024T05:31:51,42 09.805389 N,65 58.340229 W,224.73,BTM,get from CTD,get from CTD,3:06,300,4.14,AZMP2024_EDNA_015,512287,N,3,
+16,NortheastChannel,Secondary,NEC_06,10/11/2024,220,10-11-2024T07:04:55,42 11.990364 N,65 56.318150 W,226.81,BTM,get from CTD,get from CTD,4:35,301,4.2,AZMP2024_EDNA_016,512305,N,2,
+17,NortheastChannel,Secondary,NEC_06,10/11/2024,220,10-11-2024T07:04:55,42 11.990364 N,65 56.318150 W,226.81,BTM,get from CTD,get from CTD,4:42,302,4.14,AZMP2024_EDNA_017,512306,N,3,
+18,NortheastChannel,Secondary,NEC_05,10/11/2024,230,10-11-2024T08:43:33,42 13.884725 N,65 54.320437 W,237.73,BTM,get from CTD,get from CTD,6:12,303,4.25,AZMP2024_EDNA_018,512323,N,2,
+19,NortheastChannel,Secondary,NEC_05,10/11/2024,230,10-11-2024T08:43:33,42 13.884725 N,65 54.320437 W,237.73,BTM,get from CTD,get from CTD,6:19,304,4.24,AZMP2024_EDNA_019,512322,N,1,Gas sampled first.
+20,NortheastChannel,Secondary,NEC_05,10/11/2024,125,10-11-2024T08:43:33,42 13.884725 N,65 54.320437 W,get from CTD,MID,get from CTD,get from CTD,6:26,305,4.17,AZMP2024_EDNA_020,512328,N,7,Sub-sample from one bottle. Gas sampled first
+21,NortheastChannel,Secondary,NEC_05,10/11/2024,125,10-11-2024T08:43:33,42 13.884725 N,65 54.320437 W,get from CTD,MID,get from CTD,get from CTD,6:32,306,4.09,AZMP2024_EDNA_021,512328,N,7,Sub-sample from one bottle. Gas sampled first
+22,NortheastChannel,Secondary,NEC_03,10/11/2024,210,10-11-2024T12:43:06,42 17.369456 N,65 49.710757 W,254.05,BTM,get from CTD,get from CTD,9:49,307,4.59,AZMP2024_EDNA_022,512364,N,2,Missed CTD ELOG bottom submit. Bottom action has wrong timestamp (taken closer to recovery time).
+23,NortheastChannel,Secondary,NEC_03,10/11/2024,210,10-11-2024T12:43:06,42 17.369456 N,65 49.710757 W,254.05,BTM,get from CTD,get from CTD,9:57,308,4.49,AZMP2024_EDNA_023,512365,N,3,Missed CTD ELOG bottom submit. Bottom action has wrong timestamp (taken closer to recovery time).
+24,NortheastChannel,Secondary,NEC_02,10/11/2024,200,10-11-2024T14:01:42,42 19.919666 N,65 48.219054 W,203.64,BTM,get from CTD,get from CTD,11:35,309,4.14,AZMP2024_EDNA_024,512383,N,2,Missed CTD ELOG bottom submit. Bottom action has wrong timestamp (but not far off).
+25,NortheastChannel,Secondary,NEC_02,10/11/2024,200,10-11-2024T14:01:42,42 19.919666 N,65 48.219054 W,203.64,BTM,get from CTD,get from CTD,11:42,310,4.1,AZMP2024_EDNA_025,512384,N,3,Missed CTD ELOG bottom submit. Bottom action has wrong timestamp (but not far off).
+26,NortheastChannel,Secondary,NEC_01,10/11/2024,100,10-11-2024T16:19:29,42 25.027857 N,65 44.725468 W,99.65,BTM,get from CTD,get from CTD,13:51,311,4.17,AZMP2024_EDNA_026,512401,N,2,
+27,NortheastChannel,Secondary,NEC_01,10/11/2024,100,10-11-2024T16:19:29,42 25.027857 N,65 44.725468 W,99.65,BTM,get from CTD,get from CTD,13:58,312,4.18,AZMP2024_EDNA_027,512402,N,3,
+28,,,BLANK_2,10/12/2024,,,,,,,,,18:48,313,2.16,AZMP2024_EDNA_028,,,,
+29,HalifaxLine,Core,HL_04,10/13/2024,85,10-13-2024T19:55:25,43 28.742008 N,62 27.039325 W,85.88,BTM,get from CTD,get from CTD,17:24,314,4.32,AZMP2024_EDNA_029,512512,N,2,
+30,HalifaxLine,Core,HL_04,10/13/2024,85,10-13-2024T19:55:25,43 28.742008 N,62 27.039325 W,85.88,BTM,get from CTD,get from CTD,17:32,315,4.17,AZMP2024_EDNA_030,512513,N,3,
+31,HalifaxLine,Core,HL_05,10/13/2024,100,10-13-2024T23:35:38,43 10.956442 N,62 05.883297 W,101.03,BTM,get from CTD,get from CTD,21:00,316,4.14,AZMP2024_EDNA_031,512533,N,2,
+32,HalifaxLine,Core,HL_05,10/13/2024,100,10-13-2024T23:35:38,43 10.956442 N,62 05.883297 W,101.03,BTM,get from CTD,get from CTD,21:06,317,4.14,AZMP2024_EDNA_032,512534,N,3,
+33,HalifaxLine,Core,HL_05.5,10/14/2024,521,10-14-2024T03:09:18,42 56.401882 N,61 49.945079 W,453.55,BTM,get from CTD,get from CTD,0:39,318,4.15,AZMP2024_EDNA_033,512547,Y,2,"Bottle 2 sampled first (CTD ID512547), then bottle 1 (CTD ID512546)."
+34,HalifaxLine,Core,HL_05.5,10/14/2024,521,10-14-2024T03:09:18,42 56.401882 N,61 49.945079 W,453.55,BTM,get from CTD,get from CTD,0:45,319,4.15,AZMP2024_EDNA_034,512546,Y,1,"Gas sampled first (without gloves - spigot cleaned afterwards with eliminase wipe and miliq). Bottle 2 sampled first (CTD ID512547), then bottle 1 (CTD ID512546)."
+35,Gully,Secondary,GUL_01,10/15/2024,674,10-15-2024T13:28:34,44 05.870141 N,59 06.347172 W,698.28,BTM,get from CTD,get from CTD,11:13,320,4.05,AZMP2024_EDNA_035,512663,N,2,
+36,Gully,Secondary,GUL_01,10/15/2024,674,10-15-2024T13:28:34,44 05.870141 N,59 06.347172 W,698.28,BTM,get from CTD,get from CTD,11:20,321,4.16,AZMP2024_EDNA_036,512664,N,3,
+37,Gully,Secondary,GUL_02,10/15/2024,1182,10-15-2024T16:37:56,44 00.594224 N,59 00.002937 W,1148.77,BTM,get from CTD,get from CTD,14:45,322,4.21,AZMP2024_EDNA_037,512682,N,2,
+38,Gully,Secondary,GUL_02,10/15/2024,1182,10-15-2024T16:37:56,44 00.594224 N,59 00.002937 W,1148.77,BTM,get from CTD,get from CTD,14:54,323,4.05,AZMP2024_EDNA_038,512683,N,3,
+39,Gully,Secondary,GUL_03,10/15/2024,1771,10-15-2024T23:45:12,43 53.301194 N,58 57.217621 W,1639.73,BTM,get from CTD,get from CTD,21:46,324,4.26,AZMP2024_EDNA_039,512700,N,2,
+40,Gully,Secondary,GUL_03,10/15/2024,1771,10-15-2024T23:45:12,43 53.301194 N,58 57.217621 W,1639.73,BTM,get from CTD,get from CTD,21:52,325,4.13,AZMP2024_EDNA_040,512701,N,3,
+41,Gully,Secondary,GUL_03,10/15/2024,500,get from CTD,get from CTD,get from CTD,get from CTD,MID,get from CTD,get from CTD,21:59,326,4.1,AZMP2024_EDNA_041,512705,Y,7,Sub-sample from one bottle
+42,Gully,Secondary,GUL_03,10/15/2024,500,get from CTD,get from CTD,get from CTD,get from CTD,MID,get from CTD,get from CTD,22:04,327,4.09,AZMP2024_EDNA_042,512705,Y,7,Sub-sample from one bottle
+43,Gully,Secondary,GUL_04,10/16/2024,2097,10-16-2024T04:01:13,43 47.404326 N,58 53.996883 W,2023.02,BTM,get from CTD,get from CTD,2:19,334,4.11,AZMP2024_EDNA_043,512722,Y,1,Gas sampled first. Check smithrooth ID on vial matches
+44,Gully,Secondary,GUL_04,10/16/2024,2097,10-16-2024T04:01:13,43 47.404326 N,58 53.996883 W,2023.02,BTM,get from CTD,get from CTD,2:11,331,4.09,AZMP2024_EDNA_044,512723,N,2,Gas sampled first. Check smithrooth ID on vial matches
+45,Gully,Secondary,GUL_04,10/16/2024,250,get from CTD,get from CTD,get from CTD,get from CTD,MID,get from CTD,get from CTD,2:27,336,4.15,AZMP2024_EDNA_045,512729,Y,8,Sub-sample from one bottle
+46,Gully,Secondary,GUL_04,10/16/2024,250,get from CTD,get from CTD,get from CTD,get from CTD,MID,get from CTD,get from CTD,2:34,337,4.05,AZMP2024_EDNA_046,512729,Y,8,Sub-sample from one bottle
+47,,,BLANK_3,10/16/2024,,,,,,,,,3:10,339,2.22,AZMP2024_EDNA_047,,,,
+48,LouisbourgLine,Core,LL_09,10/16/2024,3775,10-16-2024T18:50:03,43 28.404480 N,57 31.598022 W,3719,BTM,get from CTD,get from CTD,17:49,340,4.07,AZMP2024_EDNA_048,512747,Y,1,Sub-sample from one bottle
+49,LouisbourgLine,Core,LL_09,10/16/2024,3775,10-16-2024T18:50:03,43 28.404480 N,57 31.598022 W,3719,BTM,get from CTD,get from CTD,17:55,341,4.09,AZMP2024_EDNA_049,512747,Y,1,Sub-sample from one bottle
+,LouisbourgLine,Core,LL_08,,2930,,,,,BTM,,,,,,,,N,2,Cancelled due to weather
+,LouisbourgLine,Core,LL_08,,2930,,,,,BTM,,,,,,,,N,3,Cancelled due to weather
+50,LouisbourgLine,Core,LL_07,10/18/2024,760,10-18-2024T01:09:22,44 07.990358 N,58 10.496238 W,746.27,BTM,get from CTD,get from CTD,22:47,342,4.16,AZMP2024_EDNA_050,512773,N,2,
+51,LouisbourgLine,Core,LL_07,10/18/2024,760,10-18-2024T01:09:22,44 07.990358 N,58 10.496238 W,746.27,BTM,get from CTD,get from CTD,22:58,343,4.15,AZMP2024_EDNA_051,512772,Y,1,Gas sampled first. Collected eDNA from other bottle repeat before this one.
+,LaurentianChannelMouth,Secondary,LCM_01,,30,,,,,BTM,,,,,,,,N,2,
+,LaurentianChannelMouth,Secondary,LCM_01,,30,,,,,BTM,,,,,,,,N,3,
+52,StAnnsBank,Secondary,STAB_06,10/20/2024,405,10-20-2024T23:06:31,46 38.692321 N,58 32.716450 W,413.3,BTM,get from CTD,get from CTD,20:42,344,4.24,AZMP2024_EDNA_052,,N,2,
+53,StAnnsBank,Secondary,STAB_06,10/20/2024,405,10-20-2024T23:06:31,46 38.692321 N,58 32.716450 W,413.3,BTM,get from CTD,get from CTD,20:50,345,4.12,AZMP2024_EDNA_053,,Y,1,Gas sampled first. Collected eDNA from other bottle repeat first.
+54,StAnnsBank,Secondary,STAB_05,10/21/2024,370,10-21-2024T03:01:32,46 25.007852 N,58 53.003783 W,368.93,BTM,get from CTD,get from CTD,0:32,346,5.02,AZMP2024_EDNA_054,,N,2,
+55,StAnnsBank,Secondary,STAB_05,10/21/2024,370,10-21-2024T03:01:32,46 25.007852 N,58 53.003783 W,368.93,BTM,get from CTD,get from CTD,0:40,347,4.09,AZMP2024_EDNA_055,,Y,1,Gas sampled first. Collected eDNA from other bottle repeat before this one.
+56,StAnnsBank,Secondary,STAB_04,10/21/2024,150,10-21-2024T05:50:51,46 18.002863 N,59 03.868562 W,158.86,BTM,get from CTD,get from CTD,3:19,346,4.05,AZMP2024_EDNA_056,,N,2,
+57,StAnnsBank,Secondary,STAB_04,10/21/2024,150,10-21-2024T05:50:51,46 18.002863 N,59 03.868562 W,158.86,BTM,get from CTD,get from CTD,3:26,348,4.06,AZMP2024_EDNA_057,,N,3,
+58,StAnnsBank,Secondary,STAB_03,10/21/2024,84,10-21-2024T09:49:31,46 12.996257 N,59 11.689253 W,91.33,BTM,get from CTD,get from CTD,7:16,350,4.08,AZMP2024_EDNA_058,,N,2,Bottom action submitted later than actual bottom stop.
+59,StAnnsBank,Secondary,STAB_03,10/21/2024,84,10-21-2024T09:49:31,46 12.996257 N,59 11.689253 W,91.33,BTM,get from CTD,get from CTD,7:26,351,4.13,AZMP2024_EDNA_059,,N,3,Bottom action submitted later than actual bottom stop.
+60,StAnnsBank,Secondary,STAB_02,10/21/2024,65,10-21-2024T13:12:59,46 06.499737 N,59 21.854697 W,64.74,BTM,get from CTD,get from CTD,10:40,352,4.18,AZMP2024_EDNA_060,,N,2,
+61,StAnnsBank,Secondary,STAB_02,10/21/2024,65,10-21-2024T13:12:59,46 06.499737 N,59 21.854697 W,64.74,BTM,get from CTD,get from CTD,10:48,353,4.14,AZMP2024_EDNA_061,,N,3,
+62,StAnnsBank,Secondary,STAB_01,10/21/2024,50,10-21-2024T15:21:11,45 59.989396 N,59 31.975769 W,61.1,BTM,get from CTD,get from CTD,12:54,354,4.19,AZMP2024_EDNA_062,,N,2,
+63,StAnnsBank,Secondary,STAB_01,10/21/2024,50,10-21-2024T15:21:11,45 59.989396 N,59 31.975769 W,61.1,BTM,get from CTD,get from CTD,13:03,355,4.17,AZMP2024_EDNA_063,,N,3,
+64,,,BLANK_4,10/21/2024,,,,,,,,,17:05,356,2.15,AZMP2024_EDNA_064,,,,Pump left running for a while after removing filter (Smith Root ID won't have accurate volume).
