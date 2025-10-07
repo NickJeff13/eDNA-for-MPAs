@@ -17,6 +17,7 @@ blastn -db nt_euk -query dna-sequences.fasta \
 -outfmt "6 qseqid sseqid pident evalue length ssciname sblastname scomname" \
 -num_threads 20
 
+#RDP classifier - mainly for COI. Change path to rRNAClassifier.properties as needed
 rdp_classifier -Xmx32g classify \
--t /mnt/nvme1n1p1/eDNA_Data/RDPClassifier/mydata/rRNAClassifier.properties \
+-t /media/mcrg/511fdc64-e3c3-4db7-9668-f8982f7782f9/eDNA_Data/RDPClassifier/mydata/rRNAClassifier.properties \
 -o rdp.output dna-sequences.fasta
