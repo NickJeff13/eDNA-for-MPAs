@@ -103,24 +103,6 @@ write.csv(x = esi22.16s.merge, file = "data/2022Data/ESI/16S/GOTeDNA_ESI2022_16S
 
 ## COI LerayXT primer
 esi22.coi <- read.table("data/2022Data/ESI/LerayXT/ESI22_COI_feature_table_export.tsv", header = T, sep="\t")
-esi22.coi.taxa <- read.table("data/2022Data/ESI/LerayXT/ESI2022.rdp.output", sep="\t") %>% glimpse()
-
-esi22.coi.merge <- left_join(esi22.coi, esi22.coi.taxa, by=c("ASV"="V1")) %>% 
-  filter(V29>0.97, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida",
-                              "Mollusca","Nematoda","Rhodophyta","Gastrotricha","Chlorophyta",
-                              "Echinodermata","Brachiopoda","Porifera","Cnidaria","Nemertea",
-                              "Haptophyta","Streptophyta","Hemichordata","Bryozoa","Ctenophora_comb_jellies",
-                              "Tardigrada","Rotifera", "Chaetognatha","Prasinodermophyta")) %>% 
-  select(!starts_with(c("ENEG","EXT","PCRB"))) %>%
-  rename(Phylum=V12, Class=V15, Species=V27)
-
-esi22.coi.filt <- esi22.coi.merge %>% 
-  dplyr::select(-c(ASV,V2:V26,V28)) %>% 
-  relocate(Species) %>%
-  relocate(V29, .after=Species) %>%
-  rename(Confidence=V29)
-
-write.csv(x = esi22.coi.filt, file = "data/2022Data/ESI/LerayXT/GOTeDNA_ESI2022_COIfilteredASVs.csv", quote = F, row.names = F)
 
 
 # 2022 SAB Data -----------------------------------------------------------

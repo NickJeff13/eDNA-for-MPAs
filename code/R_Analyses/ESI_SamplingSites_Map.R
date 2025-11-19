@@ -34,15 +34,16 @@ focal_bound <- esi%>%
 
 ggplot()+
   geom_sf(data=novsco, fill="grey")+
-  geom_sf(data=esi, fill=NA, linewidth=1.25, colour="black")+
+  geom_sf(data=esi, fill=NA, linewidth=1.1, colour="black")+
   coord_sf(expand=0, xlim=focal_bound[c(1,3)], ylim=focal_bound[c(2,4)])+
   xlab(label = "Longitude")+
   ylab(label="Latitude")+
-  geom_point(data=sites, aes(x=long, y=lat), shape=24, color="black",fill="red", size=4)+
+  #geom_point(data=sites, aes(x=long, y=lat), shape=24, color="black",fill="red", size=4)+
   geom_point(data=perley.sites, aes(x=lon, y=lat), shape=21, colour='black', fill="cornflowerblue", size=4)+
   theme_bw()+
   theme(axis.text.y = element_text(colour = "black", size = 14, face = "bold"), 
         axis.text.x = element_text(colour = "black", face = "bold", size = 14),
-        text=element_text(size=20))
+        text=element_text(size=18))
 
 ggsave(filename = "Kira_andPerley_eDNA_Sites.png",plot = last_plot(), width = 10, height=8, dpi=300, path = "figures/2024CSAS/")
+ggsave(filename = "Perley_offshore_sites.png", plot=last_plot(), width=10, height=8, dpi=300, path = "figures/2024CSAS/")
