@@ -1,4 +1,4 @@
-materialSampleID,eventDate,eventTime,samplingStation,waterColumn,Replicate,controlType,sampleDepth,CTD Bottle,CastID,SampleID,volumeFiltered,dateFiltration,Lat,,Long,,recordedBy,Notes,tide,depthWaterTemp,totalDNAconc,unitsDNAconc
+materialSampleID,eventDate,eventTime,samplingStation,waterColumn,Replicate,controlType,sampleDepth,CTD Bottle,CastID,SampleID,volumeFiltered,dateFiltration,latitudeDegrees,latitudeMinutes,longitudeDegrees,longitudeMinutes,recordedBy,Notes,tide,depthWaterTemp,totalDNAconc,unitsDNAconc
 Sample-1,Aug 6 2022,9:39,ESI_01,Bottom,1,,19.4,1,473A001,493751,1,Oct 21 2022,44,54.3245,62,13.9069,"Nick Jeffery, Ryan Stanley","could not get the CTD to reconnect after deployment. Checked all connections, reconnected all and nothing was coming up ",,,,
 Sample-2,Aug 6 2022,9:39,ESI_01,Bottom,2,,19.4,2,473A001,493752,1,Oct 21 2022,44,54.3245,62,13.9069,"Nick Jeffery, Ryan Stanley",files have the cruise number wrong. ,,,,
 Sample-3,Aug 6 2022,9:39,ESI_01,Bottom,3,,19.4,3,473A001,493753,1,Oct 21 2022,44,54.3245,62,13.9069,"Nick Jeffery, Ryan Stanley",,,,,
