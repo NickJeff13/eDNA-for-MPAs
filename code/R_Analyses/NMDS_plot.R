@@ -41,18 +41,18 @@ glimpse(esi12s.filt.fish)
 #filter out sprat 
 
 esi12s.filt.fish <- esi12s.filt.fish %>% 
-  dplyr::filter(!species=="Sprattus sprattus") %>%
+  dplyr::filter(!Species=="Sprattus sprattus") %>%
   select(-c(Sample.13, Sample.32, Sample.75, Sample.100, Sample.101, Sample.102, Sample.103, Sample.104, Sample.105, Sample.106))
-esi12s.filt.fish$species <- gsub("Clupea pallasii", "Clupea harengus", esi12s.filt.fish$species)
+esi12s.filt.fish$Species <- gsub("Clupea pallasii", "Clupea harengus", esi12s.filt.fish$Species)
 #esi12smat <- esi12s.filt %>% group_by(Species) %>% summarise(across(everything(), sum)) %>% data.frame()
 esi12tt <- t(esi12s.filt.fish[,2:length(grep("Sample", colnames(esi12s.filt.fish)))+1]) #added +1 to this since first column is the ASV name
-colnames(esi12tt)<-esi12s.filt.fish$species
+colnames(esi12tt)<-esi12s.filt.fish$Species
 esi12ttt<-esi12tt[rowSums(esi12tt[])>0,]
 
 ##### Make a barplot of taxa
 tt<-pivot_longer(esi12s.filt.fish, cols=starts_with("Sample"))
   
-  p1 <- ggplot()+geom_bar(data=tt%>%filter(value>20), aes(x=species, y=log(value)),stat="identity")+
+  p1 <- ggplot()+geom_bar(data=tt%>%filter(value>20), aes(x=Species, y=log(value)),stat="identity")+
     xlab(label = "")+
     ylab(label="12S Log(Read Count)")+
     theme_bw()+
@@ -124,7 +124,7 @@ hull.data.per21 <- data.scores.metadat %>%
           panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
           legend.key=element_blank()) + 
     labs(x = "NMDS1", y = "NMDS2")  + 
-   geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi12s.nmds.bray$stress,3),"k =",esi12s.nmds.bray$ndim)));p3
+   geom_text(aes(x=Inf, y=Inf, vjust=65,hjust=2.5,label=paste("Stress =",round(esi12s.nmds.bray$stress,3),"k =",esi12s.nmds.bray$ndim)));p3
 
 #extract nmds scores for ggplot - here just swap the various NMDS objects to make data.scores
 data.scores = as.data.frame(scores(esi16s.nmds.jac)$sites)
@@ -158,7 +158,7 @@ hull.data.per21 <- data.scores.metadat %>%
         panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         legend.key=element_blank()) + 
     labs(x = "NMDS1", y = "NMDS2")+
-    geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi16s.nmds.bray$stress,3),"k =",esi16s.nmds.bray$ndim)));p4
+    geom_text(aes(x=Inf, y=Inf, vjust=65,hjust=2.5,label=paste("Stress =",round(esi16s.nmds.bray$stress,3),"k =",esi16s.nmds.bray$ndim)));p4
 
 p3 + p4
 
@@ -167,22 +167,33 @@ ggsave(filename = "ESI21_12S_and_16S_NMDS1_2_combined.png",plot = last_plot(), d
 # Shannon and other diversity metrics for each sample and station
 
 shan21.12s <- diversity(esi12ttt, index="shannon") %>% 
-  as.data.frame()
-colnames(shan21.12s)<-c("Sample","ShannonDiv")
+  as.data.frame() %>%
+  mutate(Sample = rownames(shan21.12s)) %>%
+  rename(., ShannonDiv = .)
 
 shan21.16s <- diversity(spec.mat, index="shannon") %>%
-  as.data.frame()
+  as.data.frame() %>%
+  mutate(Sample = rownames(shan21.16s)) %>%
+  rename(., ShannonDiv = .)
+
 simps21.12s <- diversity(esi12ttt, index="simpson") %>% 
-  as.data.frame()
+  as.data.frame() %>%
+  mutate(Sample = rownames(simps21.12s)) %>%
+  rename(., Simpson = .)
+
 simps21.16s <- diversity(spec.mat, index="simpson") %>% 
-  as.data.frame()
+  as.data.frame()  %>%
+  mutate(Sample = rownames(simps21.16s)) %>%
+  rename(., Simpson = .)
+
+
 
 # 2022 ESI Perley Data ----------------------------------------------------
 
 # load metadata
-esi22.meta <-read.csv("data/2022Data/2022-sample-metadata_ESI.csv", header = T, sep="\t") %>% glimpse()
+esi22.meta <-read.csv("data/2022Data/2022-sample-metadata_ESI.csv", header = T, sep=",") %>% glimpse()
 esi22.meta <- esi22.meta[-1,] %>% 
-  select(-c("temperature","ph","dissolvedoxy","salinity"))#remove the first row which is useless from QIIME2
+  dplyr::select(-c("temperature","ph","dissolvedoxy","salinity"))#remove the first row which is useless from QIIME2
 
 esi22.meta$sample.id <- gsub("-",".",esi22.meta$sample.id) # replace dashes with . to match the ASV table
 
@@ -193,7 +204,6 @@ esi22.12s.merge$V6 <- gsub("Sebastes baramenuke", "Sebastes sp.", esi22.12s.merg
 esi22.12s.merge$V6 <- gsub("Sebastes viviparus", "Sebastes sp.", esi22.12s.merge$V6)
 esi22.12s.merge$V6 <- gsub("Ammodytes hexapterus", "Ammodytes sp.", esi22.12s.merge$V6)
 esi22.12s.merge$V6 <- gsub("Ammodytes personatus", "Ammodytes sp.", esi22.12s.merge$V6)
-esi22.12s.merge$V6 <- gsub("Pollachius virens", "Pollachius pollachius", esi22.12s.merge$V6)
 esi22.12s.merge$V6 <- gsub("Pholis ornata", "Pholis gunnellus", esi22.12s.merge$V6)
 
 
@@ -205,7 +215,7 @@ tt<-pivot_longer(esi22.12s.merge, cols=starts_with("Sample"))
     xlab(label = "Species")+
     ylab(label="12S Log(Read Count)")+
     theme_bw()+
-    theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14))+
+    theme(axis.text.x = element_text(angle=60, hjust=1), text=element_text(size=14))+
     ggtitle('2022');p5
 
 
@@ -215,8 +225,8 @@ esi22.16s.merge$V6 <- gsub("Sebastes mentella", "Sebastes sp.", esi22.16s.merge$
 esi22.16s.merge$V6 <- gsub("Gadus macrocephalus", "Gadus morhua", esi22.16s.merge$V6)
 esi22.16s.merge$V6 <- gsub("Pholis laeta", "Pholis gunnellus", esi22.16s.merge$V6)
 esi22.16s.merge$V6 <- gsub("Platichthys environmental sample", "Platichthys flesus", esi22.16s.merge$V6)
-esi22.16s.merge$V6 <- gsub("Pollachius virens", "Pollachius pollachius", esi22.16s.merge$V6)
 esi22.16s.merge$V6 <- gsub("Pleuronectes platessa", "Pleuronectinae", esi22.16s.merge$V6)
+esi22.16s.merge$V6 <- gsub("Pollachius pollachius", "Pollachius virens", esi22.16s.merge$V6)
 
 
 tt<-pivot_longer(esi22.16s.merge, cols=starts_with("Sample"))
@@ -225,7 +235,7 @@ tt<-pivot_longer(esi22.16s.merge, cols=starts_with("Sample"))
    xlab(label = "Species")+
     ylab(label="16S Log(Read Count)")+
     theme_bw()+
-    theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14));p6
+    theme(axis.text.x = element_text(angle=60, hjust=1), text=element_text(size=14));p6
 
 #plot with patchwork
 p5/p6
@@ -288,7 +298,7 @@ hull.data.per22 <- data.scores.metadat %>%
           panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         legend.key=element_blank()) + 
     labs(x = "NMDS1", y = "NMDS2")  + 
-    geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi12s.nmds.jac$stress,3),"k =",esi12s.nmds.jac$ndim)));p7
+    geom_text(aes(x=Inf, y=Inf, vjust=62,hjust=1.1,label=paste("Stress =",round(esi12s.nmds.jac$stress,3),"k =",esi12s.nmds.jac$ndim)));p7
 
 #extract nmds scores for ggplot - here just swap the various NMDS objects to make data.scores
 data.scores = as.data.frame(scores(esi16s.nmds.jac)$sites)
@@ -323,7 +333,7 @@ hull.data.per22 <- data.scores.metadat %>%
           panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
           legend.key=element_blank()) + 
     labs(x = "NMDS1", y = "")  + 
-    geom_text(aes(x=Inf, y=Inf, vjust=30,hjust=1.1,label=paste("Stress =",round(esi16s.nmds.jac$stress,3),"k =",esi16s.nmds.jac$ndim)));p8
+    geom_text(aes(x=Inf, y=Inf, vjust=62,hjust=1.1,label=paste("Stress =",round(esi16s.nmds.jac$stress,3),"k =",esi16s.nmds.jac$ndim)));p8
 
 
 p7+p8+plot_annotation(title="2022",tag_levels = "A",
