@@ -711,18 +711,47 @@ jj$Surface <- gsub("Deep","Bottom",jj$Surface)
 #jj$Species <- str_wrap(string = jj$Species,width = 8)
 
 filteredjj <- jj %>% filter(value>8000)
+filteredjj$Season <- gsub("spring","Spring",filteredjj$Season)
+filteredjj$Season <- gsub("summer","Summer",filteredjj$Season)
+filteredjj$Season <- gsub("fall","Fall",filteredjj$Season)
 
-w <- ggplot(data=filteredjj, aes(axis1=Species, axis2=Season, axis3=Surface, y=log(value)))+
-  scale_x_discrete(limits=c("Species","Season", "Depth"))+
-  geom_alluvium(aes(fill=Station))+
-  geom_stratum(alpha=0.5,width = 1/3)+  
-  #geom_text(stat = "stratum", aes(label = after_stat(stratum)), size=3)+
-  ylab(label = "Log(Read count)")+
-  theme_minimal()+
+
+w <- ggplot(data=filteredjj,        
+       aes(axis1=Species, axis2=Season, axis3=Surface, y=log(value)))+ 
+  scale_x_discrete(limits=c("Species", "Season", "Depth"),
+                   expand=c(0.1,0.2))+
+  geom_alluvium(aes(fill=Station))+ 
+  scale_fill_manual(values=colorScales)+
+  geom_stratum(alpha=1.0, width = 1/3, fill="snow")+  
+  # Season labels only on axis 2 (middle) 
+  geom_text(stat = "stratum",             
+            aes(label = Season, alpha = ifelse(after_stat(x) == 2, 1, 0)),            
+            size = 4)+    
+  # Species labels only on axis 1 (left) 
+  ggrepel::geom_text_repel(stat = "stratum",     
+                               aes(label = Species, alpha = ifelse(after_stat(x) == 1, 1, 0)),  
+                               size = 3.5, direction = "y", nudge_x = -.85
+                           ) +   
+  # Surface labels only on axis 3 (right)  
+  ggrepel::geom_text_repel(stat = "stratum",     
+    aes(label = Surface, alpha = ifelse(after_stat(x) == 3, 1, 0)),   
+    size = 4, direction = "y", nudge_x = 0  
+    )+   
+  # Hide alpha legend and set invisible alpha to fully transparent  
+  guides(alpha = "none")+  
+  scale_alpha_identity()+   
+  ylab(label = "Log(Read count)")+  
+  theme_minimal()+  
   theme(text=element_text(size=20));w
 
 
-ggsave("Perley2023_12S_AlluvialPlot_NOLABELS.png", plot = w, device = "png", path = "figures/2023_Perley/", width = 14, height=12, dpi = 300, bg="white")
+
+ggsave("Perley2023_12S_AlluvialPlot.png", 
+       plot = w, 
+       device = "png",
+       path = "figures/2023_Perley/",
+       width = 14, height=12,
+       dpi = 300, bg="white")
 
 
 
