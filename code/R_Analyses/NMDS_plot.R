@@ -15,11 +15,7 @@ library(pals)
 # NMDS theme for all plots ------------------------------------------------
 
 nmdstheme <- theme_bw()+
-  theme(#axis.text.x=element_blank(),
-    #axis.ticks.x=element_blank(),
-    #axis.text.y=element_blank(),
-    #axis.ticks.y=element_blank(),
-    panel.grid.major = element_blank(),
+  theme(panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     text=element_text(size=18))
 
@@ -750,18 +746,22 @@ ggsave("Perley2023_12S_AlluvialPlot.png",
        plot = w, 
        device = "png",
        path = "figures/2023_Perley/",
-       width = 14, height=12,
+       width = 10, height=8,
        dpi = 300, bg="white")
 
 
 
-## COI 
+## 2023 ESI COI 
 head(esi23.coi.perl.filt)
 
 #Remove columns we don't need
-esi23.coi.per.merge3 <-esi23.coi.perl.filt %>% select(-c("ASV","Phylum","V14","Class","V16","V17","V18","V19","V20","V21","V23","V24","V26","V29"))
+esi23.coi.per.merge3 <-esi23.coi.perl.filt %>% 
+  dplyr::select(-c("ASV","Phylum","V14","Class","V16","V17","V18","V19","V20","V21","V23","V24","V26","V29"))
 #Group by to make some stats easier, but we should run the NMDS on the raw ASVs not grouped as species
-esi23.coi.smat <- esi23.coi.per.merge3 %>% group_by(Species) %>% summarise(across(everything(), sum)) %>% data.frame()
+esi23.coi.smat <- esi23.coi.per.merge3 %>% 
+  group_by(Species) %>% 
+  summarise(across(everything(), sum)) %>% 
+  data.frame()
 
 
 #Make a barplot of taxa
@@ -771,7 +771,8 @@ tt$Species <- gsub("Ectyonopsis_pluridentata","Myxillidae sp.",tt$Species)
 tt$Species <- gsub("Eubranchus_olivaceus","Eubranchus_sp.",tt$Species)
 
 
-hh<- ggplot()+geom_bar(data=tt%>%filter(value>200,!Species=="Homo_sapiens"), aes(x=Species, y=log(value)),stat="identity")+
+hh<- ggplot()+geom_bar(data=tt%>%filter(value>200,!Species=="Homo_sapiens"), 
+                       aes(x=Species, y=log(value)),stat="identity")+
   xlab(label = "")+
   ylab(label="COI Log(Read Count)")+
   theme_bw()+
@@ -831,7 +832,10 @@ v <- v+plot_annotation(title = "12S Fish")
 vv <- vv + plot_annotation(title = "COI Eukaryotes")
 v+vv+plot_annotation(title=NULL)
 
-ggsave(filename = "ESI23_Perley_COI_12Scombined_NMDS1_2_bySeason.png",plot = last_plot(), device = "png", path = "figures/2023_Perley/", width = 12, height=8, units = "in", dpi = 400, bg = "white")  
+ggsave(filename = "ESI23_Perley_COI_12Scombined_NMDS1_2_bySeason.png",
+       plot = last_plot(),
+       device = "png", path = "figures/2023_Perley/", width = 12, height=8,
+       units = "in", dpi = 400, bg = "white")  
 
 # Accumulation curves
 
@@ -854,7 +858,10 @@ p22<-ggplot() +
   theme_bw()+
   theme(text = element_text(size=20));p22
 
-ggsave(filename = "ESI_Perley_2023_COI_SpecAccum.png",plot = p22, device = "png", path = "figures/2024CSAS/", width = 10, height=8, units = "in", dpi = 400, bg = "white")
+ggsave(filename = "ESI_Perley_2023_COI_SpecAccum.png",
+       plot = p22, device = "png",
+       path = "figures/2023_Perley/", width = 10, height=8, 
+       units = "in", dpi = 400, bg = "white")
 
 #Alluvial plot 
 #merge long data frame with metadata
@@ -867,24 +874,51 @@ jj$Surface <- gsub("Deep","Bottom",jj$Surface)
 #jj$Species <- str_wrap(string = jj$Species,width = 8)
 
 filteredjj <- jj %>% filter(value>4000)
+filteredjj$Species <- gsub("_CMC02","",filteredjj$Species)
+filteredjj$Species <- gsub("_CMC01","",filteredjj$Species)
+filteredjj$Season <- gsub("spring","Spring",filteredjj$Season)
+filteredjj$Season <- gsub("summer","Summer",filteredjj$Season)
+filteredjj$Season <- gsub("fall","Fall",filteredjj$Season)
 
-ww <- ggplot(data=filteredjj, aes(axis1=Species, axis2=Season, axis3=Surface, y=log(value)))+
-  scale_x_discrete(limits=c("Species","Season", "Depth"))+
-  geom_alluvium(aes(fill=Station))+
-  geom_stratum(alpha=0.5,width = 1/3)+  
-  #geom_text(stat = "stratum", aes(label = after_stat(stratum)), size=3)+
-  ylab(label = "Log(Read count)")+
-  theme_minimal()+
+
+
+ww <- ggplot(data=filteredjj,        
+            aes(axis1=Species, axis2=Season, axis3=Surface, y=log(value)))+ 
+  scale_x_discrete(limits=c("Species", "Season", "Depth"),
+                   expand=c(0.1,0.2))+
+  geom_alluvium(aes(fill=Station))+ 
+  scale_fill_manual(values=colorScales)+
+  geom_stratum(alpha=1.0, width = 1/3, fill="snow")+  
+  # Season labels only on axis 2 (middle) 
+  geom_text(stat = "stratum",             
+            aes(label = Season, alpha = ifelse(after_stat(x) == 2, 1, 0)),            
+            size = 4)+    
+  # Species labels only on axis 1 (left) 
+  ggrepel::geom_text_repel(stat = "stratum",     
+                           aes(label = Species, alpha = ifelse(after_stat(x) == 1, 1, 0)),  
+                           size = 3.5, direction = "y", nudge_x = -.85
+  ) +   
+  # Surface labels only on axis 3 (right)  
+  ggrepel::geom_text_repel(stat = "stratum",     
+                           aes(label = Surface, alpha = ifelse(after_stat(x) == 3, 1, 0)),   
+                           size = 4, direction = "y", nudge_x = 0  
+  )+   
+  # Hide alpha legend and set invisible alpha to fully transparent  
+  guides(alpha = "none")+  
+  scale_alpha_identity()+   
+  ylab(label = "Log(Read count)")+  
+  theme_minimal()+  
   theme(text=element_text(size=20));ww
 
-
-ggsave("Perley2023_COI_AlluvialPlot_NOLABELS.png", plot = ww, device = "png", path = "figures/2023_Perley/", width = 14, height=12, dpi = 300, bg="white")
+ggsave("Perley2023_COI_AlluvialPlot_NOLABELS.png", plot = ww, device = "png", 
+       path = "figures/2023_Perley/", width = 10, height=8, dpi = 300, bg="white")
 
 # 2023 ESI Seining Data ---------------------------------------------------
 
 #12S 
 #Remove columns we don't need from the mmm thing made in the asv_filtering.R script
-esi23.seine.12s.merge.filt3 <- esi23.seine.12s.merge.filt2[,-c(1,3,4,5)]
+#esi23.seine.12s.merge.filt3 <- esi23.seine.12s.merge.filt2[,-c(1,3,4,5)]
+esi23.seine.12s.merge.filt3 <- esi23.seine.12s.merge.filt2[,-2]
 #Group by to make some stats easier, but we should run the NMDS on the raw ASVs not grouped as species
 esi23smat <- esi23.seine.12s.merge.filt3 %>% group_by(Species) %>% summarise(across(everything(), sum)) %>% data.frame()
 esi23tt <- t(esi23smat[,2:length(colnames(esi23smat))])
@@ -919,7 +953,7 @@ esi23.m<-esi23.m[rowSums(esi23.m[])>0,]
 #Remove field blanks
 esi23.mm <-esi23.m[-c(6,11:12,31,39,43,50,53),]
 nmds.esi23.fish <- metaMDS(esi23.mm, distance = "jaccard", k=8, trymax = 200, maxit=500)
-#plot(nmds.esi23.fish)
+plot(nmds.esi23.fish)
 
 
 #extract nmds scores for ggplot
@@ -935,7 +969,7 @@ species.scores$species <- rownames(species.scores)
 
 hull.data <- data.scores %>%
   as.data.frame() %>%
-  group_by(Season) %>%
+  group_by(Location) %>% #change season or site Location here
   slice(chull(x=NMDS1,y=NMDS2))
 
 
@@ -952,7 +986,7 @@ r = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) +
         panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         legend.key=element_blank()) + 
   labs(x = "NMDS1", y = "NMDS2")  + 
-  geom_text(aes(x=Inf, y=Inf, vjust=26,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
+  geom_text(aes(x=Inf, y=Inf, vjust=29,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
   nmdstheme;r
 
 u = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
@@ -969,7 +1003,7 @@ u = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) +
         panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         legend.key=element_blank()) + 
   labs(x = "NMDS1", y = "NMDS2")  + 
-  #geom_text(aes(x=Inf, y=Inf, vjust=26,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
+  geom_text(aes(x=Inf, y=Inf, vjust=29,hjust=1.2,label=paste("Stress =",round(nmds.esi23.fish$stress,3),"k =",nmds.esi23.fish$ndim)))+
   nmdstheme;u
 
 u/r
@@ -992,18 +1026,36 @@ jjj$site <- gsub("MH","MOS",jjj$site)
 jjj$site <- gsub("OWL", "LH", jjj$site)
 jjj$site <- gsub("TH", "TAY", jjj$site)
 
+jjj$season <- gsub("spring","Spring", jjj$season)
+jjj$season <- gsub("summer","Summer", jjj$season)
+jjj$season <- gsub("fall","Fall", jjj$season)
+#remove newline character from Species names
+jjj$Species <- str_replace_all(jjj$Species,"\n"," ")
 
-  p50 <- ggplot(data=jjj %>% filter(value>100000, !Species=="Clupea\npallasii"), aes(axis1=Species, axis2=site, axis3=season, y=log(value)))+
-    scale_x_discrete(limits=c("Species","Site", "Season"))+
-    geom_alluvium(aes(fill=site))+
-    geom_stratum(alpha=0.5,width = 1/3)+  
-    geom_text(stat = "stratum", aes(label = after_stat(stratum)), size=3)+
+  
+p50 <- ggplot(data=jjj %>% filter(value>130000, !Species=="Clupea\npallasii"), 
+              aes(axis1=Species, axis2=season, y=log(value)))+
+    scale_x_discrete(
+      limits=c("Species", "Season"),
+      expand = c(0,0))+
+  #scale_fill_paletteer_d()+
+geom_alluvium(aes(fill=site))+
+    geom_stratum(width = .33, fill="snow")+  
+  geom_text(stat = "stratum",             
+            aes(label = season, alpha = ifelse(after_stat(x) == 2, 1, 0)),            
+            size = 4.5)+    
+  # Species labels only on axis 1 (left) 
+  ggrepel::geom_text_repel(stat = "stratum",     
+                           aes(label = Species, alpha = ifelse(after_stat(x) == 1, 1, 0)),  
+                           size = 4, direction = "y", nudge_x = -.65,
+  )+   
     ylab(label = "Log(Read count)")+
+  guides(alpha="none")+
     theme_minimal()+
-    theme(text=element_text(size=20));p50
+    theme(text=element_text(size=18));p50
 
 ggsave("2023_Seining_12S_Alluvialplot.png",plot=p50, path="figures/2023Seining/", device = "png",
-       bg="white",width = 12, height=8, dpi = 300)
+       bg="white",width = 10, height=8, dpi = 300)
 
 #Accumulation curves
 
