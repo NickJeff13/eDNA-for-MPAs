@@ -460,7 +460,44 @@ esi24.coi.coast.filt <- filter_low_reads(esi24.coi.coast.merge %>%
   
   write.csv(sab24.coi.filt2, file= "data/2024Perley/COI/GOTeDNA_SAB2024_COI_formatted.csv", quote=F, row.names = F)
   
+
+
+# St Anns Bank 2025 -------------------------------------------------------
+
+# these data include some samples from AZMP 2024
   
+  ## 12S 
+  #try with longer truncation (165bp)
+  sab25.12s.asv <-read.table("data/2025Perley/12S/LongerTruncation/SAB2025_12S_feature_table_export.tsv", header = T, sep="\t")   %>% glimpse()
+  
+  sab25.12s.taxa <-read.table("data/2025Perley/12S/LongerTruncation/12Sblast_results.tsv", header = F, sep="\t") %>%   glimpse()
+  
+  sab25.12s.merge <- left_join(sab25.12s.asv, sab25.12s.taxa, by=c("OTU.ID"="V1"))
+  
+  sab25.12s.filt <- sab25.12s.merge %>% 
+                                       drop_na() %>%
+                                       filter(V3>97 & V7 %in% c("bony fishes","whales & dolphins","sharks & rays")) %>%
+                                       select(-c(OTU.ID,V2, V4, V5, V8, V7)) %>%
+    relocate(V6) %>%
+    relocate(V3, .after=V6)
+  
+  write.csv(x = sab25.12s.filt,"data/2025Perley/12S/LongerTruncation/SAB2025_Perley_12S_filtered.csv", row.names = F, quote=F)
+  
+  #and shorter truncation (125bp)
+  sab25.12s.asv <-read.table("data/2025Perley/12S/ShorterTruncation/SAB2025_12S_feature_table_export.tsv", header = T, sep="\t")   %>% glimpse()
+  
+  sab25.12s.taxa <-read.table("data/2025Perley/12S/ShorterTruncation/12Sblast_results.tsv", header = F, sep="\t") %>%   glimpse()
+  
+  sab25.12s.merge <- left_join(sab25.12s.asv, sab25.12s.taxa, by=c("OTU.ID"="V1"))
+  
+  sab25.12s.filt <- sab25.12s.merge %>% 
+    drop_na() %>%
+    filter(V3>97 & V7 %in% c("bony fishes","whales & dolphins","sharks & rays")) %>%
+    select(-c(OTU.ID,V2, V4, V5, V8, V7)) %>%
+    relocate(V6) %>%
+    relocate(V3, .after=V6)
+  
+  write.csv(x = sab25.12s.filt,"data/2025Perley/12S/ShorterTruncation/SAB2025_Perley_12S_filtered.csv", row.names = F, quote=F)
   
 # Notes -------------------------------------------------------------------
 
