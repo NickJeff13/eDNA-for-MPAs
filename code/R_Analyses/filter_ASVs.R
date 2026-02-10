@@ -24,7 +24,7 @@ filter_low_reads <- function(df) {
 
 esi12s<-read.table(file = "data/2021Data/NEW/12S/ESI2021_12S_feature_table_export.tsv", header = T, sep = "\t")
 #taxonomy
-esi12s.taxa <-read.table(file = "data/2021Data/NEW/12S/12Sblast_1results.tsv",header = F,sep="\t")
+esi12s.taxa <-read.table(file = "data/2021Data/NEW/12S/ESI_12Sblast_1results.tsv",header = F,sep="\t")
 colnames(esi12s.taxa)<-c("ASV","NCBI","percentID", "evalue","length","species","group","commonname")
 
 esi21.12s.merge <- left_join(esi12s, esi12s.taxa, by =c("OTU.ID"="ASV"))  %>% filter(group %in% c("bony fishes","whales & dolphins", "sharks & rays", "birds"), percentID > 97.99)
@@ -47,7 +47,7 @@ write.csv(x = esi12s.filt.fish, file = "data/ESI2021_offshore_12S_filtered.csv",
 #ASV table
 esi16s<-read.table(file = "data/2021Data/NEW/16S/ESI2021_16S_feature_table_export.tsv", header = T, sep = "\t")
 #taxonomy
-esi16s.taxa <-read.table(file = "data/2021Data/NEW/16S/16Sblast_1results.tsv",header = F,sep="\t")
+esi16s.taxa <-read.table(file = "data/2021Data/NEW/16S/ESI2021_16Sblast_1results.tsv",header = F,sep="\t")
 colnames(esi16s.taxa)<-c("ASV","NCBI","percentID", "evalue","length","species","group","commonname")
 
 #can use inner_join or left_join for merging all ASV and taxonomy tables, as we will filter them by species/phylum next anyway. left_join will result in some rows having NA as not all ASVs get an assigned taxonomy, but inner_join will only keep rows in the ASV table that get a taxonomy as well 
