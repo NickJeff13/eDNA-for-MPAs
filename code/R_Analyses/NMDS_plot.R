@@ -1406,6 +1406,38 @@ ggsave("Seining2023_ESI_COI_ShannonDiversity_Seasonal.png",plot = p203, device =
       bg="white",path = "figures/2023Seining/", width = 12, height=8)
        
 
+
+# 2025 SAB Perley Data ----------------------------------------------------
+
+# load metadata
+sab25.meta <-read.csv("data/2025Perley/SAB_AZMP_2025_qiime2_samplemetadata.csv", header = T, sep = "\t") %>% glimpse()
+
+
+###### 12S Data ##
+head(sab25.12s.filt)
+
+sab25.only.12s <- sab25.12s.filt %>%
+  select(V6, starts_with("PER"))
+#Make a barplot of taxa
+tt<-pivot_longer(sab25.only.12s, cols=starts_with("PER"))
+tt$V6<-gsub(pattern = "Clupea pallasii", replacement = "Clupea harengus", tt$V6)
+tt$V6<-gsub(pattern = "Anarhichas orientalis", replacement = "Anarhichas denticulatus", tt$V6)
+tt$V6<-gsub(pattern = "Alosa fallax", replacement = "Alosa sp.", tt$V6)
+
+p251 <- ggplot()+
+  geom_bar(data=tt %>% filter(value > 100), 
+           aes(x=V6, y=log(value)),stat="identity")+
+  xlab(label = "")+
+  ylab(label="12S Log(Read Count)")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle=45, hjust=1), text=element_text(size=14))+
+  ggtitle('2025 St Anns Bank');p251
+
+ggsave(filename = "SAB25_12S_barplot.png",plot = last_plot(), 
+       device = "png", path = "figures/", width = 10, height=8, 
+       units = "in", dpi = 400, bg = "white")    
+
+
 # Save RData --------------------------------------------------------------
 
   save.image(file = "data/eDNA_NMDS_and_Diversity.RData")
