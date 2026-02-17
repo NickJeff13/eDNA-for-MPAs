@@ -55,7 +55,7 @@ qiime demux filter-samples \
   --p-where 'CAST([forward sequence count] AS INT) > 100' \
   --o-filtered-demux /path_to_output_folder/filename_greater100reads.qza
 
-#Now trim primers - COI 
+#Now trim primers - COI Leray primers
 qiime cutadapt trim-paired \
 --i-demultiplexed-sequences COI-combined-demux.qza \
 --p-cores 40 \
@@ -147,7 +147,7 @@ qiime cutadapt trim-paired \
 --p-match-read-wildcards \
 --p-match-adapter-wildcards \
 --p-minimum-length 30 \
---o-trimmed-sequences 12S-ESI-demux-trimmed-2024.qza \
+--o-trimmed-sequences 12S-PER25-demux-trimmed.qza \
 --output-dir trimmed \
 --verbose
 #visualize the trimming results
@@ -272,17 +272,6 @@ qiime feature-table tabulate-seqs \
 qiime metadata tabulate \
   --m-input-file denoised/denoising_stats.qza \
   --o-visualization denoised/denoising-stats.qzv
-  
-   qiime feature-table summarize \
-  --i-table ESIDenoisedSingle/table.qza \
-  --o-visualization ESIDenoisedSingle/table.qzv \
-  --m-sample-metadata-file ../2021-sample-metadata_ESIonly.tsv &&
-qiime feature-table tabulate-seqs \
-  --i-data ESIDenoisedSingle/representative_sequences.qza \
-  --o-visualization ESIDenoisedSingle/rep-seqs.qzv &&
-qiime metadata tabulate \
-  --m-input-file ESIDenoisedSingle/denoising_stats.qza \
-  --o-visualization ESIDenoisedSingle/denoising-stats.qzv
   
   qiime tools view /path_to_output_folder/filename_rep_seqs.qzv  ## export the ASV fasta file from the view for input into FuzzyID2 and BLAST
 
