@@ -278,11 +278,11 @@ qiime metadata tabulate \
  ### export results to biom formatted file
 qiime tools export \
 --input-path denoised/table.qza \
---output-path denoised/SAB2023_COI_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
+--output-path denoised/SAB2025_COI_filtered_table_biom ##specifying a folder output here, this tool will automatically export a file called 'feature-table.biom' to this folder
 
 ### convert biom to tsv
-biom convert -i denoised/SAB2023_COI_filtered_table_biom/feature-table.biom \
--o denoised/SAB2023_COI_filtered_table_biom/SAB2023_COI_feature_table_export.tsv \
+biom convert -i denoised/SAB2025_COI_filtered_table_biom/feature-table.biom \
+-o denoised/SAB2025_COI_filtered_table_biom/SAB2025_COI_feature_table_export.tsv \
 --to-tsv
 
 ### OPTIONAL filtering after exporting to tsv
