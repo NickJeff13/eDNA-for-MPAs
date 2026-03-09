@@ -1,0 +1,103 @@
+﻿KEY,DESCRIPTION,VALUE
+id,ID,47
+institute,Institute,St. Andrews Biological Station
+mission_name,Mission name,2023 Maritime Region Ecosystem Summer Survey (TELEOST)
+mission_number,Mission number,TEL-2023-010
+survey_number,Alternate survey identifier,
+vessel,Vessel,Teleost CGCB
+display_tz,In which timezone will date/times be entered?,Canada/Atlantic
+stratification_type,Type of stratification,1 - Random stratified based on depth with optimal allocation
+chief_scientist,Chief scientist,Ryan Martin / Bill MacEachern
+samplers,List of samplers,"Jamie Emberley
+Eric Brunsdon
+Emily Way-Nee
+Joeleen Savoie
+Tania Davignon
+Cassidy Bertin
+Dwayne d'Entremont
+Brooke Reid
+Ellen MacEachern
+Jessica Cosham
+Priyanka Varkey
+Bridhid Odenthal
+Jesse Jenkins
+Lynn Collier
+Kelly Kraska
+John Loch
+Cassandra Acheson"
+description,Description,"Bottom trawl survey of the Scotian Shelf, Bay of Fundy and Canadian portion of Georges Bank"
+notes,Notes,"Executive Summary:
+
+The primary purpose of this survey is to gather data to evaluate the abundance and distribution of commercially exploited demersal or groundfish species, as well as non-commercial species, on Georges Bank, Bay of Fundy and Scotian Shelf. The data from this survey constitutes an important source of information on which to base recommendations for fishing quotas. For many of the marine species in this area, this survey provides the only source of information on their abundance and distribution, and how these have changed over time. This survey usually provides a platform for the collection of oceanographic data used by the Atlantic Zonal Monitoring Program (AZMP), but oceanographic sampling will be conducted aboard CCGS Capt Jacques Cartier during 2023 for the comparative fishing experiment. This multispecies bottom trawl survey is Core Mandate, it is an essential and required part of the strategy for the sustainable management of Maritimes Region's aquatic resources."
+area_of_operation,Area of operation,NAFO 4VWX5Z
+start_date,Start date/time,2023-06-27 15:00:00 UTC
+end_date,End date/time,2023-08-14 11:00:00 UTC
+start_latitude,Start latitude,44.681945
+start_longitude,Start longitude,-63.613153
+end_latitude,End latitude,44.681945
+end_longitude,End longitude,-63.613153
+station_collection,Station collection,St. Andrews Biological Station - 2023 Maritimes Region Ecosystem Survey - Summer
+populate_with_set_manager,Enable using the set detail page as a way of collecting starting / ending times and positions?,No
+default_map,Default map,
+track_map_resolution,Track map resolution (in seconds),60
+fishing_track_map_resolution,Track map resolution (in seconds) during fishing,5
+min_lat,Minimum latitude,40.0
+max_lat,Maximum latitude,50.0
+min_lng,Minimum longitude,-70.0
+max_lng,Maximum longitude,-55.0
+targeted_trawl_speed,Targeted trawl speed (kts),3.5
+targeted_vessel_speed,Targeted vessel speed (kts),10.0
+targeted_time_on_station,Targeted time on station (hours),2.0
+targeted_trawl_duration,Targeted trawl duration (minutes),30.0
+targeted_trawl_distance,Targeted trawl distance (NM),1.75
+sampling_protocol,Primary sampling protocol,Maritimes Region Ecosystem Survey  - Summer (BASE)
+use_blacklisting,Enable catch restrict-listing?,No
+use_whitelisting,Enable catch allow-listing?,No
+set_auto_create_on,Automatically create sets from the station queue?,No
+next_when_complete,Move to next specimen when complete,Yes
+incomplete_warning,Warn users when leaving a specimen record prematurely?,Yes
+no_basket_wts,This cruise will not be entering basket weight,No
+basket_specimen_popup,Display a pop-up message when the basket weight differs from the specimen weight by more than 25%?,Yes
+default_length_type,Default length type,Total length
+default_length_unit,Default length unit,centimeters
+default_weight_type,Default weight type,Total
+default_weight_unit,Default weight unit,grams
+default_rounding_rule,Default rounding rule,round up to the nearest whole
+default_max_basket_weight,Default maximum basket weight (kg),45
+required_set_fields,Which fields are required for a set to be considered complete?,"['cruise', 'set_number', 'new_station', 'stratum', 'experiment_type', 'start_date', 'start_latitude_DD', 'start_latitude_MMmm', 'start_longitude_DD', 'start_longitude_MMmm', 'start_depth_m', 'end_date', 'end_latitude_DD', 'end_latitude_MMmm', 'end_longitude_DD', 'end_longitude_MMmm', 'end_depth_m', 'bridge', 'recorder', 'gear_type', 'auxiliary_equipment', 'port_warp', 'starboard_warp', 'warp_units_code', 'ship_direction', 'ship_speed', 'ship_speed_obtained_code', 'distance_towed', 'distance_towed_obtained_code', 'set_result', 'swell_height_code', 'wave_height', 'wind_direction_degree', 'wind_direction_code', 'wind_force_kts', 'wind_force_code', 'tide_direction_code', 'operations']"
+available_fishing_event_types,Which fishing events should show up in the fishing console?,"['1', '2', '3', '4', '5', '6', '7', '8']"
+start_fishing_event_type,Which event constitutes the start of fishing?,warp deployed
+end_fishing_event_type,Which event constitutes the end of fishing?,haul back
+start_scanmar_fishing_event_type,Which event should trigger the recording of scanmar data?,doors deployed
+end_scanmar_fishing_event_type,Which event should stop the recording of scanmar data?,net off bottom
+basket_sort,Sorting argument for baskets,Sampled baskets before unsampled baskets; newer baskets before older baskets
+multiple_active_set,Multiple active sets?,No
+default_ocean_map,Default oceanography map,
+starting_bottle_uid,Starting water sample UUID,483251
+ctd_filename_prefix,CTD filename prefix,21221
+oceanography_bottle_sort,Sorting argument for bottles,Descending (bottle uid)
+required_ocean_fields,Which fields are required for an oceanographic sample to be considered complete?,"['sounding', 'surface_temp', 'sea', 'sky', 'wind', 'operator', 'wire_out', 'wire_angle', 'tow_speed_down', 'tow_speed_up', 'ctd_filename', 'min_altimeter_height', 'min_bottle_height', 'max_ctd_depth', 'ctd_5m_temp', 'ctd_5m_salinity', 'ctd_bottom_temp', 'ctd_bottom_salinity', 'tow_id', 'flow_meter_start', 'flow_meter_end']"
+required_ocean_events,Which actions are required for an oceanographic activity to be considered complete?,"['1', '3']"
+default_ctd,Default CTD used on this mission,
+default_zoopnet,Default Zooplankton Net used on this mission,
+always_create_ocean_sample,Always create an oceanographic sample?,No
+bottle_shortcuts,Bottle depth shortcuts,"100, 75, 50, 25, 15, 5"
+is_archived,Is this cruise archived?,No
+last_modified_date,Last modified date,2023-07-31 14:36:59 UTC
+creation_date,Creation date,2023-04-19 12:11:10 UTC
+season,Season,2023
+is_active,Is active,Yes
+institute_id,Institute,4
+vessel_id,Vessel,2
+stratification_type_id,Type of stratification,3
+station_collection_id,Station collection,37
+default_map_id,Default map,
+sampling_protocol_id,Primary sampling protocol,46
+default_ocean_map_id,Default oceanography map,
+default_ctd_id,Default CTD used on this mission,
+default_zoopnet_id,Default Zooplankton Net used on this mission,
+west_bound_longitude,West bound longitude,-67.57849474666666
+east_bound_longitude,East bound longitude,-57.30033419833333
+north_bound_latitude,North bound latitude,47.209689471666664
+south_bound_latitude,South bound latitude,41.82736904833333
+catch_code_collection,Catch code collection,Maritimes Catch Codes

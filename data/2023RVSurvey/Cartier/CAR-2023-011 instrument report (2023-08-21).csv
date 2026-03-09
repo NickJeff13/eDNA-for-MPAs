@@ -1,0 +1,46 @@
+Instrument type,Component type,Model number,Serial number,ELog name,Is active,Notes
+Yellow Belly,Altimeter,"Teledyne Benthos PSA-916 (007601)_____6,000m", 49430,---,Yes,---
+Yellow Belly,Conductivity,"Sbe04C_____6,800m", 450071,---,Yes,---
+Yellow Belly,CTD,"SBE 25plus_____2,000m", 25P-1083,---,Yes,"Main Case 6,800 m; 2,000 m Max Built-in Pressure Sensor"
+Yellow Belly,Fluorometer,"Wet Labs ECO FLRTD G4_____6,000m", FLRTD-6068,---,Yes,ECO Deep Profiling Fluorometer
+Yellow Belly,Oxygen,"Sbe43_____6,800m", 43-1743,---,Yes,Fast Profiling Oxygen Sensor - 0.5mm Membrane
+Yellow Belly,Photosynthetically Active Radiation (PAR),"Biospherical QSP2300_____6,000m", 70760,---,Yes,Photosynthetically Active Radiation (PAR)
+Yellow Belly,Pressure,"Strain Gauge_____2,000m Depth Range", 25P-1083-,---,Yes,25plus CTD Built-in Pressure Sensor
+Yellow Belly,Rosette,"Sbe32_____6,800m", 3253201-0778,---,Yes,12 Bottle Rosette - 5 Litre Bottles
+Yellow Belly,Temperature,"Sbe03-01/F_____6,800m", 03-1593,---,Yes,Fast Profiling Temperature Sensor
+Yellow Belly,Water Pump,"Sbe5T_____10,000m", 05-1476 2K,---,Yes,2K Set-up??
+Plankton net (202μm),Flowmeter,Hydro-Bios, 405329,Flowmeter,Yes,---
+Plankton net (202μm),Ring net,Filmar 202um, None,202um,Yes,---
+Plankton net (76μm),Flowmeter,---, None,flowmeter,Yes,---
+Plankton net (76μm),Ring net,---, None,76μm,Yes,---
+Secchi Disc,Turbidity,---, None,---,Yes,---
+CTD AZOMP 2023 (inactive),Altimeter,VA500, 62184,---,Yes,Calibration Date 30-Nov-2018
+CTD AZOMP 2023 (inactive),Beam transmissometer  beam attenuation,Wet Labs ECO-BB, BBRTD-1490,---,Yes,Calibration Date 09-Aug-2016
+CTD AZOMP 2023 (inactive),Conductivity,SBE4, 3561,---,Yes,secondary Calibration Date 08-Feb-2023
+CTD AZOMP 2023 (inactive),Conductivity,SBE4, 4362,---,Yes,primary Calibration Date 07-Feb-2023
+CTD AZOMP 2023 (inactive),Fluorometer,Seapoint Chlorophyll Fluorometer (SCF), 3867,---,Yes,Calibration Date 23-Feb-2017
+CTD AZOMP 2023 (inactive),Fluorometer,Seapoint Ultraviolet Fluorometer (SUVF), 6229,---,Yes,Calibration Date 23-FEB-2017
+CTD AZOMP 2023 (inactive),Oxygen,SBE43, 3026,---,Yes,secondary Calibration Date 15-Feb-2023
+CTD AZOMP 2023 (inactive),Oxygen,SBE43, 2524,---,Yes,primary Calibration Date 04-Mar-2023
+CTD AZOMP 2023 (inactive),pH,SBE18, 1221,---,Yes,Calibration Date 31-Oct-2022
+CTD AZOMP 2023 (inactive),Photosynthetically Active Radiation (PAR),SAT-QR-99019, 1043,---,Yes,Calibration Date 01-Dec-2015
+CTD AZOMP 2023 (inactive),Pressure,410K-135 / Modulo 12P, 09P9984-0370,---,Yes,Calibration Date 06-Feb-2023
+CTD AZOMP 2023 (inactive),SBE,911plus, None,---,Yes,---
+CTD AZOMP 2023 (inactive),Temperature,SBE3, 5064,---,Yes,primary Calibration Date 11-Feb-2023
+CTD AZOMP 2023 (inactive),Temperature,SBE3, 5081,---,Yes,secondary Calibration Date 18-Feb-2023
+RedFoot (inactive),Altimeter,"Teledyne Benthos PSA-916 (007601)_____6,000m", 61765,---,Yes,---
+RedFoot (inactive),Conductivity,"Sbe04C_____6,800m", 2867246,---,Yes,---
+RedFoot (inactive),CTD,"Sbe25plus_____6,800m", 25P-1161,---,Yes,w/ Built-in Pressure Sensor
+RedFoot (inactive),Fluorometer,"Chelsea Aquatracka Mk III_____6,000m", 088 172,---,Yes,---
+RedFoot (inactive),Oxygen,"Sbe43_____6,800m", 43-1157,---,Yes,Fast Profiling Oxygen Sensor - 0.5mm Membrane
+RedFoot (inactive),Photosynthetically Active Radiation (PAR),"Biospherical QSP2300_____6,000m", 70694,---,Yes,---
+RedFoot (inactive),Pressure,"Strain Gauge_____2,000m", 25P-1161-10724593,---,Yes,25plus CTD Built-in Pressure Sensor
+RedFoot (inactive),Rosette,"Sbe32_____6,800m", 3224491-0315,---,Yes,12 Bottle Rosette - 5 Liter Bottles
+RedFoot (inactive),Temperature,"Sbe03F_____6,800m", 1585944,---,Yes,Profiling Fast Temperature Sensor
+RedFoot (inactive),Water Pump,"Sbe05T_____10,500m", 05-9500 2K,---,Yes,---
+Bongo Net (335 + 750 μm) (inactive),Ring net,---, None,---,Yes,---
+Bongo Net (335 + 750 μm) (inactive),Ring net,---, None,---,Yes,---
+Plankton net (335μm) (inactive),Ring net,---, None,---,Yes,---
+Plankton net (64μm) (inactive),Ring net,---, None,---,Yes,---
+Plankton net (750μm) (inactive),Ring net,---, None,---,Yes,---
+Mooring (inactive),ADCP,---, None,---,Yes,---
