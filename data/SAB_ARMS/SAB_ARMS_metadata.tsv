@@ -1,0 +1,31 @@
+sample-id	replicate	site	Deployment-retrieval	concentration
+SAB_1	1	Curdo Bank	retrieval	24.5
+SAB_2	2	Curdo Bank	retrieval	25.2
+SAB_3	3	Curdo Bank	retrieval	24.6
+SAB_4	0	Curdo field control	retrieval	0.23
+SAB_5	1	East SAB	retrieval	5
+SAB_6	2	East SAB	retrieval	6.8
+SAB_7	3	East SAB	retrieval	18.4
+SAB_8	0	East SAB-Control	retrieval	0.14
+SAB_9	1	West SAB	retrieval	24.3
+SAB_10	2	West SAB	retrieval	21
+SAB_11	3	West SAB	retrieval	21.9
+SAB_12	0	West SAB-Control	retrieval	0.31
+SAB_13	1	SAB-ARMS	retrieval	24.1
+SAB_14	2	SAB-ARMS	retrieval	19.8
+SAB_15	3	SAB-ARMS	retrieval	28.2
+SAB_16	0	SAB-ARMS-Control	retrieval	0.44
+SAB_17	1	Curdo Bank	deployment	31.9
+SAB_18	2	Curdo Bank	deployment	27.9
+SAB_19	3	Curdo Bank	deployment	37
+SAB_20	1	Scatarie-Site1	deployment	25.1
+SAB_21	2	Scatarie-Site1	deployment	22.1
+SAB_22	3	Scatarie-Site1	deployment	21.1
+SAB_23	1	Scatarie-Site2	deployment	18.5
+SAB_24	2	Scatarie-Site2	deployment	20.1
+SAB_25	3	Scatarie-Site2	deployment	18.8
+SAB_26	0	Scatarie field control	deployment	0.41
+SAB_27	1	Scatarie-Site3	deployment	29.5
+SAB_28	2	Scatarie-Site3	deployment	21.7
+SAB_29	3	Scatarie-Site3	deployment	27.5
+SAB_30	-1	extraction negative	extraction negative	0.58
