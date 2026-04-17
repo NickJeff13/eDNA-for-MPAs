@@ -10,6 +10,7 @@ The following repositories include other analyses conducted for various Maritime
 2. [Fundian Channel - Browns Bank](https://github.com/dfo-mar-mpas/fundian_aoi) 
 3. [St. Anns Bank MPA](https://github.com/dfo-mar-mpas/stannsbank_mpa) 
 4. [Musquash Estuary](https://github.com/dfo-mar-mpas/musquash_mpa)
+5. [The Gully MPA](https://www.dfo-mpo.gc.ca/oceans/mpa-zpm/gully/index-eng.html)
 
 #2. Bioinformatics
 
