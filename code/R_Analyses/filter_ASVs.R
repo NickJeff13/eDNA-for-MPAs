@@ -102,8 +102,27 @@ write.csv(x = esi22.16s.merge, file = "data/2022Data/ESI/16S/GOTeDNA_ESI2022_16S
 
 
 ## COI LerayXT primer
-esi22.coi <- read.table("data/2022Data/ESI/LerayXT/ESI22_COI_feature_table_export.tsv", header = T, sep="\t")
+esi22.coi.asvs <- read.table("data/2022Data/ESI/LerayXT/ESI2022_COI_feature_table_export.tsv", header = T, sep="\t")
 
+esi22.coi.taxa <- read.table(file = "data/2022Data/ESI/LerayXT/ESI2022_COI.rdp.output", header = F, sep = "\t") #here the \t is short for tab separation
+esi22.coi.taxa<- rename(esi22.coi.taxa, OTU.ID= V1) #this is just so there is a matching column between our taxon and asvs files so we can merge them easier (OTU.ID)
+
+esi22.coi.merge <- left_join(esi22.coi.asvs, esi22.coi.taxa, by =c("ASV"="OTU.ID"))  %>%
+  filter(V29>0.97, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida","Mollusca",
+                              "Nematoda","Rhodophyta","Gastrotricha","Chlorophyta","Echinodermata",
+                              "Brachiopoda","Porifera","Cnidaria","Nemertea","Haptophyta","Streptophyta",
+                              "Hemichordata","Bryozoa","Ctenophora_comb_jellies","Tardigrada","Rotifera",
+                              "Chaetognatha","Prasinodermophyta")) %>% select(!starts_with(c("ENEG","EXT","PCRB"))) %>%
+  rename(Phylum=V12, Class=V15, Species=V27)
+
+
+#Clean up this table and remove columns we don't need - here we are 'selecting' the columns from "taxatable" to keep, AND filtering by 0.90 probability of species being kept, AND removing rows with very few ASV counts
+
+esi22.coi.merge.filt <- esi22.coi.merge %>% filter(V29 > 0.95) %>% 
+  select(-c(ASV, V2:V11, Phylum, V13:V14, Class, V16:V26, V28)) %>%
+  relocate(Species) %>%
+  relocate(V29, .after=Species) %>%
+  as.data.frame()
 
 # 2022 SAB Data -----------------------------------------------------------
 
@@ -210,16 +229,17 @@ esi23.12s.perl.taxa <-read.table("data/2023Perley/ESI/MiFishU/12Sblast_results.t
 
 esi23.12s.perl.merge <- left_join(esi23.12s.perl, esi23.12s.perl.taxa, by=c("ASV"="V1"))
 
-esi23.12s.per.merge2 <- esi23.12s.perl.merge %>% 
-  filter(V3>97.9 & V7 %in% c("bony fishes","whales & dolphins","sharks & rays"))
-
-esi23.12s.perl.merge3 <- esi23.12s.per.merge2 %>%
+esi23.12s.perl.merge2 <- esi23.12s.perl.merge %>% 
+  filter(V3>97.9 & V7 %in% c("bony fishes","whales & dolphins","sharks & rays")) %>%
   select(-c(ASV, V2, V4, V5, V7, V8)) %>%
   rename(species=V6, percentID=V3) %>%
   relocate(species) %>%
   relocate(percentID, .after=species)
 
-write.csv(x = esi23.12s.perl.merge3, file="data/2023Perley/ESI/MiFishU/GOTeDNA_Perley2023_12S_formatted.csv", quote = F, row.names = F)
+esi23.12s.perl.merge2$species <- gsub("Salvelinus fontinalis x Salvelinus malma", "Salvelinus fontinalis", esi23.12s.per.merge2$species)
+
+
+write.csv(x = esi23.12s.perl.merge2, file="data/2023Perley/ESI/MiFishU/GOTeDNA_Perley2023_12S_formatted.csv", quote = F, row.names = F)
 
 #COI Invertebrates
 esi23.coi.perl <- read.table("data/2023Perley/ESI/COI/ESIPer23_COI_feature_table_export.tsv", header = T, sep = "\t") %>% glimpse()
@@ -497,7 +517,46 @@ esi24.coi.coast.filt <- filter_low_reads(esi24.coi.coast.merge %>%
     relocate(V6) %>%
     relocate(V3, .after=V6)
   
-  write.csv(x = sab25.12s.filt,"data/2025Perley/12S/ShorterTruncation/SAB2025_Perley_12S_filtered.csv", row.names = F, quote=F)
+  #Need to remove Alepocephalus umbriceps, Hippoglossus stenolepis, Gymnelus andersoni (change to genus or could be viridis),
+  #Sebastes baramenuke
+  
+  sab25.12s.filt2 <- sab25.12s.filt %>% 
+    filter(!V6==c("Alepocephalus umbriceps", "Hippoglossus stenolepis", 
+                 "Gymnelus andersoni", "Sebastes baramenuke", "Clupea pallasii"))
+  write.csv(x = sab25.12s.filt2,"data/2025Perley/12S/ShorterTruncation/SAB2025_Perley_12S_filtered.csv", row.names = F, quote=F)
+  
+  
+  ## COI Leray
+  
+  sab25.coi.asv <- read.table("data/2025Perley/Leray/SAB2025_COI_feature_table_export.tsv", header = T, sep="\t") %>% glimpse()
+
+  sab25.coi.rdp <- read.table("data/2025Perley/Leray/rdp.output", header = F, sep="\t") %>% glimpse()
+  
+  sab25.coi.merge <- left_join(sab25.coi.asv, sab25.coi.rdp, by=c("OTU.ID"="V1"))
+  
+  sab25.coi.filt <- filter_low_reads(sab25.coi.merge %>% 
+                                       select(-c(V2:V11,V13,V22, V25, V28, OTU.ID)) %>%
+                                       filter(V29>0.979, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida","Mollusca","Nematoda","Rhodophyta",
+                                                                    "Gastrotricha","Chlorophyta","Echinodermata","Brachiopoda","Porifera","Cnidaria",
+                                                                    "Nemertea","Haptophyta","Hemichordata","Bryozoa","Ctenophora_comb_jellies","Tardigrada",
+                                                                    "Rotifera", "Chaetognatha","Kinorhyncha","Acanthocephala_thorny-headed_worms")) %>%
+                                       rename(Phylum=V12, Class=V15, Species=V27) %>% 
+                                       as.data.frame())
+  
+  
+  write.csv(x = sab25.coi.filt, file="data/2025Perley/Leray/GOTeDNA-SAB2025-COI-ASVsFiltered.csv",
+            quote=F, row.names = F)
+  
+  # 2025 SAB ARMS samples ---------------------------------------------------
+
+arms25.asvs <-read.table("data/SAB_ARMS/SABARMS_COI_feature_table_export.tsv", header = T, sep="\t")   %>% glimpse()
+  
+  arms25.taxa <-read.table("data/SAB_ARMS/rdp.output", header = F, sep="\t") %>%   glimpse()
+  
+  arms25.merge <- left_join(arms25.asvs, arms25.taxa, by=c("OTU.ID"="V1"))
+  
+  
+  write.csv(arms25.merge, file = "data/SAB_ARMS/SAB_ARMS_ASV_mergedTaxonomy.csv", quote=F)
   
 # Notes -------------------------------------------------------------------
 
@@ -505,7 +564,7 @@ esi24.coi.coast.filt <- filter_low_reads(esi24.coi.coast.merge %>%
 #Below is a list of invertebrate distributions for those found in these eDNA datasets but I am not sure they are accurate
 
 #Copepods
-#1. Pseudocalanus mimus = Pacific, change to Pseuodcalanus sp.1
+#1. Pseudocalanus mimus = Pacific, change to Pseudocalanus sp.1
 #2. Eurytemora herdmani = Atlantic, keep as is
 #3. Temora longicornis = Atlantic, keep as is
 #4. Pseudocalanus acuspes = Arctic, Baltic, some North Pacific, change to Pseudocalanus sp. 2

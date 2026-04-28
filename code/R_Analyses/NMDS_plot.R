@@ -471,7 +471,6 @@ sab.coi.nmds <-metaMDS(commat2, distance="bray", k=6, trymax = 100, maxit=500)
 plot(sab.coi.nmds) #this is not very informative without labels!
 
 
-
 ordiplot(sab.coi.nmds, type='n')
 ordihull(sab.coi.nmds,groups=groups$V2,draw="polygon",col="cyan",label=F)
 #orditorp(sab.coi.nmds,display="species",col="red",air=0.01)
@@ -487,10 +486,11 @@ data.scores$Surface <- groups$V3
 species.scores <- as.data.frame(scores(sab.coi.nmds, "species"))  #Using the scores function from vegan to extract the species scores and convert to a data.frame
 species.scores$species <- rownames(species.scores) 
 
-
+#turn on or turn off species labels
   p12 <- ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
-    geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
-    geom_point(size = 4, aes(shape = Surface, colour = Depth))+ 
+    #geom_text(data=species.scores,aes(x=NMDS1,y=NMDS2,label=species), alpha=0.5)+
+    geom_point(size = 4, aes(shape = Surface, fill = Depth), color="black")+ 
+    scale_shape_manual(values = c(21, 23))+
       theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
           axis.text.x = element_text(colour = "black", face = "bold", size = 14), 
           legend.text = element_text(size = 12, face ="bold", colour ="black"), 
