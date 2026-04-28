@@ -225,7 +225,7 @@ qiime dada2 denoise-paired \
 --p-trunc-len-f  194 \
 --p-trunc-len-r  189 \
 --p-n-threads 0 \
---p-min-overlap 10 \
+--p-min-overlap 11 \
 --p-max-ee-f 5 \
 --p-max-ee-r 5 \
 --p-trim-left-r 4 \
