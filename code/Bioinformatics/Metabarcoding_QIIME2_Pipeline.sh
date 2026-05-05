@@ -147,8 +147,7 @@ qiime cutadapt trim-paired \
 --p-match-read-wildcards \
 --p-match-adapter-wildcards \
 --p-minimum-length 30 \
---o-trimmed-sequences 12S-PER25-demux-trimmed.qza \
---output-dir trimmed \
+--o-trimmed-sequences 12S-RV25-demux-trimmed.qza \
 --verbose
 #visualize the trimming results
 qiime demux summarize --i-data 12s-demux-trimmed-2023-test2.qza \
@@ -222,13 +221,13 @@ qiime dada2 denoise-single \
 '
 qiime dada2 denoise-paired \
 --i-demultiplexed-seqs COI-demux-trimmed.qza \
---p-trunc-len-f  194 \
+--p-trunc-len-f  195 \
 --p-trunc-len-r  189 \
 --p-n-threads 0 \
 --p-min-overlap 11 \
 --p-max-ee-f 5 \
 --p-max-ee-r 5 \
---p-trim-left-r 4 \
+--p-trim-left-r 10 \
 --p-pooling-method independent \
 --p-n-reads-learn 3000000 \
 --output-dir denoised \
@@ -237,8 +236,8 @@ qiime dada2 denoise-paired \
 #Generate summaries of denoising stats and feature table
 
 qiime feature-table summarize \
-  --i-table denoised3/table.qza \
-  --o-visualization denoised3/table.qzv \
+  --i-table denoised/table.qza \
+  --o-visualization denoised/table.qzv \
   --m-sample-metadata-file ../../2023Perley-sample-metadata_ESI.tsv &&
 qiime feature-table tabulate-seqs \
   --i-data denoisede3/representative_sequences.qza \
