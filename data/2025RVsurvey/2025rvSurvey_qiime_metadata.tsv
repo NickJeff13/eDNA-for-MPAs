@@ -1,0 +1,98 @@
+sample-id	concentration	depth	surface	station	volume	MPA	month
+#q2:types	numeric	numeric	categorical	categorical	numeric	categorical	categorical
+962-ENEG-1	0	0	ENEG	ENEG	0	NA	NA
+962-ENEG-2	0	0	ENEG	ENEG	0	NA	NA
+963-ENEG-1	0	0	ENEG	ENEG	0	NA	NA
+963-ENEG-2	0	0	ENEG	ENEG	0	NA	NA
+964-ENEG-1	0	0	ENEG	ENEG	0	NA	NA
+964-ENEG-2	0	0	ENEG	ENEG	0	NA	NA
+965-ENEG-1	0	0	ENEG	ENEG	0	NA	NA
+965-ENEG-2	0	0	ENEG	ENEG	0	NA	NA
+BBL25-521760	0.11	1887.154	bottom	BBL_07	4.2	BrownsBank	October
+CAR25-518830	2.3	81.4	bottom	1012	3.07	Offshore	July
+CAR25-518831	2.08	81.4	bottom	1012	3	Offshore	July
+CAR25-518836	1.84	73.5	bottom	220	3.04	Offshore	July
+CAR25-518837	1.6	73.5	bottom	220	3.09	Offshore	July
+CAR25-518855	2.77	74.8	bottom	230	3	Offshore	July
+CAR25-518856	2.27	74.8	bottom	230	3.02	Offshore	July
+CAR25-518862	1.73	85.8	bottom	229	3.13	Offshore	July
+CAR25-518863	1.46	85.8	bottom	229	3.02	Offshore	July
+CAR25-518872	1.8	172.8	bottom	215	3.02	Offshore	July
+CAR25-518873	1.67	172.8	bottom	215	2.97	Offshore	July
+CAR25-518879	1.92	121	bottom	216	3.05	Offshore	July
+CAR25-518880	1.11	121	bottom	216	3.05	Offshore	July
+CAR25-518927	0.2	328	bottom	189	3.03	Offshore	July
+CAR25-518928	0.2	328	bottom	189	3.04	Offshore	July
+CAR25-519011	0.11	238	bottom	186	3.02	Offshore	July
+CAR25-519012	0.15	238	bottom	186	0	Offshore	July
+CAR25-519017	0.14	233	bottom	188	3.05	Offshore	July
+CAR25-519018	0.2	233	bottom	188	3.01	Offshore	July
+CAR25-519028	1.48	89.4	bottom	172	2.97	Offshore	July
+CAR25-519029	0.59	89.4	bottom	172	3.01	Offshore	July
+CAR25-519082	1.34	140	bottom	159	3.17	Offshore	July
+CAR25-519083	1.54	140	bottom	159	3.51	Offshore	July
+CAR25-519157	0.44	103	bottom	125	3.04	Offshore	July
+CAR25-519158	0.27	103	bottom	125	3.04	Offshore	July
+CAR25-519163	0.31	125	bottom	133	4.18	Offshore	July
+CAR25-519164	0.4	124	bottom	133	4.18	Offshore	July
+CAR25-519170	0.99	73	bottom	117	4.17	Offshore	July
+CAR25-519171	0.67	72	bottom	117	4.17	Offshore	July
+CAR25-519176	0.64	95	bottom	127	3.03	Offshore	July
+CAR25-519177	0.75	95	bottom	127	3.04	Offshore	July
+CAR25-519182	0.5	89	bottom	121	3.04	Offshore	July
+CAR25-519183	0.4	88	bottom	121	3.18	Offshore	July
+CAR25-519197	0.43	124	bottom	114	3.16	Offshore	July
+CAR25-519198	0.45	123	bottom	114	3.19	Offshore	July
+CAR25-519268	0.6	259	bottom	64	4.17	Offshore	July
+CAR25-519269	0.72	259	bottom	64	4.27	Offshore	July
+CAR25-519329	0.81	104	bottom	7	4.1	Offshore	July
+CAR25-519330	0.71	104	bottom	7	4.09	Offshore	July
+CAR25-519335	0.79	109.8	bottom	6	4.16	Offshore	July
+CAR25-519336	0.75	109.8	bottom	6	4.15	Offshore	July
+CAR25-519407	0.55	346	bottom	4	4.06	Offshore	July
+CAR25-519408	0.49	346	bottom	4	4.04	Offshore	July
+CAR25-519590	0.97	104	bottom	61	4.19	Offshore	August
+CAR25-519591	1.31	104	bottom	61	4.54	Offshore	August
+CAR25-519648	1.26	107.7	bottom	111	4.02	Offshore	August
+CAR25-519649	0.53	107.7	bottom	111	4	Offshore	August
+CAR25-FB101	0	0	field blank	125	2.11	Offshore	July
+CAR25-FB111	0	0	field blank	121	2.21	Offshore	July
+CAR25-FB114	0	0	field blank	114	2.21	Offshore	July
+CAR25-FB128	0	0	field blank	64	1.78	Offshore	July
+CAR25-FB131	0	0	field blank	7	2.06	Offshore	July
+CAR25-FB141	0	0	field blank	61	2.1	Offshore	July
+CAR25-FB144	0	0	field blank	111	2.07	Offshore	July
+CAR25-FB585	0	0	field blank	159	2.23	Offshore	July
+CAR25-FB614	0	0	field blank	4	2	Offshore	July
+CAR25-FB67	0	0	field blank	1012	1.99	Offshore	July
+CAR25-FB72	0	0	field blank	230	2.05	Offshore	July
+CAR25-FB75	0	0	field blank	229	1.94	Offshore	July
+CAR25-FB82	0	0	field blank	189	1.95	Offshore	July
+CAR25-FB86	0	0	field blank	186	2	Offshore	July
+CAR25-FB98	0	0	field blank	159	2	Offshore	July
+GUL25-522118	0.55	689.814	bottom	GUL_01	4.23	Gully	October
+GUL25-522119	0.46	689.822	bottom	GUL_01	4.26	Gully	October
+GUL25-522134	0.29	1194.625	bottom	GUL_02	4.21	Gully	October
+GUL25-522135	0.45	1194.613	bottom	GUL_02	4.21	Gully	October
+GUL25-522163	0.18	1780.39	bottom	GUL_03	4.23	Gully	October
+GUL25-522164	0.2	1780.445	bottom	GUL_03	4.26	Gully	October
+GUL25-522169	0.58	500.945	midcolumn	GUL_03	4.22	Gully	October
+GUL25-522185	0.12	2158.024	bottom	GUL_04	4.23	Gully	October
+GUL25-522186	0.12	2158.074	bottom	GUL_04	4.26	Gully	October
+GUL25-522192	0.76	249.669	midcolumn	GUL_04	4.26	Gully	October
+GUL25-FB668	0.43	0	field blank	GUL_04	1.99	Gully	October
+NEC25-521595	1.29	92.776	bottom	NEC_01	4.36	NEC	October
+NEC25-521596	1.17	92.801	bottom	NEC_01	4.27	NEC	October
+NEC25-521615	0.87	197.077	bottom	NEC_02	4.29	NEC	October
+NEC25-521616	0.37	197.088	bottom	NEC_02	4.3	NEC	October
+NEC25-521631	0.36	207.415	bottom	NEC_03	4.2	NEC	October
+NEC25-521632	0.49	207.496	bottom	NEC_03	4.19	NEC	October
+NEC25-521648	0.32	221.897	bottom	NEC_04	4.23	NEC	October
+NEC25-521649	0.89	222.019	bottom	NEC_04	4.23	NEC	October
+NEC25-521663	1.15	229.552	bottom	NEC_05	4.22	NEC	October
+NEC25-521664	0.98	229.529	bottom	NEC_05	4.18	NEC	October
+NEC25-521686	1.06	220.202	bottom	NEC_06	4.22	NEC	October
+NEC25-521687	0.82	220.21	bottom	NEC_06	4.19	NEC	October
+NEC25-521702	0.796	218.161	bottom	NEC_07	4.24	NEC	October
+NEC25-521703	1.14	218.194	bottom	NEC_07	4.22	NEC	October
+NEC25-FB641	0.08	0	field blank	NEC_07	2.01	NEC	October
