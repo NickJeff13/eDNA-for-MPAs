@@ -558,6 +558,102 @@ arms25.asvs <-read.table("data/SAB_ARMS/SABARMS_COI_feature_table_export.tsv", h
   
   write.csv(arms25.merge, file = "data/SAB_ARMS/SAB_ARMS_ASV_mergedTaxonomy.csv", quote=F)
   
+  
+  
+
+# 2025 RV Trawl Survey and AZMP -------------------------------------------
+  
+  ## 12S 
+  #try with longer truncation (165bp)
+  rv25.12s.asv <-read.table("data/2025RVsurvey/12S/RV2025_12S_feature_table_export.tsv", header = T, sep="\t")   %>% glimpse()
+  
+  rv25.12s.taxa <-read_tsv("data/2025RVsurvey/12S/12Sblast_5results.tsv", col_names = F, quote="") %>%   glimpse()
+  
+  rv25.12s.taxa <- rv25.12s.taxa %>%
+    group_by(X1) %>%
+    arrange(desc(X3), .by_group = TRUE) %>%
+    slice(1) %>%
+    ungroup() %>%
+    as.data.frame()
+  #rv25.12s.taxa <- rv25.12s.taxa[!duplicated(rv25.12s.taxa$V1), ]
+  
+  rv25.12s.merge <- left_join(rv25.12s.asv, rv25.12s.taxa, by=c("OTU.ID"="X1"))
+  
+  rv25.12s.filt <- rv25.12s.merge %>% 
+    drop_na() %>%
+    filter(X3>97 & X5>100 & X7 %in% c("ray-finned fishes",
+                             "whales & dolphins",
+                             "even-toed ungulates & whales",
+                             "sharks & rays"),
+           !X6 %in% c("Bos taurus","Sagmatias obliquidens", "Allenbatrachus grunniens", "Artediellus pacificus")) %>%
+    select(-c(OTU.ID,X2, X4, X5, X8, X7)) %>%
+    relocate(X6) %>%
+    relocate(X3, .after=X6)
+  
+  sort(unique(rv25.12s.filt$X6))
+  
+  rv25.12s.filt$X6 <- gsub("Paraplagusia japonica", "Cynoglossidae", rv25.12s.filt$X6)
+  
+  write.csv(x = rv25.12s.filt,"data/2025RVsurvey/12S/RV2025_12S_filtered.csv", row.names = F, quote=F)
+
+  
+  ## COI Leray
+  
+  rv25.coi.asv <- read.table("data/2025RVsurvey/COI/RV2025_COI_feature_table_export.tsv", header = T, sep="\t") %>% glimpse()
+  
+  rv25.coi.taxa <- read_tsv("data/2025RVsurvey/COI/COIblast_5results.tsv", col_names = F, quote="") %>%   glimpse()
+  
+  rv25.coi.merge <- left_join(rv25.coi.asv, rv25.coi.taxa, by=c("OTU.ID"="X1"))
+  
+  rv25.coi.filt <- filter_low_reads(rv25.coi.merge %>% 
+                                      drop_na() %>%
+                                      filter(X3>97.5 & X5>100 & X7 %in% c("amphipods","anthozoans",
+                                                                        "arthropods","arrow worms","bivalves",
+                                                                        "black corals", "blue corals","brachiopods",
+                                                                        "brittle stars","brown algae","bryozoans",
+                                                                        "carnivores","cephalopods", "chimaeras",
+                                                                        "chitons","cnidarians","ciliates",
+                                                                        "comb jellies", "coral anemones", "crinoids",
+                                                                        "crustaceans","diatoms", "dinoflagelleates",
+                                                                        "echinoderms","flatworms","forams","gastropods",
+                                                                        "golden algae","green algae","hagfishes",
+                                                                        "hemichordates","hydrozoans",
+                                                                        "isopods","jellyfishes",
+                                                                        "lampreys","mat anemones","molluscs","nematodes",
+                                                                        "peanut worms","phoronid worms","ray-finned fishes",
+                                                                        "red algae","ribbon worms","rotifers","sea anemones",
+                                                                        "sea cucumbers","sea pens","sea spiders","sea urchins",
+                                                                        "sea wasps","segmented worms","sharks & rays",
+                                                                        "soft corals","sponges","spoonworms",
+                                                                        "starfish","stony corals","tardigrades","tube anemones",
+                                                                        "tunicates","turtles","tusk shells","whales & dolphins"),
+                                             !X6 %in% c("uncultured diatom",
+                                                        "Pennatula phosphorea",
+                                                        "Chloroparvula pacifica",
+                                                        "Lamellitrochus sp. 5 SW-2025")
+                                             ) %>%
+                                      select(-c(OTU.ID,X2, X4, X5, X8, X7)) %>%
+                                      relocate(X6) %>%
+                                      relocate(X3, .after=X6)
+  )
+                                      
+  #Lots of replacements here
+  
+  rv25.coi.filt$X6 <- gsub("Sagartiogeton awii", "Anthozoa sp.", rv25.coi.filt$X6)
+  rv25.coi.filt$X6 <- gsub("Paragorgia papillata", "Paragorgia sp.", rv25.coi.filt$X6)
+  rv25.coi.filt$X6 <- gsub("Pseudocalanus newmani", "Pseudocalanus sp.", rv25.coi.filt$X6)
+  rv25.coi.filt$X6 <- gsub("Thysanoessa sp. AB-2009", "Thysanoessa sp.", rv25.coi.filt$X6)
+  rv25.coi.filt$X6 <- gsub("Primnoa pacifica", "Primnoa sp.", rv25.coi.filt$X6)
+  
+                                   
+  
+  
+  
+  write.csv(x = rv25.coi.filt, file="data/2025RVsurvey/COI/GOTeDNA-RV2025-COI-ASVsFiltered.csv",
+            quote=F, row.names = F)
+
+  
+    
 # Notes -------------------------------------------------------------------
 
 #Once we have our filtered ASV tables, move to the NMDS or diversity scripts to make some plots
@@ -577,7 +673,7 @@ arms25.asvs <-read.table("data/SAB_ARMS/SABARMS_COI_feature_table_export.tsv", h
 
 
 #Sessile Inverts
-#1. Boltenia echinata = Atlantic and Arctic, keep as is
+#1. Boltenia echinatca = Atlantic and Arctic, keep as is
 #2. Hymeraphia_stellifera, a sponge = European, change to Hymeraphia sp. 
 #3. Haliclona oculata, a sponge = North Atlantic, keep as is
 #4. Ectyonopsis_pluridentata, sponge = South African species only, remove?

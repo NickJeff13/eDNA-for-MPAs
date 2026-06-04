@@ -47,7 +47,7 @@ colnames(esi12tt)<-esi12s.filt.fish2$species
 esi12ttt<-esi12tt[rowSums(esi12tt[])>0,]
 
 ##### Make a barplot of taxa
-tt<-pivot_longer(esi12s.filt.fish2, cols=starts_with("Sample"))
+tt<-pivot_longer(esi12s.filt.fish2, cols=starts_with(c("X2023","AZMP2024","SAB24")))
   
   p1 <- ggplot()+geom_bar(data=tt%>%filter(value>20), aes(x=species, y=log(value)),stat="identity")+
     xlab(label = "")+
