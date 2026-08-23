@@ -88,8 +88,8 @@ write.csv(x = esi22.12s.merge, file = "data/2022Data/ESI/MiFishU/GOTeDNA_ESI2022
 
 
 ## 16S Fish
-esi22.16s <- read.table("data/2022Data/ESI/16S/ESI22_16S_feature_table_export.tsv", header = T, sep="\t") %>% glimpse()
-esi22.16s.taxa <- read.table("data/2022Data/ESI/16S/16Sblast_results.tsv", header=F, sep="\t")
+esi22.16s <- read.table("data/2022Data/ESI/16S/ESI2022_16S_feature_table_export.tsv", header = T, sep="\t") %>% glimpse()
+esi22.16s.taxa <- read.table("data/2022Data/ESI/16S/ESI2022_16Sblast_results.tsv", header=F, sep="\t")
 
 esi22.16s.merge <- left_join(esi22.16s, esi22.16s.taxa, by =c("ASV"="V1"))  %>% 
   filter(V7 %in% c("bony fishes","whales & dolphins", "sharks & rays"), V3>97.9) %>%
@@ -249,12 +249,15 @@ esi23.coi.perl.rdp <- read.table("data/2023Perley/ESI/COI/ESIPerl.2023.rdp.outpu
 esi23.coi.perl.merge <- left_join(esi23.coi.perl, esi23.coi.perl.rdp, by=c("ASV"="V1"))
 
 esi23.coi.perl.filt <- esi23.coi.perl.merge %>% 
-  filter(V29>0.97, V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida",
+  filter(V29>0.97, 
+         !V27 == "Homo_sapiens", 
+         V12 %in% c("Arthropoda","Platyhelminthes","Chordata","Annelida",
                               "Mollusca","Nematoda","Rhodophyta","Gastrotricha","Chlorophyta",
                               "Echinodermata","Brachiopoda","Porifera","Cnidaria",
                               "Nemertea","Haptophyta","Hemichordata","Bryozoa",
                               "Ctenophora_comb_jellies","Tardigrada","Rotifera", 
-                              "Chaetognatha","Kinorhyncha","Acanthocephala_thorny-headed_worms"),!V15=="Insecta") %>% 
+                              "Chaetognatha","Kinorhyncha","Acanthocephala_thorny-headed_worms"),
+         !V15=="Insecta") %>% 
                                           select(-c(ASV, V2:V26, V28)) %>%
                                           as.data.frame()
 
