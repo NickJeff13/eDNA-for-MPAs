@@ -11,6 +11,7 @@ library(ggalluvial) #make alluvial plots
 library(patchwork) #stick plots together
 library(eulerr) #for Venn diagrams
 library(pals)
+library(forcats)
 
 # NMDS theme for all plots ------------------------------------------------
 
@@ -32,6 +33,22 @@ load("data/eDNA_NMDS_and_Diversity.RData")
 esi21meta <-read.table("data/2021Data/metadata/2021-sample-metadata_ESIonly.tsv",header = T, sep = "\t")
 esi21meta$sample.id<-gsub("-",".",esi21meta$sample.id)
 
+## read in 2021 chemistry data 
+
+esichem <- readxl::read_xlsx("~/GitHub/easternshoreislands_aoi/data/2021 chemistry/ESI 2021 allchem final.xlsx", sheet = 1, col_names = T)
+
+esichem2 <- esichem %>%
+  rename(sample_id = `Sample ID...1`, sample_id2 = `Sample ID...7`,
+         salinity = `Salinity (psu)`,
+         predicted_depth = PrDM...4,
+         measured_depth = PrDM...19,
+         ammonium = `Ammonium  (umol L-1)`,
+         TIC = `TIC (umol kg-1)`)
+
+ggplot(esichem2, aes(x=measured_depth, y=ammonium, fill=Site))+
+  geom_point(shape=21, colour="black")+
+  theme_bw()
+
 #### 12S
 glimpse(esi12s.filt.fish)
 #filter out sprat 
@@ -39,7 +56,9 @@ glimpse(esi12s.filt.fish)
 esi12s.filt.fish2 <- esi12s.filt.fish %>% 
   dplyr::filter(!species=="Sprattus sprattus") %>%
   select(-c(Sample.13, Sample.32, Sample.75, Sample.100, 
-            Sample.101, Sample.102, Sample.103, Sample.104, Sample.105, Sample.106))
+            Sample.101, Sample.102, Sample.103, 
+            Sample.104, Sample.105, Sample.106))
+
 esi12s.filt.fish2$species <- gsub("Clupea pallasii", "Clupea harengus", esi12s.filt.fish2$species)
 #esi12smat <- esi12s.filt %>% group_by(Species) %>% summarise(across(everything(), sum)) %>% data.frame()
 esi12tt <- t(esi12s.filt.fish2[,2:length(grep("Sample", colnames(esi12s.filt.fish2)))+1]) #added +1 to this since first column is the ASV name
@@ -203,10 +222,16 @@ ggplot()+
 
 ggplot()+
   geom_boxplot(data = shan.div.withmeta2 %>% filter(!surface=="BLANK"), 
-               aes(x = station, y=ShannonDiv12S, fill=station),color="black",alpha=0.7)+
-  xlab(label = "")+
+               aes(x = station, y=ShannonDiv16S, fill=station),color="black",alpha=0.7)+
+  facet_wrap(.~surface)+
+  xlab(label = "Station")+
   ylab(label= "Shannon Diversity")+
-  theme_bw()
+  theme_bw()+
+  theme(legend.position = "none",
+        )
+
+# Model shannon diversity and simpson diversity with chemistry data 
+
 
 # 2022 ESI Perley Data ----------------------------------------------------
 
@@ -219,19 +244,19 @@ esi22.meta$sample.id <- gsub("-",".",esi22.meta$sample.id) # replace dashes with
 
 ###### 12S Data ##
 head(esi22.12s.merge)
-esi22.12s.merge$V6 <- gsub("Clupea pallasii", "Clupea harengus", esi22.12s.merge$V6)
-esi22.12s.merge$V6 <- gsub("Sebastes baramenuke", "Sebastes sp.", esi22.12s.merge$V6)
-esi22.12s.merge$V6 <- gsub("Sebastes viviparus", "Sebastes sp.", esi22.12s.merge$V6)
-esi22.12s.merge$V6 <- gsub("Ammodytes hexapterus", "Ammodytes sp.", esi22.12s.merge$V6)
-esi22.12s.merge$V6 <- gsub("Ammodytes personatus", "Ammodytes sp.", esi22.12s.merge$V6)
-esi22.12s.merge$V6 <- gsub("Pholis ornata", "Pholis gunnellus", esi22.12s.merge$V6)
+esi22.12s.merge$Species <- gsub("Clupea pallasii", "Clupea harengus", esi22.12s.merge$Species)
+esi22.12s.merge$Species <- gsub("Sebastes baramenuke", "Sebastes sp.", esi22.12s.merge$Species)
+esi22.12s.merge$Species <- gsub("Sebastes viviparus", "Sebastes sp.", esi22.12s.merge$Species)
+esi22.12s.merge$Species <- gsub("Ammodytes hexapterus", "Ammodytes sp.", esi22.12s.merge$Species)
+esi22.12s.merge$Species <- gsub("Ammodytes personatus", "Ammodytes sp.", esi22.12s.merge$Species)
+esi22.12s.merge$Species <- gsub("Pholis ornata", "Pholis gunnellus", esi22.12s.merge$Species)
 
 
 #Make a barplot of taxa
 tt<-pivot_longer(esi22.12s.merge, cols=starts_with("Sample"))
 
 
-  p5 <- ggplot()+geom_bar(data=tt%>%filter(value>2000), aes(x=V6, y=log(value)),stat="identity")+
+  p5 <- ggplot()+geom_bar(data=tt%>%filter(value>2000), aes(x=Species, y=log(value)),stat="identity")+
     xlab(label = "Species")+
     ylab(label="12S Log(Read Count)")+
     theme_bw()+
@@ -241,17 +266,19 @@ tt<-pivot_longer(esi22.12s.merge, cols=starts_with("Sample"))
 
 ###### 16S Data ##
 head(esi22.16s.merge)
-esi22.16s.merge$V6 <- gsub("Sebastes mentella", "Sebastes sp.", esi22.16s.merge$V6)
-esi22.16s.merge$V6 <- gsub("Gadus macrocephalus", "Gadus morhua", esi22.16s.merge$V6)
-esi22.16s.merge$V6 <- gsub("Pholis laeta", "Pholis gunnellus", esi22.16s.merge$V6)
-esi22.16s.merge$V6 <- gsub("Platichthys environmental sample", "Platichthys flesus", esi22.16s.merge$V6)
-esi22.16s.merge$V6 <- gsub("Pleuronectes platessa", "Pleuronectinae", esi22.16s.merge$V6)
-esi22.16s.merge$V6 <- gsub("Pollachius pollachius", "Pollachius virens", esi22.16s.merge$V6)
+esi22.16s.merge$Species <- gsub("Sebastes mentella", "Sebastes sp.", esi22.16s.merge$Species)
+esi22.16s.merge$Species <- gsub("Gadus macrocephalus", "Gadus morhua", esi22.16s.merge$Species)
+esi22.16s.merge$Species <- gsub("Pholis laeta", "Pholis gunnellus", esi22.16s.merge$Species)
+esi22.16s.merge$Species <- gsub("Platichthys environmental sample", "Platichthys flesus", esi22.16s.merge$Species)
+esi22.16s.merge$Species <- gsub("Pleuronectes platessa", "Pleuronectinae", esi22.16s.merge$Species)
+esi22.16s.merge$Species <- gsub("Pollachius pollachius", "Pollachius virens", esi22.16s.merge$Species)
 
 
 tt<-pivot_longer(esi22.16s.merge, cols=starts_with("Sample"))
 
-  p6 <- ggplot()+geom_bar(data=tt%>%filter(value>2000, !V6 %in% c("Platichthys flesus","Myzopsetta punctatissima"  )), aes(x=V6, y=log(value)),stat="identity")+
+  p6 <- ggplot()+geom_bar(data=tt%>%filter(value>2000, 
+                                           !Species %in% c("Platichthys flesus","Myzopsetta punctatissima")), 
+                          aes(x=Species, y=log(value)),stat="identity")+
    xlab(label = "Species")+
     ylab(label="16S Log(Read Count)")+
     theme_bw()+
@@ -362,15 +389,16 @@ p7+p8+plot_annotation(title="2022",tag_levels = "A",
 ggsave(filename = "ESI2022_12s_16s_NMDS_Jaccard_Combined.png", plot = last_plot(), device = "png", path = "figures/2022Results/", width = 10, height=8, dpi = 300, bg = "white")
 
 ###### LerayXT COI Data ##
-head(esi22.coi.merge)
+head(esi22.coi.merge.filt)
 
 #Make a barplot of taxa
 ii <-pivot_longer(esi22.coi.merge, cols=starts_with("Sample")) %>% filter(!Species=="Homo_sapiens")
 ii$Species <- gsub("Nothria_conchylega_CMC02","Nothria_conchylega", ii$Species)
 ii$Species <- gsub("Bipalponephtys_neotena","Micronephthys_neotena", ii$Species)
 ii$Species <- gsub("Euclymene_sp.","Euclymene_zonalis", ii$Species)
+ii$Species <- gsub("Euclymene_sp.","Euclymene_zonalis_CMC02", ii$Species)
 
-  p9 <- ggplot()+geom_bar(data=ii%>%filter(value>400), aes(x=Species, y=log(value)),stat="identity")+
+  p9 <- ggplot()+geom_bar(data=ii%>%filter(value>200), aes(x=Species, y=log(value)),stat="identity")+
     xlab(label = "Species")+
     ylab(label="COI Log(Read Count)")+
     theme_bw()+
@@ -621,6 +649,7 @@ ggsave(filename = "2022SAB_COIand16S_Specaccum.png", plot = p6, device = "png", 
 per23.metadata <- read.table("data/2023Perley/2023Perley-sample-metadata_ESI.tsv", sep="\t",header = T) %>% glimpse()
 
 per23.metadata$sample.id<-gsub("-",".",per23.metadata$sample.id)
+per23.metadata$surface <- gsub("Deep","Bottom", per23.metadata$surface)
 
 ## 12S 
 head(esi23.12s.perl.merge)
@@ -639,15 +668,45 @@ tt$V6<-gsub(pattern = "Alosa pseudoharengus", replacement = "A. pseudoharengus",
 tt$V6<-gsub(pattern = "Salvelinus fontinalis x Salvelinus malma", replacement = "Salvelinus fontinalis", tt$V6)
 
 
-h<- ggplot()+geom_bar(data=tt%>%filter(value>200), aes(x=V6, y=log(value)),stat="identity")+
+h<- ggplot()+
+  geom_bar(data=tt%>%filter(value>200), aes(x=V6, y=log(value)),stat="identity")+
   xlab(label = "")+
   ylab(label="12S Log(Read Count)")+
   theme_bw()+
   theme(axis.text.x = element_text(angle=55, hjust=1), text=element_text(size=14))+
   ggtitle('2023 Offshore');h
 
-ggsave(filename = "ESI23_Perley_12S_barplot.png",plot = h, device = "png", path = "figures/2023_Perley/", width = 12, height=8, units = "in", dpi = 400, bg = "white")    
+#ggsave(filename = "ESI23_Perley_12S_barplot.png",plot = h, device = "png", path = "figures/2023_Perley/", width = 12, height=8, units = "in", dpi = 400, bg = "white")    
 
+
+## bubble plot of where species are found 
+# Species, Station_Depth, Abundance, and Transect
+bubb <- left_join(tt, per23.metadata, by = c("name"="sample.id")) %>%
+  mutate(season= factor(season, levels=c("spring","summer","fall"))) %>%
+  rename(Species = V6)
+
+cleaned_bubb <- bubb %>%
+  mutate(Species = fct_reorder(Species, value, .fun=sum))
+
+ggplot(bubb %>% 
+         group_by(Species) %>%
+         filter(!station %in% c("Blank","LabBlank"), value>100), 
+       aes(x = station, y = Species, size = value, fill=depth)) +
+  geom_point(alpha = 0.7, shape=21) +
+  scale_fill_viridis_c()+
+  labs(fill="Sample \ndepth (m)",
+       size= "Read count")+
+  #facet_grid(rows = vars(surface), cols = vars(season)) +
+  theme_bw() +
+  labs(x = "Station", y = "Species")+
+  theme(strip.background = element_rect(fill = "white", color = "black"),
+        text=element_text(size = 12),
+        axis.text.y=element_text(size=7, face="italic"),
+        #strip.text.y = element_text(angle = 0),
+        legend.position="bottom", legend.box = "horizontal")
+
+ggsave(filename = "ESI2023_Fish_BubblePlot.png", height=13, width=10, units="in",
+       plot = last_plot(), path = "figures/2023_Perley/ESI/")
 # Do NMDS of data and group by site or season
 
 #Set up matrix for NMDS with the non-grouped data
@@ -788,11 +847,12 @@ esi23.coi.per.merge3 <-esi23.coi.perl.filt2 %>%
   dplyr::select(-c("confidence"))
 #Group by to make some stats easier, but we should run the NMDS on the raw ASVs not grouped as species
 esi23.coi.smat <- esi23.coi.per.merge3 %>% 
+  filter(!species=="Homo_sapiens") %>%
   group_by(species) %>% 
   summarise(across(everything(), sum)) %>% 
   data.frame()
 
-
+#remove Crella elegans- Adriatic sponge
 #Make a barplot of taxa
 tt<-pivot_longer(esi23.coi.smat, cols=starts_with("Sample"))
 tt$species <- gsub("Eunoe_sp._BOLD:AAG5099","Eunoe_sp.",tt$species)
