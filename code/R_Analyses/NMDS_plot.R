@@ -392,7 +392,7 @@ ggsave(filename = "ESI2022_12s_16s_NMDS_Jaccard_Combined.png", plot = last_plot(
 head(esi22.coi.merge.filt)
 
 #Make a barplot of taxa
-ii <-pivot_longer(esi22.coi.merge, cols=starts_with("Sample")) %>% filter(!Species=="Homo_sapiens")
+ii <-pivot_longer(esi22.coi.merge.filt, cols=starts_with("Sample")) %>% filter(!Species=="Homo_sapiens")
 ii$Species <- gsub("Nothria_conchylega_CMC02","Nothria_conchylega", ii$Species)
 ii$Species <- gsub("Bipalponephtys_neotena","Micronephthys_neotena", ii$Species)
 ii$Species <- gsub("Euclymene_sp.","Euclymene_zonalis", ii$Species)
@@ -460,7 +460,7 @@ hull.data.per22.coi <- data.scores.merge %>%
 ggsave(filename = "ESI22_Perley_COI_NMDS1_2_byDepth.png",plot = last_plot(), device = "png", path = "figures/2022Results/", width = 12, height=8, units = "in", dpi = 400, bg = "white")  
 
 
-
+#####################################################################################################
 # 2022 SAB Perley Data ----------------------------------------------------
 
 
@@ -666,6 +666,8 @@ tt$V6<-gsub(pattern = "Clupea pallasii", replacement = "Clupea harengus", tt$V6)
 tt$V6<-gsub(pattern = "Alosa fallax", replacement = "Alosa sp.", tt$V6)
 tt$V6<-gsub(pattern = "Alosa pseudoharengus", replacement = "A. pseudoharengus", tt$V6)
 tt$V6<-gsub(pattern = "Salvelinus fontinalis x Salvelinus malma", replacement = "Salvelinus fontinalis", tt$V6)
+tt$V6<-gsub(pattern = "Liparis fabricii", replacement = "Liparis spp.", tt$V6)
+tt$V6<-gsub(pattern = "Liparis miostomus", replacement = "Liparis spp.", tt$V6)
 
 
 h<- ggplot()+
@@ -690,23 +692,52 @@ cleaned_bubb <- bubb %>%
 
 ggplot(bubb %>% 
          group_by(Species) %>%
-         filter(!station %in% c("Blank","LabBlank"), value>100), 
+         filter(!station %in% c("Blank","LabBlank"), surface=="Bottom", value>100), 
        aes(x = station, y = Species, size = value, fill=depth)) +
   geom_point(alpha = 0.7, shape=21) +
   scale_fill_viridis_c()+
   labs(fill="Sample \ndepth (m)",
        size= "Read count")+
-  #facet_grid(rows = vars(surface), cols = vars(season)) +
+  facet_grid(cols = vars(season)) +
   theme_bw() +
   labs(x = "Station", y = "Species")+
   theme(strip.background = element_rect(fill = "white", color = "black"),
         text=element_text(size = 12),
-        axis.text.y=element_text(size=7, face="italic"),
+        axis.text.y=element_text(size=9, face="italic"),
         #strip.text.y = element_text(angle = 0),
+        panel.background = element_rect(fill = "white", color = NA),
+        plot.background = element_rect(fill = "white", color = NA),
+        panel.grid.major.y = element_line(color = "grey50", linewidth = 0.25),
         legend.position="bottom", legend.box = "horizontal")
 
-ggsave(filename = "ESI2023_Fish_BubblePlot.png", height=13, width=10, units="in",
+ggsave(filename = "ESI2023_Fish_BubblePlot_Bottom.png", height=13, width=10, units="in",
        plot = last_plot(), path = "figures/2023_Perley/ESI/")
+
+
+ggplot(bubb %>% 
+         group_by(Species) %>%
+         filter(!station %in% c("Blank","LabBlank"), surface=="Surface", value>100), 
+       aes(x = station, y = Species, size = value, fill=depth)) +
+  geom_point(alpha = 0.7, shape=21) +
+  scale_fill_viridis_c()+
+  labs(fill="Sample \ndepth (m)",
+       size= "Read count")+
+  facet_grid(cols = vars(season)) +
+  theme_bw() +
+  labs(x = "Station", y = "Species")+
+  theme(strip.background = element_rect(fill = "white", color = "black"),
+        text=element_text(size = 12),
+        axis.text.y=element_text(size=9, face="italic"),
+        #strip.text.y = element_text(angle = 0),
+        panel.background = element_rect(fill = "white", color = NA),
+        plot.background = element_rect(fill = "white", color = NA),
+        panel.grid.major.y = element_line(color = "grey50", linewidth = 0.25),
+        legend.position="bottom", legend.box = "horizontal")
+
+ggsave(filename = "ESI2023_Fish_BubblePlot_Surface.png", height=13, width=10, units="in",
+       plot = last_plot(), path = "figures/2023_Perley/ESI/")
+
+
 # Do NMDS of data and group by site or season
 
 #Set up matrix for NMDS with the non-grouped data
