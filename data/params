@@ -25,4 +25,4 @@ TeleoR=CRBGGTCGCCCCAACCRAA
 COMEF=CYGCGGTAATTCCAGCTC
 COMER=AYGGTATCTRATCRTCTTYG
 
-echo Primers for 12S, COI, 16S, and 18S are now loaded, please add any others you might need!
+echo 'Primers for 12S, COI, 16S, and 18S are now loaded, please add any others you might need!'
