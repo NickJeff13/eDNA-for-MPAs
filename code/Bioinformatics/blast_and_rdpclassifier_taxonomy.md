@@ -1,6 +1,7 @@
 #we will use blastn and a COI specific RDP classifier for taxonomy assignments of our ASVs
 
-export BLASTDB=/media/mcrg/511fdc64-e3c3-4db7-9668-f8982f7782f9/blastdb/
+#Update this file path if it changes - may need to export it to /mnt/ instead of /media/
+export BLASTDB=/media/mcrg/511fdc64-e3c3-4db7-9668-f8982f7782f9/blastdb/ 
 
 #As of April 2026, using a conda environment for blast 2.17+
 conda activate blast

@@ -1,0 +1,68 @@
+sample-id	replicate	site	season	filterType
+1000-ENEG-1	ENEG	ENEG	ENEG	NA
+987-ENEG-1	ENEG	ENEG	ENEG	NA
+987-ENEG-2	ENEG	ENEG	ENEG	NA
+988-ENEG-1	ENEG	ENEG	ENEG	NA
+988-ENEG-2	ENEG	ENEG	ENEG	NA
+989-ENEG-1	ENEG	ENEG	ENEG	NA
+ESI25-45194	1	ESI_4	Fall	New
+ESI25-45195	2	ESI_4	Fall	New
+ESI25-45196	1	ESI_8	Fall	New
+ESI25-45197	2	ESI_8	Fall	New
+ESI25-45198	1	ESI_7	Fall	New
+ESI25-45199	2	ESI_7	Fall	New
+ESI25-45200	1	ESI_6	Fall	New
+ESI25-45201	2	ESI_6	Fall	New
+ESI25-45202	1	ESI_12	Fall	New
+ESI25-45203	2	ESI_12	Fall	New
+ESI25-45204	1	ESI_16	Fall	New
+ESI25-45205	2	ESI_16	Fall	New
+ESI25-45206	0	ESI_16	Fall	New
+MCRG25-01	1	Moosehead	Spring	Reused
+MCRG25-02	2	Moosehead	Spring	New
+MCRG25-03	3	Moosehead	Spring	New
+MCRG25-04	0	Moosehead	Spring	Reused
+MCRG25-05	1	Little Harbour	Spring	New
+MCRG25-06	2	Little Harbour	Spring	Reused
+MCRG25-07	3	Little Harbour	Spring	New
+MCRG25-08	0	Little Harbour	Spring	Reused
+MCRG25-09	1	Conrod Beach	Spring	Unknown
+MCRG25-10	2	Conrod Beach	Spring	Unknown
+MCRG25-11	3	Conrod Beach	Spring	Unknown
+MCRG25-12	0	Conrod Beach	Spring	Unknown
+MCRG25-13	1	TaylorHead	Spring	Reused
+MCRG25-14	2	TaylorHead	Spring	New
+MCRG25-15	3	TaylorHead	Spring	New
+MCRG25-16	0	TaylorHead	Spring	Reused
+MCRG25-17	1	TaylorHead	Summer	New
+MCRG25-18	2	TaylorHead	Summer	New
+MCRG25-19	3	TaylorHead	Summer	Reused
+MCRG25-20	0	TaylorHead	Summer	Reused
+MCRG25-21	1	Moosehead	Summer	Unknown
+MCRG25-22	2	Moosehead	Summer	Unknown
+MCRG25-23	3	Moosehead	Summer	Unknown
+MCRG25-24	0	Moosehead	Summer	Unknown
+MCRG25-25	1	Conrod Beach	Summer	Unknown
+MCRG25-26	2	Conrod Beach	Summer	Unknown
+MCRG25-27	3	Conrod Beach	Summer	Unknown
+MCRG25-28	0	Conrod Beach	Summer	Unknown
+MCRG25-29	1	Little Harbour	Summer	Unknown
+MCRG25-30	2	Little Harbour	Summer	Unknown
+MCRG25-31	3	Little Harbour	Summer	Unknown
+MCRG25-32	0	Little Harbour	Summer	Unknown
+MCRG25-33	1	TaylorHead	Fall	New
+MCRG25-34	2	TaylorHead	Fall	Reused
+MCRG25-35	3	TaylorHead	Fall	New
+MCRG25-36	0	TaylorHead	Fall	Reused
+MCRG25-37	1	Moosehead	Fall	New
+MCRG25-38	2	Moosehead	Fall	New
+MCRG25-39	3	Moosehead	Fall	Reused
+MCRG25-40	0	Moosehead	Fall	Reused
+MCRG25-41	1	Little Harbour	Fall	New
+MCRG25-42	2	Little Harbour	Fall	Reused
+MCRG25-43	3	Little Harbour	Fall	New
+MCRG25-44	0	Little Harbour	Fall	Reused
+MCRG25-45	1	Conrod Beach	Fall	Reused
+MCRG25-46	2	Conrod Beach	Fall	New
+MCRG25-47	3	Conrod Beach	Fall	New
+MCRG25-48	0	Conrod Beach	Fall	Reused
