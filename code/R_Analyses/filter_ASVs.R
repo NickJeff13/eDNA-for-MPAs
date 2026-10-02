@@ -27,7 +27,7 @@ esi12s<-read.table(file = "data/2021Data/NEW/12S/ESI2021_12S_feature_table_expor
 esi12s.taxa <-read.table(file = "data/2021Data/NEW/12S/ESI_12Sblast_1results.tsv",header = F,sep="\t")
 colnames(esi12s.taxa)<-c("ASV","NCBI","percentID", "evalue","length","species","group","commonname")
 
-esi21.12s.merge <- left_join(esi12s, esi12s.taxa, by =c("OTU.ID"="ASV"))  %>% filter(group %in% c("bony fishes","whales & dolphins", "sharks & rays", "birds"), percentID > 97.99)
+esi21.12s.merge <- left_join(esi12s, esi12s.taxa, by =c("OTU.ID"="ASV"))  %>% filter(group %in% c("bony fishes","whales & dolphins", "sharks & rays", "birds"), percentID > 90)
 
 
 
